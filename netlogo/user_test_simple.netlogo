@@ -1,13 +1,14 @@
-extensions [http-req]
-
-globals [adj key prevkey prevtime timelog]
+;;extensions [http-req]
+globals [adj key prevkey prevtime timelog currtime simul]
 
 to setup
   clear-all
   setup-patches
   setup-turtles
   reset-ticks
-  set timelog date-and-time
+  set timelog user-input "What is your name?"
+  set timelog word timelog ", "
+  set timelog word timelog date-and-time
 end
 
 to setup-patches
@@ -16,7 +17,7 @@ end
 
 to setup-turtles
   create-turtles 4 [setxy (-4 + who * 2) 0]
-  ask turtles [set shape "square"]
+  ask turtles [set shape "border"]
   ask turtles [set color red]
   set adj [[1 3 4 5 6][0 2 4 8 7][1 3 5 7 9][0 2 6 8 9]
     [0 1][0 2][0 3][1 2][1 3][2 3]]
@@ -26,11 +27,11 @@ end
 ;; [set hidden? not hidden?]
 
 to show-key
-  ask turtles [show-turtle]
-  ifelse 
-  key < 4 [ask turtle key [hide-turtle]]
+  ask turtles [set color grey]
+  ifelse
+  key < 4 [ask turtle key [set color red]]
   [
-    foreach item key adj [x -> ask turtle x [hide-turtle]]
+    foreach item key adj [x -> ask turtle x [set color red]]
   ]
 end
 
@@ -42,72 +43,87 @@ to update [current-node next-size]
   set timelog word timelog date-and-time
 end
 
+to update-time
+  let hh read-from-string substring date-and-time 0 2
+  let mm read-from-string substring date-and-time 3 5
+  let ss read-from-string substring date-and-time 6 8
+  let ms read-from-string substring date-and-time 8 12
+  set prevtime currtime
+  set currtime hh * 3600 + mm * 60 + ss + ms
+  set simul currtime - prevtime < 0.15
+end
+
 to finish
-  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
-  ifelse (first response-triplet) = "200" [
-    show "logs successfully sent"
-  ]
-  [
-    show "log transmission failed"
-  ]
+;;  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
+;;  show first response-triplet
+  ;;ifelse (first response-triplet) = "200" [
+    ;;show "logs successfully sent"
+  ;;]
+  ;;[
+    ;;show "log transmission failed"
+  ;;]
 end
 
 to press-h
+  update-time
 	(ifelse key = 0 [
     update 0 5
   ]
-    key = 4 and prevkey = 1 [
+    key = 4 and prevkey = 1 and simul[
       update 4 2
     ]
-    key = 5 and prevkey = 2 [
+    key = 5 and prevkey = 2 and simul[
       update 5 2
     ]
-    key = 6 and prevkey = 3 [
+    key = 6 and prevkey = 3 and simul[
       update 6 2
     ][set prevkey 0])
 end
 
 to press-j
+  update-time
 	(ifelse key = 1 [
     update 1 5
   ]
-    key = 4 and prevkey = 0 [
+    key = 4 and prevkey = 0 and simul[
       update 4 2
     ]
-    key = 7 and prevkey = 2 [
+    key = 7 and prevkey = 2 and simul[
       update 7 2
     ]
-    key = 8 and prevkey = 3 [
+    key = 8 and prevkey = 3 and simul[
       update 8 2
     ][set prevkey 1])
 end
 
 to press-k
+  update-time
 	(ifelse key = 2 [
     update 2 5
   ]
-    key = 5 and prevkey = 0 [
+    key = 5 and prevkey = 0 and simul[
       update 5 2
     ]
-    key = 7 and prevkey = 1 [
+    key = 7 and prevkey = 1 and simul[
       update 7 2
     ]
-    key = 9 and prevkey = 3 [
+    key = 9 and prevkey = 3 and simul[
       update 9 2
     ][set prevkey 2])
 end
 
 to press-l
+  update-time
 	(ifelse key = 3 [
     update 3 5
     ]
-    key = 6 and prevkey = 0 [
+    key = 6 and prevkey = 0 and simul[
       update 6 2
     ]
-    key = 8 and prevkey = 1 [
+    key = 8 and prevkey = 1 and simul[
       update 8 2
     ]
-    key = 9 and prevkey = 2 [
+    key = 9 and prevkey = 2 and simul[
       update 9 2
     ][set prevkey 3])
 end
@@ -146,13 +162,13 @@ to draw
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-285
-45
-725
-405
+290
+105
+838
+294
 -1
 -1
-40
+60.0
 1
 10
 1
@@ -162,20 +178,20 @@ GRAPHICS-WINDOW
 1
 1
 1
--6
-4
--4
-4
+-5
+3
+-1
+1
 0
 0
 1
 ticks
-30
+30.0
 
 BUTTON
 35
 110
-85
+90
 144
 H
 press-h
@@ -192,7 +208,7 @@ NIL
 BUTTON
 95
 110
-140
+150
 144
 J
 press-j
@@ -226,8 +242,8 @@ NIL
 BUTTON
 215
 110
-260
-142
+270
+143
 L
 press-l
 NIL
@@ -242,9 +258,9 @@ NIL
 
 BUTTON
 60
-200
+190
 140
-230
+223
 draw
 draw
 T
@@ -258,10 +274,10 @@ NIL
 1
 
 BUTTON
-60
-290
-240
-350
+100
+255
+200
+299
 restart
 setup
 NIL
@@ -275,10 +291,10 @@ NIL
 1
 
 BUTTON
-155
-200
-230
-230
+160
+190
+235
+223
 finish
 finish
 NIL
@@ -290,6 +306,7 @@ F
 NIL
 NIL
 1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -341,6 +358,12 @@ arrow
 true
 0
 Polygon -7500403 true true 150 0 0 150 105 150 105 293 195 293 195 150 300 150
+
+border
+false
+0
+Rectangle -7500403 true true 0 -30 315 315
+Rectangle -1 true false 45 45 255 255
 
 box
 false
@@ -632,22 +655,22 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.0
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 default
-0
--0.2 0 0 1
-0 1 1 0
-0.2 0 0 1
+0.0
+-0.2 0 0.0 1.0
+0.0 1 1.0 0.0
+0.2 0 0.0 1.0
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-
+0
 @#$#@#$#@
