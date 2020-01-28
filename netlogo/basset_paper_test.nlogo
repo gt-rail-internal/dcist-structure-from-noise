@@ -1,11 +1,9 @@
 ;; TODO/Issues
 ;; Netlogo uses synchronous mode in HTTPS post, which probably causes the network error at the end, nothing runs after the error.
 ;; Write code to generate the lattice graph
-;; Display "Click here" on view before game starts : problem - only way to do this is using labels which are very small
-;; Display "ERROR!" when a wrong key is pressed, not sure how to do this
+;; Display "Click here" on view before game starts : problem - cannot remove it after click. 
 ;; Host simple-https-server to receive responses, do away with webhook.site? 
 ;; Setup AMT
-;; Maybe skip logging the first keypress?
 ;; Refer to paper to check if all requirements are met
 extensions [http-req]
 globals [adj key prevkey prevtime timelog currtime simul keymap press-count]
@@ -17,6 +15,8 @@ to setup
   set adj modular-graph modular-clusters ;; create modular clusters and use it to create an adjacency list
   ;; timelog is a string that contains the user name and time as CSV
   set press-count 0
+  ask patches [set plabel-color black]
+  set prevkey -1
   set timelog user-input "What is your name?" 
   set timelog word timelog ", "
   reset-ticks
@@ -74,12 +74,13 @@ end
 
 ;; function to transition to the next key according to the graph
 to update [current-node]
+  ask patch 0 -1 [set plabel ""]
   set timelog word timelog ", "
   set timelog word timelog date-and-time
   ;; clear previous key when transitioning to next node
   set prevkey -1
   set press-count (press-count + 1)
-  if press-count > 10 [
+  if press-count > 50 [
     finish
     user-message "Thank you!"
   ]
@@ -134,7 +135,14 @@ to press-space
     key = 8 and prevkey = 4 and simul[
       update 8
     ]
-    [set prevkey 0])
+    [
+      (ifelse (not (key = 0 or key = 5 or key = 6 or key = 7 or key = 8)) [
+  			ask patch 0 -1 [set plabel "Error!"]
+      	]
+      	prevkey != -1 [
+      	ask patch 0 -1 [set plabel "Error!"]
+        ][])
+      set prevkey 0])
 end
 
 to press-h
@@ -153,7 +161,14 @@ to press-h
     ]
     key = 11 and prevkey = 4 and simul[
       update 11
-    ][set prevkey 1])
+    ][
+      (ifelse (not (key = 1 or key = 5 or key = 10 or key = 9 or key = 11)) [
+  			ask patch 0 -1 [set plabel "Error!"]
+      	]
+      	prevkey != -1 [
+      	ask patch 0 -1 [set plabel "Error!"]
+        ][])
+			set prevkey 1])
 end
 
 to press-j
@@ -172,7 +187,15 @@ to press-j
     ]
     key = 13 and prevkey = 4 and simul[
       update 13
-    ][set prevkey 2])
+    ][
+      (ifelse (not (key = 2 or key = 6 or key = 9 or key = 12 or key = 13)) [
+  			ask patch 0 -1 [set plabel "Error!"]
+      ]
+      prevkey != -1 [
+      	ask patch 0 -1 [set plabel "Error!"]
+        ][])
+      set prevkey 2
+  ])
 end
 
 to press-k
@@ -191,7 +214,14 @@ to press-k
     ]
     key = 14 and prevkey = 4 and simul[
       update 14
-    ][set prevkey 3])
+    ][
+      (ifelse (not (key = 3 or key = 7 or key = 10 or key = 12 or key = 14)) [
+  			ask patch 0 -1 [set plabel "Error!"]
+      ]
+      prevkey != -1 [
+      	ask patch 0 -1 [set plabel "Error!"]
+        ][])
+      set prevkey 3])
 end
 
 to press-l
@@ -210,20 +240,27 @@ to press-l
     ]
     key = 14 and prevkey = 3 and simul[
       update 14
-    ][set prevkey 4])
+    ][
+      (ifelse (not (key = 4 or key = 8 or key = 11 or key = 13 or key = 14)) [
+  			ask patch 0 -1 [set plabel "Error!"]
+      ]
+      prevkey != -1 [
+      	ask patch 0 -1 [set plabel "Error!"]
+        ][])
+      set prevkey 4])
 end
 
 @#$#@#$#@
 GRAPHICS-WINDOW
-305
-25
-965
-205
+325
+30
+985
+270
 -1
 -1
 60
 1
-10
+40
 1
 1
 1
@@ -233,7 +270,7 @@ GRAPHICS-WINDOW
 1
 -5
 5
--1
+-2
 1
 0
 0
