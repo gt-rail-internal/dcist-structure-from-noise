@@ -1,8 +1,8 @@
 ;; TODO/Issues
 ;; Netlogo uses synchronous mode in HTTPS post, which probably causes the network error at the end, nothing runs after the error.
 ;; Write code to generate the lattice graph
-;; Display "Click here" on view before game starts : problem - cannot remove it after click. 
-;; Host simple-https-server to receive responses, do away with webhook.site? 
+;; Display "Click here" on view before game starts : problem - cannot remove it after click.
+;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
 extensions [http-req]
@@ -17,7 +17,7 @@ to setup
   set press-count 0
   ask patches [set plabel-color black]
   set prevkey -1
-  set timelog user-input "What is your name?" 
+  set timelog user-input "What is your name?"
   set timelog word timelog ", "
   reset-ticks
   set timelog word timelog date-and-time
@@ -29,7 +29,7 @@ end
 
 to setup-turtles
   create-turtles 5 [setxy (-4 + who * 2) 0]
-  ask turtles [set shape "border"]
+  ask turtles [set shape "border2"]
   ask turtles [set color red]
   ;; keymap maps each node in the graph to one or two keys
   set keymap [[0][1][2][3][4][0 1][0 2][0 3][0 4][1 2][1 3][1 4][2 3][2 4][3 4]]
@@ -37,7 +37,7 @@ to setup-turtles
   show-key
 end
 
-;; function to randomly sample 3 clusters of 5 elements each 
+;; function to randomly sample 3 clusters of 5 elements each
 ;; these are the clusters in the modular graph
 ;; reports a 3x5 list of the clusters
 to-report modular-clusters
@@ -55,7 +55,7 @@ to-report modular-graph [clusters]
       set graph replace-item node graph (remove node cluster)
     ]
   ]
-  foreach (range 3) [i -> 
+  foreach (range 3) [i ->
     let node-1 (item 0 (item i clusters))
     let adj-list-1 (item node-1 graph)
     set graph (replace-item node-1 graph (replace-item 3 adj-list-1 (item 4 (item ((i + 1) mod 3) clusters))))
@@ -68,7 +68,7 @@ to-report modular-graph [clusters]
 end
 
 to show-key
-  ask turtles [set color grey]
+  ask turtles [set color white]
   foreach item key keymap [x -> ask turtle x [set color red]]
 end
 
@@ -112,8 +112,8 @@ to finish
   ]
 end
 
-;; functions starting with press-x are triggered when x is pressed, 
-;; they check if the pressed key matches with the key to be pressed, 
+;; functions starting with press-x are triggered when x is pressed,
+;; they check if the pressed key matches with the key to be pressed,
 ;; this also requires checking the previous key if two keys are to be pressed
 ;; and updates the time of keypress
 to press-space
@@ -121,7 +121,7 @@ to press-space
   (ifelse key = 0 [
     	update 0
     ]
-    ;; the combination of 1 and 0 make up node 5 in the graph, so, 
+    ;; the combination of 1 and 0 make up node 5 in the graph, so,
     ;; if prev key was 1, currently pressed 0 and key is 5 and keys were simulatneously pressed
     key = 5 and prevkey = 1 and simul[
     	update 5
@@ -249,16 +249,15 @@ to press-l
         ][])
       set prevkey 4])
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 325
 30
-985
-270
+993
+279
 -1
 -1
-60
+60.0
 1
 40
 1
@@ -276,7 +275,7 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-30
+30.0
 
 BUTTON
 30
@@ -375,10 +374,11 @@ NIL
 T
 OBSERVER
 NIL
- 
+NIL
 NIL
 NIL
 1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -436,6 +436,13 @@ false
 0
 Rectangle -7500403 true true 0 -30 315 315
 Rectangle -1 true false 45 45 255 255
+
+border2
+false
+0
+Rectangle -7500403 true true 0 -30 315 315
+Rectangle -1 true false 30 30 270 270
+Rectangle -16777216 false false 30 30 270 270
 
 box
 false
@@ -727,22 +734,22 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.0
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 default
-0
--0.2 0 0 1
-0 1 1 0
-0.2 0 0 1
+0.0
+-0.2 0 0.0 1.0
+0.0 1 1.0 0.0
+0.2 0 0.0 1.0
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-
+0
 @#$#@#$#@
