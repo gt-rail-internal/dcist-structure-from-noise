@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-extensions [http-req]
+;;extensions [http-req]
 globals [adj key prevkey prevtime timelog currtime simul keymap press-count]
 
 to setup
@@ -28,8 +28,9 @@ to setup-patches
 end
 
 to setup-turtles
-  create-turtles 5 [setxy (-4 + who * 2) 0]
-  ask turtles [set shape "border2"]
+  create-turtles 5 [setxy (-2 + who) 0]
+  ask turtles [set shape "dani-border"]
+  ask turtle 0 [set shape "dani-space-border"]
   ask turtles [set color red]
   ;; keymap maps each node in the graph to one or two keys
   set keymap [[0][1][2][3][4][0 1][0 2][0 3][0 4][1 2][1 3][1 4][2 3][2 4][3 4]]
@@ -68,7 +69,7 @@ to-report modular-graph [clusters]
 end
 
 to show-key
-  ask turtles [set color white]
+  ask turtles [set color black]
   foreach item key keymap [x -> ask turtle x [set color red]]
 end
 
@@ -98,18 +99,27 @@ to update-time
   set currtime hh * 3600 + mm * 60 + ss + ms
   ;; check if the time difference between previous and this keypress is less than a threshold
   ;; to determine if keys were simultaneously pressed
-  set simul currtime - prevtime < 0.15
+  set simul currtime - prevtime < 0.010
 end
 
 
 to finish
-  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
-  ifelse (first response-triplet) = "200" [
-    show "logs successfully sent"
-  ]
-  [
-    show "log transmission failed"
-  ]
+;  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
+;  ifelse (first response-triplet) = "200" [
+;    show "logs successfully sent"
+;  ]
+;  [
+;    show "log transmission failed"
+;  ]
+end
+
+to-report nothing-else-pressed [check]
+  (ifelse (currtime - prevtime) > 0.003 [
+    report true
+    ]
+    prevkey = check[
+      report true
+    ][report false])
 end
 
 ;; functions starting with press-x are triggered when x is pressed,
@@ -123,7 +133,7 @@ to press-space
     ]
     ;; the combination of 1 and 0 make up node 5 in the graph, so,
     ;; if prev key was 1, currently pressed 0 and key is 5 and keys were simulatneously pressed
-    key = 5 and prevkey = 1 and simul[
+    key = 5 and prevkey = 1 and simul and (nothing-else-pressed -2)[
     	update 5
     ]
     key = 6 and prevkey = 2 and simul[
@@ -147,7 +157,7 @@ end
 
 to press-h
   update-time
-	(ifelse key = 1 [
+	(ifelse key = 1 and (nothing-else-pressed -2)[
     update 1
     ]
     key = 5 and prevkey = 0 and simul[
@@ -173,7 +183,7 @@ end
 
 to press-j
   update-time
-	(ifelse key = 2 [
+	(ifelse key = 2 and (nothing-else-pressed -2)[
     update 2
     ]
     key = 6 and prevkey = 0 and simul[
@@ -200,7 +210,7 @@ end
 
 to press-k
   update-time
-	(ifelse key = 3 [
+	(ifelse key = 3 and (nothing-else-pressed -2)[
     update 3
     ]
     key = 7 and prevkey = 0 and simul[
@@ -226,7 +236,7 @@ end
 
 to press-l
   update-time
-	(ifelse key = 4 [
+	(ifelse key = 4 and (nothing-else-pressed -2)[
     update 4
     ]
     key = 8 and prevkey = 0 and simul[
@@ -253,13 +263,13 @@ end
 GRAPHICS-WINDOW
 325
 30
-993
-279
+858
+339
 -1
 -1
-60.0
+75.0
 1
-40
+50
 1
 1
 1
@@ -267,8 +277,8 @@ GRAPHICS-WINDOW
 1
 1
 1
--5
-5
+-3
+3
 -2
 1
 0
@@ -507,6 +517,18 @@ cylinder
 false
 0
 Circle -7500403 true true 0 0 300
+
+dani-border
+false
+0
+Rectangle -7500403 true true 30 30 270 270
+Rectangle -1 true false 60 60 240 240
+
+dani-space-border
+false
+0
+Rectangle -7500403 true true 30 60 270 300
+Rectangle -1 true false 60 90 240 270
 
 dot
 false
