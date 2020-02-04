@@ -4,7 +4,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-extensions [http-req]
+; extensions [http-req]
 globals [adj key prevkey prevtime timelog currtime simul keymap press-count]
 
 to setup
@@ -135,13 +135,13 @@ end
 
 
 to finish
-  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
-  ifelse (first response-triplet) = "200" [
-    show "logs successfully sent"
-  ]
-  [
-    show "log transmission failed"
-  ]
+  ; let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
+  ; ifelse (first response-triplet) = "200" [
+  ;   show "logs successfully sent"
+  ; ]
+  ; [
+    ; show "log transmission failed"
+  ; ]
 end
 
 to-report nothing-else-pressed [check]
@@ -294,11 +294,11 @@ end
 GRAPHICS-WINDOW
 325
 30
-850
-255
+858
+264
 -1
 -1
-75
+75.0
 1
 50
 1
@@ -316,7 +316,7 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-30
+30.0
 
 BUTTON
 30
@@ -415,10 +415,11 @@ NIL
 T
 OBSERVER
 NIL
- 
+NIL
 NIL
 NIL
 1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -552,9 +553,21 @@ dani-border
 false
 0
 Rectangle -7500403 true true 30 30 270 270
+Rectangle -1 true false 75 75 225 225
+
+dani-border-thin
+false
+0
+Rectangle -7500403 true true 30 30 270 270
 Rectangle -1 true false 60 60 240 240
 
 dani-space-border
+false
+0
+Rectangle -7500403 true true 30 60 270 300
+Rectangle -1 true false 75 105 225 255
+
+dani-space-border-thin
 false
 0
 Rectangle -7500403 true true 30 60 270 300
@@ -786,22 +799,22 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.0
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 default
-0
--0.2 0 0 1
-0 1 1 0
-0.2 0 0 1
+0.0
+-0.2 0 0.0 1.0
+0.0 1 1.0 0.0
+0.2 0 0.0 1.0
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-
+0
 @#$#@#$#@
