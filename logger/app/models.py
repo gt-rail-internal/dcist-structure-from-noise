@@ -8,4 +8,4 @@ class Response(db.Model):
 	pretest_reactions = db.Column(db.String(45000))
 
 	def __repr__(self):
-		return '<Response from {} {}>'.format(self.id, self.reactions)
+		return '<Response from {} {}>'.format(self.user_id, self.pretest_reactions)
