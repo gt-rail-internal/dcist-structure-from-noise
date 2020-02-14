@@ -1,2 +1,4 @@
 /logger/certs
 /logger/logs.db
+/logger/.env
+/logger/config.py
