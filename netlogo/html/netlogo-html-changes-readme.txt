@@ -15,6 +15,6 @@ flex-column
 netlogo-speed-slider
 netlogo-tab-area
 
-hide them by adding a style=\"visibility:hidden;\" attribute
+hide them by adding a style=\"visibility: hidden;\" attribute
 
 

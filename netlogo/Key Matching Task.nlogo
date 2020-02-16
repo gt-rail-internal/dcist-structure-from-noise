@@ -1,51 +1,53 @@
-;; TODO/Issues
-;; Netlogo uses synchronous mode in HTTPS post, which probably causes the network error at the end (OR MAYBE CORS), nothing runs after the error.
-;; Do away with webhook.site?
-;; Setup AMT
-;; 
-;; Refer to paper to check if all requirements are met
 extensions [http-req]
 globals [adj key prevkey prevtime timelog keylog currtime 
-  simul keymap press-count initialized completed]
+  simul keymap press-count initialized completed token]
 
 to setup
   clear-all
   setup-patches
   setup-turtles
-  
   ;; randomly select either modular or lattice graph and initialize the adjacency list of the graph
   let graph-choice random 2  set prevkey -1
-
-  (ifelse graph-choice = 0[
+  (
+   ifelse graph-choice = 0[
     set adj modular-graph modular-clusters
     show "using modular graph"
+    set keylog "::gtype, modular::keys"
   ][set adj lattice-graph lattice-clusters
-  show "using lattice graph"])
-	set timelog ":user, "
-  set timelog word timelog (user-input "Enter your Mechanical Turk ID:")
-  set timelog word timelog ":time, "
-  set keylog ":keys"
+  	show "using lattice graph"
+    set keylog "::gtype, lattice::keys"
+	])
+	set timelog "::user, "
+  set timelog word timelog (user-input "Enter your Mechanical Turk Worker ID:")
+  set timelog word timelog "::time, "
   initialize-view
   reset-ticks
 end
 
+to-report get-token
+	let token-set (shuffle n-of 8 ["a" "b" "c" "d" "e" "f" 
+    "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "1" "2" "3" "4" "5" "6" "7" "8"])
+  let token-string ""
+  foreach token-set [ element ->
+    set token-string (token-string + element)
+  ]
+  report token-string
+end
 
 to initialize-view
   set initialized false
-  ask patch -2 1 [set plabel "space"]
-  ask patch -1 1 [set plabel "H     "]
-  ask patch 0 1 [set plabel "J     "]
-  ask patch 1 1 [set plabel "K     "]
-  ask patch 2 1 [set plabel "L     "]
-  ask patch 2 -1 [set plabel "Click here to start, "]
-  ask patch 2 -2 [set plabel "and then press the red keys"]
+ ; ask patch -2 1 [set plabel "space"]
+ ; ask patch -1 1 [set plabel "H     "]
+ ; ask patch 0 1 [set plabel "J     "]
+ ; ask patch 1 1 [set plabel "K     "]
+ ; ask patch 2 1 [set plabel "L     "]
+  ask patch 2 -1 [set plabel "Click here before starting"]
 end
 
 
 to clear-view-labels
   set initialized true
-  ask patches [set plabel ""]
-  
+  ask patches [set plabel ""]  
   set press-count 0
   set prevkey -1
   set key item random 4 item key adj
@@ -53,10 +55,12 @@ to clear-view-labels
   show-key
 end
 
+
 to setup-patches
   ask patches [set pcolor white]
   ask patches [set plabel-color black]
 end
+
 
 to setup-turtles
   create-turtles 5 [setxy (-2 + who) 0]
@@ -144,10 +148,11 @@ to update [current-node]
   ;; clear previous key when transitioning to next node
   set prevkey -1
   set press-count (press-count + 1)
-  if press-count >= 10 [
+  if press-count >= 500 [
     set initialized false
     set completed true
-    set keylog (word keylog ":graph, " adj)
+    set token get-token
+    set keylog (word keylog "::graph, " adj "::token, " token)
     set timelog (word timelog keylog)
     finish
     completed-message
@@ -166,18 +171,13 @@ to update-time
   set currtime hh * 3600 + mm * 60 + ss + ms
   ;; check if the time difference between previous and this keypress is less than a threshold
   ;; to determine if keys were simultaneously pressed
-  set simul currtime - prevtime < 0.018
+  set simul currtime - prevtime < 0.025
 end
 
 
 to finish
-  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
-  ifelse (first response-triplet) = "200" [
-    show "logs successfully sent"
-  ]
-  [
-    show "log transmission failed"
-  ]
+  let response-triplet (http-req:post "https://34.227.18.144/pretest-data" timelog "text/plain")
+  show "logs sent"
 end
 
 to-report nothing-else-pressed [check]
@@ -190,7 +190,10 @@ to-report nothing-else-pressed [check]
 end
 
 to completed-message
-  user-message "Thank you for completing the task. You may now close this window."
+  ask patch 0 -1 [set plabel ""]
+  ask patch 2 -1 [set plabel (word "Your token: " token)]
+  user-message (word "Thank you for completing the task." "\nYour token is\n" 
+    token "\nYou may now close this window.")
 end
 
 ;; functions starting with press-x are triggered when x is pressed,
