@@ -6,21 +6,20 @@
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
 ;;extensions [http-req]
-globals [adj key prevkey prevtime timelog currtime simul keymap press-count loc]
+globals [timelog loc]
 
 to setup
   clear-all
   setup-patches
-  setup-turtles
   ;; timelog is a string that contains the user name and time as CSV
-  set press-count 0
   ask patches [set plabel-color black]
-  set prevkey -1
   set timelog user-input "What is your Mechanical Turk ID?"
   set timelog word timelog ", "
   reset-ticks
   set timelog word timelog date-and-time
-  blink
+  start-experiment-one
+  clear-turtles
+  start-experiment-three
 end
 
 to setup-patches
@@ -28,7 +27,6 @@ to setup-patches
 end
 
 to setup-turtles
-  set loc [[-3 2.75] [-3 1.9] [-1.6 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.5]]
   foreach loc [ [x] ->
   create-turtles 1 [setxy (item 0 x) item 1 x]
   ask turtles [set size 0.6]
@@ -39,54 +37,73 @@ to setup-turtles
   ;; keymap maps each node in the graph to one or two keys
 end
 
-to blink
-  let network
- [[0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [1 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 1 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 1 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 0 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 0]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1]
-  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+
+
+to start-experiment-one
+  set loc [[-3 2.75] [-3 1.9] [-1.7 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.4]]
+  setup-turtles
   let blinkrounds 0
-  let starter [0 10 20]
+  let starterAr [0 10 20] ;;these are the items to start with
   wait 1.5
   while [blinkrounds < 3] [
+    blink item blinkrounds starterAr
+    set blinkrounds blinkrounds + 1 ;;go the next blink round
+  ]
+  queryUser "Click on the item you feel will propogate the fastest"
+  queryUser "Click on the item you feel will propogate the second fastest"
+  queryUser "Click on the item you feel will propogate the third fastest"
+end
+
+
+to start-experiment-three
+  set loc [[-2 0] [-1 0] [0 0] [1 0] [2 0]]
+  setup-turtles
+  let blinkrounds 0
+  let starterAr [0 2 4] ;;these are the items to start with
+  wait 1.5
+  while [blinkrounds < 3] [
+    blink item blinkrounds starterAr
+    set blinkrounds blinkrounds + 1 ;;go the next blink round
+  ]
+  queryUser "Click on the item you feel will propogate the fastest"
+end
+
+
+
+
+to queryUser [message]
+  user-message (message)
+  let turt 0
+  let clicked -1
+  while [clicked = -1][
+    if mouse-down? [
+      ask turtles with [distancexy mouse-xcor mouse-ycor < 0.5] [
+        set clicked who
+      ]
+    ]
+  ]
+  blink clicked
+  show clicked
+end
+to blink [starter]
     let lit [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-    set lit replace-item item blinkrounds starter lit 1 ;;makes the first value the one to start propogating
+    set lit replace-item starter lit 1 ;;makes the first value the one to start propogating
+    ask turtle starter [set color green]
     wait 1
     let iter 0
     let litnew lit
     while [iter < 20][ ;; rounds of propogation
       set litnew lit
       let i 0
-      while [i < 26] [
+      while [i < count turtles] [
         if item i lit = 1 [ ;;if this item is recently lit then lets see what else we can light
           let j 0
-          while [j < 26][ ;;check all other nodes
+          while [j < count turtles][ ;;check all other nodes
             ;;if 1 = item j item i network [ ;;check what its nearby using adjacency matrix
             let tx item 0 item j loc - item 0 item i loc
             let ty item 1 item j loc - item 1 item i loc
-            if sqrt ((tx * tx) + (ty * ty)) < 1.75 [ ;;calculate l2 norm and decide on next to light
+            if sqrt ((tx * tx) + (ty * ty)) < 1.5 [ ;;calculate l2 norm and decide on next to light
               set litnew replace-item j litnew 1
             ]
             set j j + 1
@@ -97,17 +114,17 @@ to blink
       ]
       set lit litnew
       set i 0
-      while [ i < 26] [
+      while [i < 26] [
         if 1 = item i lit [
           ask turtle i
           [set color green]
         ]
         set i i + 1
       ]
-      wait 0.3
+      wait 0.1 ;;0.4
       set iter iter + 1
 
-      let t 0 ;;check if we are all done if so then go to the next one
+      let t 0  ;;check if we are all done if so then go to the next phase
       foreach lit [turt ->
         if turt = 0 [
           set t 1
@@ -119,22 +136,6 @@ to blink
 
     ]
     ask turtles [set color red]
-    set blinkrounds blinkrounds + 1
-  ]
-
-end
-
-;; function to update time of keypress
-to update-time
-  let hh read-from-string substring date-and-time 0 2
-  let mm read-from-string substring date-and-time 3 5
-  let ss read-from-string substring date-and-time 6 8
-  let ms read-from-string substring date-and-time 8 12
-  set prevtime currtime
-  set currtime hh * 3600 + mm * 60 + ss + ms
-  ;; check if the time difference between previous and this keypress is less than a threshold
-  ;; to determine if keys were simultaneously pressed
-  set simul currtime - prevtime < 0.010
 end
 
 
@@ -146,15 +147,6 @@ to finish
 ;  [
 ;    show "log transmission failed"
 ;  ]
-end
-
-to-report nothing-else-pressed [check]
-  (ifelse (currtime - prevtime) > 0.003 [
-    report true
-    ]
-    prevkey = check[
-      report true
-    ][report false])
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
