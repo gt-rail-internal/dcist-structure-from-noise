@@ -4,22 +4,22 @@ def responseDictFromString(response):
 	dataDict = {}
 	print("$", "a", "$", "b", "$")
 	for entry in response.split('::'):
-	if len(entry) > 1:
-		values = entry.split(', ')
-		if values[0] == 'time':
-			dataDict['pretest_reactions'] = ", ".join(values[1:])
-		elif values[0] == 'user':
-			dataDict['user_id'] = values[1]
-		elif values[0] == 'keys':
-			dataDict['pretest_keys'] = ", ".join(values[1:])
-		elif values[0] == 'graph':
-			dataDict['pretest_graph'] = values[1]
-		elif values[0] == 'gtype':
-			dataDict['pretest_graph_type'] = values[1]
-		elif values[0] == 'token':
-			dataDict['pretest_token'] = values[1]
-		elif values[0] == 'status':
-			dataDict['pretest_key_status'] = values[1]
+		if len(entry) > 1:
+			values = entry.split(', ')
+			if values[0] == 'time':
+				dataDict['pretest_reactions'] = ", ".join(values[1:])
+			elif values[0] == 'user':
+				dataDict['user_id'] = values[1]
+			elif values[0] == 'keys':
+				dataDict['pretest_keys'] = ", ".join(values[1:])
+			elif values[0] == 'graph':
+				dataDict['pretest_graph'] = values[1]
+			elif values[0] == 'gtype':
+				dataDict['pretest_graph_type'] = values[1]
+			elif values[0] == 'token':
+				dataDict['pretest_token'] = values[1]
+			elif values[0] == 'status':
+				dataDict['pretest_key_status'] = values[1]
 	return dataDict
 
 def responseFromDict(data_dict):
