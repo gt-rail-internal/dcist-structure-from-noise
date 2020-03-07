@@ -19,7 +19,7 @@ def responseDictFromString(response):
 			elif values[0] == 'token':
 				dataDict['pretest_token'] = values[1]
 			elif values[0] == 'status':
-				dataDict['pretest_key_status'] = values[1]
+				dataDict['pretest_key_status'] = ", ".join(values[1:])
 	return dataDict
 
 def responseFromDict(data_dict):
