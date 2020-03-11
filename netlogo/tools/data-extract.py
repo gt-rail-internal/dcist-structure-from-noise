@@ -1,7 +1,7 @@
 import pymysql.cursors
 import matplotlib.pyplot as plt
 
-conn = pymysql.connect(host = 'localhost', user='root', password='', db='logger',charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+conn = pymysql.connect(host = 'localhost', user='root', password='R0b0tsAr3C00l!', db='logger',charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
 crsr = conn.cursor()
 crsr.execute("select * from response;")
 data = crsr.fetchall()
@@ -16,7 +16,6 @@ def timeStringToFloat(time_string):
 		time_int = (int(hh)*3600 + int(mm)*60 + float(ss))
 		if first:
 			prev_time = time_int
-
 		if xm == 'PM':
 			time_int += 12*3600
 		result.append(time_int)
@@ -26,8 +25,16 @@ def stringListToInt(string_list):
 	return [int(item) for item in string_list.split(', ')]
 
 for row in data:
-	if len(row['pretest_graph_type']) > 0:
+	if row['pretest_key_status'] and len(row['pretest_key_status']) > 0:
 		time = timeStringToFloat(row['pretest_reactions'])
 		keys = stringListToInt(row['pretest_keys'])
 		key_status = stringListToInt(row['pretest_key_status'])
-		print(time, keys)
+		print(time, keys, key_status)
+		if len(key_status) >= 630:
+			wrong = [(i, time[i]) for i, x in enumerate(key_status) if x == 0]
+			correct = [(i, time[i]) for i, x in enumerate(key_status) if x == 1]
+			a, b = zip(*wrong)
+			plt.scatter(a, b, 'r')
+			a, b = zip(*correct)
+			plt.scatter(a, b, 'g')
+			plt.show()
