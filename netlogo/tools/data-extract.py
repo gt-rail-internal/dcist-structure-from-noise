@@ -1,7 +1,7 @@
 import pymysql.cursors
 import matplotlib.pyplot as plt
 
-conn = pymysql.connect(host = 'localhost', user='root', password='R0b0tsAr3C00l!', db='logger',charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+conn = pymysql.connect(host = 'localhost', user='root', password='!', db='logger',charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
 crsr = conn.cursor()
 crsr.execute("select * from response;")
 data = crsr.fetchall()
