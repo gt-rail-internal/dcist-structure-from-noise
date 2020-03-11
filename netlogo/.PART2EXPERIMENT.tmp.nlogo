@@ -30,7 +30,7 @@ to setup
 end
 
 to setup-patches
-  ask patches [set pcolor white]
+  ;ask patches [set pcolor white]
 end
 
 to setup-turtles
@@ -50,13 +50,13 @@ end
 to start-experiment-one
   set loc [[-3 2.75] [-3 1.9] [-1.7 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.4]]
   setup-turtles
-  let blinkrounds 0
-  let starterAr [0 10 20] ;;these are the items to start with
+  ;;let blinkrounds 0
+  ;;let starterAr [0 10 20] ;;these are the items to start with
   ;;wait 1.5
-  while [blinkrounds < 3] [
-    blink item blinkrounds starterAr
-    set blinkrounds blinkrounds + 1 ;;go the next blink round
-  ]
+  ;;while [blinkrounds < 3] [
+  ;;  blink item blinkrounds starterAr
+  ;;  set blinkrounds blinkrounds + 1 ;;go the next blink round
+  ;;d]
   queryUser "Click on the item you feel will propogate the fastest"
   queryUser "Click on the item you feel will propogate the second fastest"
   queryUser "Click on the item you feel will propogate the third fastest"
