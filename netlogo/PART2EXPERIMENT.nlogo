@@ -20,12 +20,12 @@ to setup
     reset-ticks
 
     start-experiment-one
-    clear-turtles
-    start-experiment-two
-    clear-turtles
-    start-experiment-three
-    clear-turtles
-    start-experiment-four
+    ;;clear-turtles
+    ;start-experiment-two
+    ;clear-turtles
+    ;start-experiment-three
+    ;clear-turtles
+    ;start-experiment-four
   ]
 end
 
@@ -35,11 +35,11 @@ end
 
 to setup-turtles
   foreach loc [ [x] ->
-  create-turtles 1 [setxy (item 0 x) item 1 x]
+  create-turtles 1 [setxy (item 0 x)  (item 1 x)]
   ask turtles [set size 0.6]
   ask turtles [set shape "dani-border"]
-  ask turtle 0 [set shape "dani-space-border"]
   ask turtles [set color red]
+    ;ask turtles [set color green]
   ]
   ;; keymap maps each node in the graph to one or two keys
 end
@@ -49,17 +49,19 @@ end
 
 to start-experiment-one
   set loc [[-3 2.75] [-3 1.9] [-1.7 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.4]]
+  ;create-turtles 1 [setxy 1 2]
   setup-turtles
   let blinkrounds 0
   let starterAr [0 10 20] ;;these are the items to start with
-  ;;wait 1.5
+  ;wait 1.5
   while [blinkrounds < 3] [
     blink item blinkrounds starterAr
     set blinkrounds blinkrounds + 1 ;;go the next blink round
   ]
-  queryUser "Click on the item you feel will propogate the fastest"
-  queryUser "Click on the item you feel will propogate the second fastest"
-  queryUser "Click on the item you feel will propogate the third fastest"
+
+  ;queryUser "Click on the item you feel will propogate the fastest"
+  ;queryUser "Click on the item you feel will propogate the second fastest"
+  ;queryUser "Click on the item you feel will propogate the third fastest"
 end
 
 to start-experiment-two  ;;top left square                                       ;;start Curve part                                                       ;;start bottom square                                                  ;;shootoff to third
@@ -128,7 +130,7 @@ to blink [starter]
     let lit [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] ;;not scalable
     set lit replace-item starter lit 1 ;;makes the first value the one to start propogating
     ask turtle starter [set color green]
-    ;;wait 1
+    wait 0.1
     let iter 0
     let litnew lit
     while [iter < 20][ ;; rounds of propogation
@@ -159,7 +161,7 @@ to blink [starter]
         ]
         set i i + 1
       ]
-      ;;wait 0.1 ;;0.4
+      wait 0.4 ;;0.4
       set iter iter + 1
 
       let t 0  ;;check if we are all done if so then go to the next phase
@@ -221,7 +223,7 @@ BUTTON
 309
 START
 setup
-NIL
+T
 1
 T
 OBSERVER

@@ -6,133 +6,249 @@
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
 ;;extensions [http-req]
-globals [logStr loc firsttime]
+globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr]
 
 to setup
-  if firsttime = 0[
-    set firsttime 1
+
+  if state = 0[
     clear-all
+    set state 1
     setup-patches
     ;; timelog is a string that contains the user name and time as CSV
     ;;ask patches [set plabel-color black]
     set logStr user-input "What is your Mechanical Turk ID?"
     set logStr word logStr ","
     reset-ticks
-
-    start-experiment-one
-    clear-turtles
-    start-experiment-two
-    clear-turtles
-    start-experiment-three
-    clear-turtles
-    start-experiment-four
   ]
+  if state = 1 [
+    start-experiment-one
+  ]
+  if state = 2 [
+    start-experiment-two
+  ]
+  if state = 3 [
+    start-experiment-three
+  ]
+  tick
 end
 
 to setup-patches
-  ;ask patches [set pcolor white]
+  ask patches [set pcolor white]
 end
 
 to setup-turtles
   foreach loc [ [x] ->
-  create-turtles 1 [setxy (item 0 x) item 1 x]
+  create-turtles 1 [setxy (item 0 x)  (item 1 x)]
   ask turtles [set size 0.6]
   ask turtles [set shape "dani-border"]
-  ask turtle 0 [set shape "dani-space-border"]
   ask turtles [set color red]
+    ;ask turtles [set color green]
   ]
   ;; keymap maps each node in the graph to one or two keys
 end
 
-
-
-
 to start-experiment-one
+  if expstate = 0[
   set loc [[-3 2.75] [-3 1.9] [-1.7 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.4]]
   setup-turtles
-  ;;let blinkrounds 0
-  ;;let starterAr [0 10 20] ;;these are the items to start with
-  ;;wait 1.5
-  ;;while [blinkrounds < 3] [
-  ;;  blink item blinkrounds starterAr
-  ;;  set blinkrounds blinkrounds + 1 ;;go the next blink round
-  ;;d]
-  queryUser "Click on the item you feel will propogate the fastest"
-  queryUser "Click on the item you feel will propogate the second fastest"
-  queryUser "Click on the item you feel will propogate the third fastest"
+  set blinkrounds 0
+  set starterAr [0 10 20] ;;these are the items to start with
+  ;wait 1.5
+   set expstate 1
+   set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 6[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on the top three items you feel will propogate the fastest")
+    ask turtles [set color red]
+  ]
+  if expstate = 7[
+    queryUser
+  ]
+  if expstate = 8[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on your next item")
+    ask turtles [set color red]
+  ]
+  if expstate = 9[
+    queryUser
+  ]
+  if expstate = 10[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on your final item")
+    ask turtles [set color red]
+
+  ]
+  if expstate = 11[
+    queryUser
+  ]
+  if expstate = 12[
+    user-message ("Round One Complete")
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
 end
 
 to start-experiment-two  ;;top left square                                       ;;start Curve part                                                       ;;start bottom square                                                  ;;shootoff to third
-  set loc [[-3 2.85] [-2.4 2.75] [-1.8 2.95] [-1.2 2.8] [-2.8 2.2] [-2.2 2.2] [-1.6 2.2] [-0.8 1] [-0.2 0.25] [0.2 -0.5] [-0.2 -1.25] [-0.8 -2] [-1.6 -2.2] [-2.2 -2.2] [-2.8 -2.2] [-2.8 -2.7] [-2.2 -2.8] [-1.6 -2.8] [-1 -2.7] [0.3 -2.2] [0.9 -2.0] [1.4 -1.8] [2.1 -1.9] [2.7 -1.8] [3.2 -2.0] [3.1 -2.6] [2.6 -2.6] [2.0 -2.4]]
+  if expstate = 0[
+   set loc [[-3 2.85] [-2.4 2.75] [-1.8 2.95] [-1.2 2.8] [-2.8 2.2] [-2.2 2.2] [-1.6 2.2] [-0.8 1] [-0.2 0.25] [0.2 -0.5] [-0.2 -1.25] [-0.8 -2] [-1.6 -2.2] [-2.2 -2.2] [-2.8 -2.2] [-2.8 -2.7] [-2.2 -2.8] [-1.6 -2.8] [-1 -2.7] [0.3 -2.2] [0.9 -2.0] [1.4 -1.8] [2.1 -1.9] [2.7 -1.8] [3.2 -2.0] [3.1 -2.6] [2.6 -2.6] [2.0 -2.4]]
   setup-turtles
-  let blinkrounds 0
-  let starterAr [0 13 25] ;;these are the items to start with
-  ;;wait 1.5
-  while [blinkrounds < 3] [
-    blink item blinkrounds starterAr
-    set blinkrounds blinkrounds + 1 ;;go the next blink round
+  set blinkrounds 0
+  set starterAr [0 13 25] ;;these are the items to start with
+  ;wait 1.5
+   set expstate 1
+   set iter 0
+    set lit n-values count turtles [0]
   ]
-  queryUser "Click on the item you feel will propogate the fastest"
-  queryUser "Click on the item you feel will propogate the second fastest"
-  queryUser "Click on the item you feel will propogate the third fastest"
+  if expstate = 1[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 6[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on the top three items you feel will propogate the fastest")
+    ask turtles [set color red]
+  ]
+  if expstate = 7[
+    queryUser
+  ]
+  if expstate = 8[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on your next item")
+    ask turtles [set color red]
+  ]
+  if expstate = 9[
+    queryUser
+  ]
+  if expstate = 10[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on your final item")
+    ask turtles [set color red]
 
+  ]
+  if expstate = 11[
+    queryUser
+  ]
+  if expstate = 12[
+    user-message ("Round Two Complete")
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
 end
+
 
 
 to start-experiment-three
-  set loc [[-2 0] [-1 0] [0 0] [1 0] [2 0]]
+  if expstate = 0[
+    set loc [[-2 0] [-1 0] [0 0] [1 0] [2 0] [0 2] [0 1] [0 -1] [0 -2]]
   setup-turtles
-  let blinkrounds 0
-  let starterAr [0 2 4] ;;these are the items to start with
-  ;;wait 1.5
-  while [blinkrounds < 3] [
-    blink item blinkrounds starterAr
-    set blinkrounds blinkrounds + 1 ;;go the next blink round
+  set blinkrounds 0
+  set starterAr [0  20] ;;these are the items to start with
+  ;wait 1.5
+   set expstate 1
+   set iter 0
+    set lit n-values count turtles [0]
   ]
-  queryUser "Click on the item you feel will propogate the fastest"
+  if expstate = 1[
+    blink 0;;;item blinkrounds starterAr
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink 2;;;item blinkrounds starterAr
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink 5;;;item blinkrounds starterAr
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on the top item you feel will propogate the fastest")
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+  ]
+  if expstate = 9[
+    user-message ("Round Three Complete")
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
 end
 
-to start-experiment-four
-  set loc [[-3 3] [-2 3] [-1 3] [0 3] [1 3] [2 3] [3 3] [3 2] [3 1] [3 0] [3 -1] [3 -2] [3 -3] [2.5 -3] [2 -3]]
-  setup-turtles
-  let blinkrounds 0
-  let starterAr [0 2 4] ;;these are the items to start with
-  ;;wait 1.5
-  while [blinkrounds < 3] [
-    blink item blinkrounds starterAr
-    set blinkrounds blinkrounds + 1 ;;go the next blink round
-  ]
-  queryUser "Click on the item you feel will propogate the fastest"
-  queryUser "Click on the item you feel will propogate the second fastest"
-  queryUser "Click on the item you feel will propogate the third fastest"
-end
 
 
 
-to queryUser [message]
-  user-message (message)
-  let turt 0
-  let clicked -1
-  while [clicked = -1][
-    if mouse-down? [
-      ask turtles with [distancexy mouse-xcor mouse-ycor < 0.5] [
-        set clicked who
-        show logStr
-      ]
-    ]
-  ]
-  set logStr word logStr word clicked ","
-  blink clicked
-end
 to blink [starter]
-    let lit [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] ;;not scalable
-    set lit replace-item starter lit 1 ;;makes the first value the one to start propogating
-    ask turtle starter [set color green]
-    ;;wait 1
-    let iter 0
-    let litnew lit
-    while [iter < 20][ ;; rounds of propogation
-      set litnew lit
+
+
+    every 0.4[
+    if iter < 30 and iter > 0 [ ;; rounds of propogation
+      let litnew lit
       let i 0
       while [i < count turtles] [
         if item i lit = 1 [ ;;if this item is recently lit then lets see what else we can light
@@ -152,14 +268,13 @@ to blink [starter]
       ]
       set lit litnew
       set i 0
-      while [i < 30] [ ;;not scalable
+      while [i < count turtles] [ ;;not scalable
         if 1 = item i lit [
           ask turtle i
           [set color green]
         ]
         set i i + 1
       ]
-      ;;wait 0.1 ;;0.4
       set iter iter + 1
 
       let t 0  ;;check if we are all done if so then go to the next phase
@@ -168,14 +283,44 @@ to blink [starter]
           set t 1
         ]
       ]
-      if t =  0 [
-        set iter 100
+      show lit
+      show iter
+      if t =  0 and iter != 30[
+        set iter 29
       ];;check if we are all done if so then go to the next one
-
     ]
-    ask turtles [set color red]
+    if iter = 30[
+      set expstate expstate + 1
+    ]
+    if iter = 0[ ;if first round setup the starter.  this is after to allow the iter state to work
+      set lit n-values count turtles [0]
+      set lit replace-item starter lit 1
+      ask turtle starter [set color green]
+      set iter 1
+    ]
+  ]
 end
 
+to queryUser []
+  if querystate = 0 [
+    set clicked -1
+    let turt 0
+    if clicked = -1[
+      if mouse-down? [
+        ask turtles with [distancexy mouse-xcor mouse-ycor < 0.5] [
+          set clicked who
+          set querystate 1
+          set logStr word logStr word clicked ","
+          show logStr
+          set iter 0
+        ]
+      ]
+    ]
+  ]
+  if querystate = 1[
+    blink clicked
+  ]
+end
 
 to finish
 ;  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
@@ -221,7 +366,7 @@ BUTTON
 309
 START
 setup
-NIL
+T
 1
 T
 OBSERVER
