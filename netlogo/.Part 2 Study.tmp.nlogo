@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-;extensions [http-req]
+extensions [http-req]
 globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz]
 
 to setup
@@ -33,6 +33,7 @@ to setup
     start-experiment-four
   ]
   if state = 5[
+    c 100
     finish
   ]
   if state = 6[
@@ -578,7 +579,11 @@ to print-instructions [choice]
     output-print "change in the fewest"
     output-print "timesteps across the group."
   ]
-
+  if choice = 100[
+    clear-output
+    output-print "Study Complete!"
+    output-print "Return to Mechanical Turk"
+  ]
 
 
 end

@@ -33,6 +33,7 @@ to setup
     start-experiment-four
   ]
   if state = 5[
+    print-instructions 100
     finish
   ]
   if state = 6[
@@ -578,7 +579,11 @@ to print-instructions [choice]
     output-print "change in the fewest"
     output-print "timesteps across the group."
   ]
-
+  if choice = 100[
+    clear-output
+    output-print "Study Complete!"
+    output-print "Return to Mechanical Turk"
+  ]
 
 
 end
