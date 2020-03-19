@@ -29,6 +29,12 @@ to setup
   if state = 3 [
     start-experiment-three
   ]
+  if state = 4 [
+    start-experiment-four
+  ]
+  if state = 5[
+
+  ]
   tick
 end
 
@@ -42,6 +48,27 @@ to setup-turtles
   ask turtles [set size 0.6]
   ask turtles [set shape "dani-border"]
   ask turtles [set color red]
+    ;ask turtles [set color green]
+  ]
+  ;; keymap maps each node in the graph to one or two keys
+end
+
+to setup-turtles-shapes [heters]
+  let a 0
+  foreach loc [ [x] ->
+  show item a heters
+  create-turtles 1 [setxy (item 0 x)  (item 1 x)]
+
+  if item a heters = 0[
+      ask turtle a [set size 0.6]
+      ask turtle a [set shape "dani-border"]
+  ]
+  if item a heters = 1[
+      ask turtle a [set size 0.7]
+      ask turtle a [set shape "dani-triangle"]
+  ]
+  ask turtle a [set color red]
+  set a a + 1
     ;ask turtles [set color green]
   ]
   ;; keymap maps each node in the graph to one or two keys
@@ -82,30 +109,39 @@ to start-experiment-one
   if expstate = 6[
     set querystate 0
     set expstate expstate + 1
-    user-message ("Click on the top three items you feel will propogate the fastest")
+    user-message ("Click on three items you feel will propogate the fastest")
     ask turtles [set color red]
   ]
   if expstate = 7[
     queryUser
+        if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 8[
     set querystate 0
     set expstate expstate + 1
-    user-message ("Click on your next item")
+    user-message ("Click on another item")
     ask turtles [set color red]
   ]
   if expstate = 9[
     queryUser
+        if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 10[
     set querystate 0
     set expstate expstate + 1
-    user-message ("Click on your final item")
+    user-message ("Click on another item")
     ask turtles [set color red]
 
   ]
   if expstate = 11[
     queryUser
+        if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 12[
     user-message ("Round One Complete")
@@ -150,30 +186,39 @@ to start-experiment-two  ;;top left square                                      
   if expstate = 6[
     set querystate 0
     set expstate expstate + 1
-    user-message ("Click on the top three items you feel will propogate the fastest")
+    user-message ("Click on three items you feel will propogate the fastest")
     ask turtles [set color red]
   ]
   if expstate = 7[
     queryUser
+        if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 8[
     set querystate 0
     set expstate expstate + 1
-    user-message ("Click on your next item")
+    user-message ("Click on another item")
     ask turtles [set color red]
   ]
   if expstate = 9[
     queryUser
+        if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 10[
     set querystate 0
     set expstate expstate + 1
-    user-message ("Click on your final item")
+    user-message ("Click on another item")
     ask turtles [set color red]
 
   ]
   if expstate = 11[
     queryUser
+        if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 12[
     user-message ("Round Two Complete")
@@ -231,6 +276,9 @@ to start-experiment-three
   ]
   if expstate = 8[
     queryUser
+    if querystate = 1[
+     blink clicked
+    ]
   ]
   if expstate = 9[
     user-message ("Round Three Complete")
@@ -240,10 +288,170 @@ to start-experiment-three
   ]
 end
 
+to start-experiment-four
+  let adj
+  [[0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+  [1 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 1 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 1 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0]
+  [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+  if expstate = 0[
+    set loc [[-3 2.75] [-3 1.9] [-1.7 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.4]]
+    setup-turtles-shapes [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+    set blinkrounds 0
+    set starterAr [0  20] ;;these are the items to start with
+    set expstate 1
+    set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink-neighbors 0 adj
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink-neighbors 10 adj
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink-neighbors 20 adj
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on three items you feel will propogate the fastest")
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+    if expstate = 9[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on another item")
+    ask turtles [set color red]
+  ]
+  if expstate = 10[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+    if expstate = 11[
+    set querystate 0
+    set expstate expstate + 1
+    user-message ("Click on another item")
+    ask turtles [set color red]
+  ]
+  if expstate = 12[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 13[
+    user-message ("Experiment Complete!  Return to Mechanical Turk")
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
+
+to blink-neighbors [starter network]
+    every 0.4[
+    if iter < 30 and iter > 0 [ ;; rounds of propogation
+      let litnew lit
+      let i 0
+      while [i < count turtles] [
+        if item i lit = 1 [ ;;if this item is recently lit then lets see what else we can light
+          let j 0
+          while [j < count turtles][ ;;check all other nodes
+            if 1 = item j item i network [ ;;check what its nearby using adjacency matrix
+              set litnew replace-item j litnew 1
+            ]
+            set j j + 1
+          ]
+          set litnew replace-item i litnew 2
+        ]
+        set i i + 1
+      ]
+      set lit litnew
+      set i 0
+      while [i < count turtles] [ ;;not scalable
+        if 1 = item i lit [
+          ask turtle i
+          [set color green]
+        ]
+        set i i + 1
+      ]
+      set iter iter + 1
+
+      let t 0  ;;check if we are all done if so then go to the next phase
+      foreach lit [turt ->
+        if turt = 0 [
+          set t 1
+        ]
+      ]
+      show lit
+      show iter
+      if t =  0 and iter != 30[
+        set iter 29
+      ];;check if we are all done if so then go to the next one
+    ]
+    if iter = 30[
+      set expstate expstate + 1
+    ]
+    if iter = 0[ ;if first round setup the starter.  this is after to allow the iter state to work
+      set lit n-values count turtles [0]
+      set lit replace-item starter lit 1
+      ask turtle starter [set color green]
+      set iter 1
+    ]
+  ]
+end
 
 
-
-to blink [starter]
+to blink [starter]  ;;this is regular blink
 
 
     every 0.4[
@@ -317,10 +525,9 @@ to queryUser []
       ]
     ]
   ]
-  if querystate = 1[
-    blink clicked
-  ]
 end
+
+
 
 to finish
 ;  let response-triplet (http-req:post "https://webhook.site/2d66c206-48a6-4c5f-9119-af279829a0c5" timelog "text/plain")
@@ -516,6 +723,14 @@ false
 0
 Rectangle -7500403 true true 30 60 270 300
 Rectangle -1 true false 60 90 240 270
+
+dani-triangle
+false
+0
+Rectangle -1 true false 60 60 240 240
+Rectangle -1 true false 30 30 270 270
+Polygon -7500403 true true 30 270 150 30 270 270 30 270
+Polygon -1 true false 60 255 150 75 240 255 60 255
 
 dot
 false
