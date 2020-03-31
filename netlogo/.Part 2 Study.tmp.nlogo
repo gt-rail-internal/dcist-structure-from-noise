@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-;;extensions [http-req]
+extensions [http-req]
 globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz waitcounter]
 
 to setup
@@ -510,7 +510,7 @@ to start-experiment-five
     ]
   ]
   if expstate = 13[
-    user-message ("Experiment Complete!  Return to Mechanical Turk")
+    user-message ("Experiment Complete!  isReturn to Mechanical Turk")
     clear-turtles
     set state state + 1
     set expstate 0
@@ -701,20 +701,23 @@ to print-instructions [choice]
     clear-output
     output-print "Study Complete!"
     output-print "Return to Mechanical Turk"
+    output-print ""
+    output-print "Your Exit Code is:"
+    output-print "Your Exit Code is:"
   ]
 
 
 end
 
 to finish
-;;  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
-;;  ifelse (first response-triplet) = "200" [
-;;    show "logs successfully sent"
-;;  ]
-;;  [
- ;;   show "log transmission failed"
-;;  ]
-;;  set state state + 1
+  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+  ifelse (first response-triplet) = "200" [
+    show "logs successfully sent"
+  ]
+  [
+   show "log transmission failed"
+  ]
+  set state state + 1
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
