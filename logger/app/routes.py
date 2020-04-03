@@ -39,3 +39,25 @@ def initializePretest():
     else:
         app.logger.debug("task init attempted twice")
         return {}, 210
+
+@app.route('/posttest-data', methods=['POST'])
+def logPostTestData():
+    app.logger.debug("post test data received")
+    data = request.data.decode('ASCII')
+    list_data = data.split(",")
+    user_id = list_data[0]
+    list_data.remove(user_id)
+    post_test_agents = ",".join(list_data)
+    db_entry = Response.query.get(user_id)
+    if db_entry is None:
+        response = processing.newResponse(user_id)
+        response.post_test_agents = post_test_agents
+        db.session.add(response)
+        app.logger.debug("new response added with posttest data")
+    else:
+        db_entry.post_test_agents = post_test_agents
+        app.logger.debug("added posttest data to existing response")
+    db.session.commit()
+    app.logger.debug("exiting posttest route")
+    return {}, 200
+

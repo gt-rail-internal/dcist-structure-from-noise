@@ -6,7 +6,7 @@
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
 extensions [http-req]
-globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz]
+globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz waitcounter]
 
 to setup
 
@@ -32,11 +32,14 @@ to setup
   if state = 4 [
     start-experiment-four
   ]
-  if state = 5[
+  if state = 5 [
+    start-experiment-five
+  ]
+  if state = 6[
     print-instructions 100
     finish
   ]
-  if state = 6[
+  if state = 7[
   ]
   tick
 end
@@ -83,11 +86,19 @@ to start-experiment-one
   setup-turtles
   set blinkrounds 0
   set starterAr [0 10 20] ;;these are the items to start with
-  ;wait 1.5
-   set expstate 1
-   set iter 0
-    set lit n-values count turtles [0]
-    print-instructions 0
+  set expstate 100
+  set iter 0
+  set lit n-values count turtles [0]
+  print-instructions 0
+  set waitcounter 0
+  ]
+  if expstate = 100 [
+    every 0.5 [
+      set waitcounter waitcounter + 1
+      if waitcounter = 10 [
+        set expstate 1
+      ]
+    ]
   ]
   if expstate = 1[
     blink item blinkrounds starterAr
@@ -332,7 +343,7 @@ to start-experiment-four
   if expstate = 0[
     print-instructions 0
     set loc [[-3 2.75] [-3 1.9] [-1.7 2.75] [-1.5 2] [-0.3 2.2] [0.9 2] [1.2 1.3] [1.9 2.7] [2.6 2.5] [2.5 1.2] [2.3 0.2] [2.1 -0.5]  [2.6 -1.2]  [2.2 -2.2] [1.1 -1.8] [0.8 -2.7] [0.2 -2.2] [-0.5 -1.8] [-0.5 -2.8] [-0.7 -1.1] [-1.4 -2.2] [-2.2 -2.5] [ -2.3 -1.8] [-2.5 -1.2] [-2.5 -0.5] [-2.7 0.4]]
-    setup-turtles-shapes [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+    setup-turtles-shapes [1 0 0 0 0 0 0 0 1 1 0 0 0 0 1 0 0 1 0 0 1 0 0 0 0 0]
     set blinkrounds 0
     set starterAr [0  20] ;;these are the items to start with
     set expstate 1
@@ -406,12 +417,110 @@ to start-experiment-four
     ]
   ]
   if expstate = 13[
-    user-message ("Experiment Complete!  Return to Mechanical Turk")
+    user-message ("Round Four Complete")
     clear-turtles
     set state state + 1
     set expstate 0
   ]
 end
+
+to start-experiment-five
+  let adj
+  [[0 1 0 0 0 0 0 0 0 0 0 0 0]
+   [1 0 1 0 0 0 0 0 0 0 0 0 0]
+   [0 1 0 1 0 0 0 0 0 0 0 0 0]
+   [0 0 1 0 1 0 0 0 0 0 0 0 0]
+   [0 0 0 1 0 1 0 0 0 0 0 0 0]
+   [0 0 0 0 1 0 1 0 0 0 0 0 0]
+   [0 0 0 0 0 1 0 1 0 0 0 0 0]
+   [0 0 0 0 0 0 1 0 1 0 0 0 0]
+   [0 0 0 0 0 0 0 1 0 1 0 0 0]
+   [0 0 0 0 0 0 0 0 1 0 1 0 0]
+   [0 0 0 0 0 0 0 0 0 1 0 1 0]
+   [0 0 0 0 0 0 0 0 0 0 1 0 1]
+   [0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+  if expstate = 0[
+    print-instructions 0
+    set loc [[-3 0] [-2 0] [-1 0] [0 0] [1 0] [2 0] [3 0] [0 3] [0 2] [0 1] [0 -1] [0 -2] [0 -3]]
+    setup-turtles
+    set expstate 1
+    set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink-neighbors 0 adj
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink-neighbors 4 adj
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink-neighbors 7 adj
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 1
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+    if expstate = 9[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 2
+    ask turtles [set color red]
+  ]
+  if expstate = 10[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+    if expstate = 11[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 3
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+  ]
+  if expstate = 12[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 13[
+    user-message ("Experiment Complete!  Return to Mechanical Turk with your code: 31247")
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
+
+
+
+
+
 
 to blink-neighbors [starter network]
     every 0.4[
@@ -551,38 +660,50 @@ to print-instructions [choice]
   ]
   if choice = 1 [
     clear-output
-    output-print "Select the start block that"
-    output-print "will cause color to change"
-    output-print "in the fewest timesteps"
-    output-print "across the group."
-
+    output-print "Start a new color change by"
+    output-print "clicking a block. Try to"
+    output-print "pick a block that will make the"
+    output-print "color change happen in the"
+    output-print "FEWEST time steps possible."
   ]
   if choice = 2 [
     clear-output
-    output-print "Select another start block"
-    output-print "that will cause color to"
-    output-print "change in the fewest"
-    output-print "timesteps across the group."
-
+    output-print "Great!  Let's do it again"
+    output-print "on the same graph. Start"
+    output-print "a new color change by clicking"
+    output-print "a block. Try to pick a block"
+    output-print "that will make the color "
+    output-print "change happen in the FEWEST time"
+    output-print "steps possible.  You can pick "
+    output-print "the same or a different block "
+    output-print "as last time."
   ]
   if choice = 3[
     clear-output
-    output-print "Select a final start block"
-    output-print "that will cause color to"
-    output-print "change in the fewest"
-    output-print "timesteps across the group."
+    output-print "One last time!  Let's do it again"
+    output-print "on the same graph.  Start a new"
+    output-print "color change by clicking a block."
+    output-print "Try to pick a block that will make"
+    output-print "the color change happen in the"
+    output-print "FEWEST time steps possible.  You"
+    output-print "can pick the same or a different"
+    output-print "block as last time."
   ]
   if choice = 10[
     clear-output
-    output-print "Select one start block"
-    output-print "that will cause color to"
-    output-print "change in the fewest"
-    output-print "timesteps across the group."
+    output-print "Start a new color change by"
+    output-print "clicking a block. Try to"
+    output-print "pick a block that will make the"
+    output-print "color change happen in the"
+    output-print "FEWEST time steps possible."
   ]
   if choice = 100[
     clear-output
     output-print "Study Complete!"
     output-print "Return to Mechanical Turk"
+    output-print ""
+    output-print "Your Exit Code is:"
+    output-print "31247"
   ]
 
 
@@ -594,7 +715,7 @@ to finish
     show "logs successfully sent"
   ]
   [
-    show "log transmission failed"
+   show "log transmission failed"
   ]
   set state state + 1
 end
@@ -628,9 +749,9 @@ ticks
 
 BUTTON
 81
-134
+110
 219
-231
+207
 START
 setup
 T
@@ -644,17 +765,17 @@ NIL
 1
 
 OUTPUT
-29
-329
-269
-425
+19
+302
+297
+481
 14
 
 TEXTBOX
 35
-296
+269
 185
-318
+291
 Instructions:
 18
 0.0
