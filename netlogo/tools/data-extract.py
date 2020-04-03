@@ -27,20 +27,70 @@ def stringListToInt(string_list):
 	return [int(item) for item in string_list.split(', ')]
 
 
+def createGraph(input_str, graph_type):
+	graph = {}
+	input_str = input_str[2:-2]
+	adj_list_char = input_str.split("] [")
+	adj_list = [chars.split(" ") for chars in adj_list_char]
+	adj_list = [[int(number) for number in adj_list[i]] for i in range(0, len(adj_list))]
+	print(adj_list)
+	in_cluster = []
+	out_cluster = []
+	if graph_type == "modular":
+		for i, adj in enumerate(adj_list):
+			in_cluster.append((i, adj[1]))
+			in_cluster.append((i, adj[2]))
+			j = adj[0]
+			in_cluster_flag = False
+			for k in adj:
+				if j in adj_list[k]:
+					in_cluster_flag = True
+					break
+			if in_cluster_flag:
+				in_cluster.append((i, j))
+				l = adj[3]
+				in_cluster_flag = False
+				for k in adj:
+					if l in adj_list[k]:
+						in_cluster_flag = True
+						break
+				if in_cluster_flag:
+					in_cluster.append((i, l))
+				else:
+					out_cluster.append((i, l))
+			else:
+				out_cluster.append((i, j))
+				in_cluster.append((i, adj[3]))
+	else:
+		for i, adj in enumerate(adj_list):
+			in_cluster.append((i, adj[0]))
+			in_cluster.append((i, adj[1]))
+			out_cluster.append((i, adj[2]))
+			out_cluster.append((i, adj[3]))
+	print(in_cluster)
+	print(out_cluster)
+	return adj_list, in_cluster, out_cluster
+
+
+
 rt_writer = csv.writer(open('rt-01.csv', 'w', newline='\n'))
 trial_writer = csv.writer(open('trial-01.csv', 'w', newline='\n'))
 target_writer = csv.writer(open('target-01.csv', 'w', newline='\n'))
 graph_type_writer = csv.writer(open('graph-type-01.csv', 'w', newline ='\n'))
-
+cluster_writer = csv.writer(open('cluster-01.csv', 'w', newline='\n'))
+graph_writer = csv.writer(open('graph-01.csv', 'w', newline='\n'))
 
 for row in data:
 	if row['pretest_key_status'] and len(row['pretest_key_status']) > 0:
+		print('---------------------------------------------------------------')
+		adj_list, in_cluster, out_cluster = createGraph(row['pretest_graph'], row['pretest_graph_type'])
+		print('---------------------------------------------------------------')
 		time = timeStringToFloat(row['pretest_reactions'])
 		keys = stringListToInt(row['pretest_keys'])
 		key_status = stringListToInt(row['pretest_key_status'])
-		print(time)
-		print(keys)
-		print(key_status)
+		# print(time)
+		# print(keys)
+		# print(key_status)
 		if len(key_status) >= 630:
 			wrong = [(i, time[i] - time[i-1]) for i, x in enumerate(key_status) if x == 0 and i != 0]
 			correct = [(i, time[i]) for i, x in enumerate(key_status) if x == 1 and i != 0]
@@ -56,15 +106,26 @@ for row in data:
 
 			ind, rtf = zip(*rt_filtered)
 			target = [keys[i] for i in ind]
+			cluster = [1]
+			# 1 - out of cluster 0 is in cluster
+			for i in range(1, len(target)):
+				if (target[i-1], target[i]) in in_cluster:
+					cluster.append(0)
+				else:
+					cluster.append(1)
+
 			trial_writer.writerow(ind)
 			target_writer.writerow(target)
 			rt_writer.writerow(rtf)
+			cluster_writer.writerow(cluster)
 
 			if row['pretest_graph_type'] == 'modular':
 				graph_type_writer.writerow([10])
 			else:
 				graph_type_writer.writerow([20])
-
+			for adj in adj_list:
+				graph_writer.writerow(adj)
+			print("this is adj list size", len(adj_list))
 			plt.scatter(list(ind), list(rtf), c='g', s=2)
 			plt.title(row['user_id']+" "+row['pretest_graph_type'])
 			plt.show()
