@@ -10,7 +10,7 @@ adj_list_char = input_str.split("] [")
 adj_list = [chars.split(" ") for chars in adj_list_char]
 adj_list = [[int(number) for number in adj_list[i]] for i in range(0, len(adj_list))]
 
-
+adj_list = [[11, 5, 6, 7], [13, 2, 10, 12], [3, 10, 12, 1], [2, 10, 12, 8], [11, 14, 9, 8], [13, 6, 7, 0], [13, 5, 7, 0], [13, 5, 6, 0], [3, 14, 4, 9], [11, 14, 4, 8], [3, 2, 12, 1], [14, 4, 9, 0], [3, 2, 10, 1], [5, 6, 7, 1], [11, 4, 9, 8]]
 adj =np.zeros((num_nodes, num_nodes))
 for i in range(0, len(adj_list)):
 	for node in adj_list[i]:
