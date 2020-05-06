@@ -1,24 +1,54 @@
-globals [obs-x obs-y adj]
-;; adj is the adjacency matrix for the turtles - helpes check whether two turtles are connected. 
-;; this will have to be updated every iteration based on what graph is being used. 
-;; an alternative is to not have a matrix at all and iterate over turtles in each iteration to check if they are connected. 
+globals 
+[
+  num-robots 		;; number of robots including base station
+  disk-radius 	;; radius for the delta-disk connectivity graph 
+  ;; The user needs to click on the screen only in two cases - to select a bunch of robots, 
+  ;; or to provide direction for the come or similar behaviors (which I refer to as pointed modes). 
+  ;; In the first case select-on flag is true, and in the second case, pointed-mode-on flag is true. 
+  ;; We listen for mouse clicks only when either of these flags are true. 
+  select-on 			 ;; turns true when user clicks "select"
+  pointed-mode-on  ;; turns true when user clicks "come" or "heading" or other modes that need a heading input
+  ;; I use flags to check how many times the user has clicked on the arena. These flags are reset every time 
+  ;; select or a pointed mode is clicked. 
+  clicked1_x clicked1_y 	;; used to cache the coordinates for the first click. 
+  clicked-once ;;		flag - true if one point has been selected by clicking on the arena
+  clicked-twice  ;; flag - true if the second point has been selected by clicking on the arena. Clicked once should already be true for this to happen. 
+  clicked2_x clicked2_y		;; used to cache the coordinates for the second click. 
+  pointed-mode ;; Stores name of the pointed mode if any pointed mode is currently being executed
+  selected ;; "agentset" of selected robots. Any further commands will be executed by these robots. Empty by default. 
+  pointed-color ;; stores the color for the pointed mode behavior
+]
 
-patches-own [occupied]
-turtles-own [mode]
-;; mode is the variable for each turtle that decides which behavior it should have i.e how it should move 
+;; each patch has a local variable named occupied - a boolean that is true if it is occupied
+patches-own [occupied] 
+;; local variables for turtles 
+;; mode is the variable for each turtle that decides which behavior it should have eg: come, rendezvous, deploy
+;; (xtarget, ytarget) stores the coordinates of the target that the agent has to either move towards 
+;; reachable - flag that is true if the agent is connected to the base station. Only agents that are reachable can be selected. 
+turtles-own [mode xtarget ytarget reachable]
 
-to setup 
+
+to setup
   clear-all
+  set num-robots 30			;; change this to control number of robots
+  set disk-radius 35		;; change this to control the connectivity radius
   setup-patches
+  setup-turtles
   reset-ticks
 end
 
+;; Patch setup function - we get x and y coordinates (downsampled) from the generate maps file. 
+;; Use that file if you would like to change the map. 
+;; Those x and y coordinates are at a lower map resolution. So for each patch in the map generator 16 patches in this file are occupied. 
 to setup-patches
+  ;; all patches are free
   ask patches [set occupied false
   							set pcolor white]
+  ;; get downsampled coordinates from map generator
   let map-x [49 49 49 49 49 49 49 49 48 48 48 48 48 48 48 48 47 47 47 47 47 47 47 47 47 47 47 47 47 47 47 47 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 42 42 42 42 42 42 42 41 41 41 41 41 41 41 40 40 40 40 40 40 40 40 40 40 40 40 40 39 39 39 39 39 39 39 39 38 38 38 38 38 38 38 38 38 38 38 38 38 37 37 37 37 37 37 37 37 37 37 37 37 37 37 37 37 37 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 24 24 24 23 23 23 22 22 22 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 19 19 19 19 19 19 19 19 19 19 19 19 18 18 18 18 18 18 18 18 18 17 17 17 17 17 17 16 16 16 16 16 16 15 15 15 15 15 15 14 14 14 14 14 14 14 13 13 13 13 13 13 13 12 12 12 12 12 12 12 11 11 11 11 11 11 11 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 7 7 7 7 7 7 7 7 7 6 6 6 6 6 6 6 6 6 6 6 5 5 5 5 5 5 5 5 5 5 5 5 5 4 4 4 4 4 4 4 4 3 3 3 3 2 2 2 2 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -3 -3 -3 -3 -3 -3 -3 -3 -3 -3 -3 -3 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -8 -8 -8 -9 -9 -9 -10 -10 -10 -11 -11 -11 -12 -12 -12 -12 -12 -12 -13 -13 -13 -13 -13 -14 -14 -14 -14 -14 -14 -15 -15 -15 -15 -15 -15 -15 -15 -15 -15 -15 -15 -16 -16 -16 -16 -16 -16 -16 -16 -16 -16 -16 -16 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -28 -28 -29 -29 -29 -29 -29 -29 -29 -30 -30 -30 -30 -30 -30 -30 -30 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -49 -50]
   let map-y [26 25 24 23 5 4 3 2 26 25 24 23 5 4 3 2 34 33 32 31 30 29 28 27 26 25 24 23 5 4 3 2 34 33 32 31 30 29 28 27 26 5 4 3 2 -27 -28 -29 -30 -31 44 43 42 41 40 34 33 32 31 30 29 28 27 26 5 4 3 2 -27 -28 -29 -30 -31 -47 -48 44 43 42 41 40 34 33 32 31 30 29 28 27 26 5 4 3 2 1 -27 -28 -29 -30 -31 -47 -48 44 43 42 41 40 34 33 32 31 30 29 28 27 26 2 1 -47 -48 44 43 42 41 40 -47 -48 44 43 42 41 40 -47 -48 44 43 42 41 40 2 1 0 -1 -2 -3 -47 -48 2 1 0 -1 -2 -3 -47 -48 2 1 0 -1 -2 -3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 2 1 0 -1 -2 -3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 9 8 7 6 5 4 3 2 1 0 -1 -2 -3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 47 46 45 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 -15 -16 -17 -18 -19 -20 -26 -27 -28 -29 -30 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 -15 -16 -17 -18 -19 -20 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -34 -35 -36 -37 -38 -39 -40 9 8 7 6 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -33 -34 -35 -36 -37 -38 -39 -40 -43 -44 -45 -46 28 27 26 25 24 9 8 7 6 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -43 -44 -45 -46 48 47 46 28 27 26 25 24 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -43 -44 -45 -46 48 47 46 28 27 26 25 24 -15 -16 -17 -18 -19 -20 -43 -44 -45 -46 48 47 46 48 47 46 48 47 46 -21 -22 -23 -24 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 49 48 47 46 37 36 35 34 33 32 31 30 29 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 37 36 35 34 33 32 31 30 29 -43 -44 -45 30 29 28 27 26 25 -43 -44 -45 30 29 28 27 26 25 30 29 28 27 26 25 30 29 28 27 26 25 -8 -9 -10 -11 -12 -13 -14 -8 -9 -10 -11 -12 -13 -14 -8 -9 -10 -11 -12 -13 -14 -8 -9 -10 -11 -12 -13 -14 45 44 43 42 41 36 35 34 -8 -9 -10 -11 -12 -13 -14 -27 -28 -29 -30 -37 -38 -39 -40 45 44 43 42 41 36 35 34 -8 -9 -10 -11 -12 -13 -14 -27 -28 -29 -30 -37 -38 -39 -40 45 44 43 42 41 -8 -9 -10 -11 -12 -13 -14 -27 -28 -29 -30 -37 -38 -39 -40 45 44 43 42 41 -27 -28 -29 -30 45 44 43 42 41 4 3 -27 -28 -29 -30 45 44 43 42 41 30 29 4 3 -27 -28 -29 -30 30 29 4 3 -27 -28 -29 -30 30 29 4 3 30 29 4 3 30 29 4 3 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 32 31 30 29 28 27 26 25 24 23 -23 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 48 30 29 -23 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 48 30 29 -23 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 48 -23 49 48 -23 49 48 -23 49 48 -23 49 48 -13 -14 -15 -23 49 48 -13 -14 -15 14 13 12 -13 -14 -15 45 44 43 42 41 40 39 38 14 13 12 11 45 44 43 42 41 40 39 38 14 13 12 11 45 44 43 42 41 40 39 38 14 13 12 11 -14 -15 -16 -17 45 44 43 42 41 40 39 38 14 13 12 11 -14 -15 -16 -17 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -18 -19 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -18 -19 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -18 -19 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -37 -38 -46 -47 -48 -37 -38 -30 -31 -32 -33 -34 -37 -38 42 -30 -31 -32 -33 -34 -37 -38 47 46 45 44 43 42 16 15 14 -30 -31 -32 -33 -34 -37 -38 -45 -46 47 46 45 44 43 42 16 15 14 -30 -31 -32 -33 -34 -37 -38 -45 -46 47 46 45 44 43 42 16 15 14 -37 -38 -45 -46 47 46 45 44 43 42 31 16 15 14 -37 -38 -45 -46 47 46 45 44 43 42 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 47 46 45 44 43 42 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 42 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 30 29 28 27 26 25 24 23 22 16 15 14 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -45 -46 49 30 29 28 27 26 25 24 23 22 16 15 14 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -45 -46 49 30 29 28 27 26 25 24 23 22 16 15 14 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -45 -46 49 30 29 28 27 26 25 24 23 22 16 15 14 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -21 -22 -23 -45 -46 49 30 29 28 27 26 25 24 23 22 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 -45 -46 49 24 23 22 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 49 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 49 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 49 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 7 6 5 4 -3 -4 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 49]
-	(foreach map-x map-y [
+  ;; upsample the coordinates - 16 for each - set them to be occupied
+  (foreach map-x map-y [
     [a b] ->
     ask patch (4 * a) (4 * b) [set occupied true]
     ask patch (4 * a) (4 * b + 1) [set occupied true]
@@ -35,8 +65,9 @@ to setup-patches
     ask patch (4 * a + 3) (4 * b) [set occupied true]
     ask patch (4 * a + 3) (4 * b + 1) [set occupied true]
     ask patch (4 * a + 3) (4 * b + 2) [set occupied true]
-    ask patch (4 * a + 3) (4 * b + 3) [set occupied true]    
+    ask patch (4 * a + 3) (4 * b + 3) [set occupied true]
   ])
+  ;; occupied patches have to be black :) 
   ask patches 
   [if occupied = true 
     [
@@ -46,28 +77,318 @@ to setup-patches
 end
 
 
+;; agents setup function. 
 to setup-turtles
-  ;; initialize turtle positions and the adjacency matrix here
+  ;; creating the base station
+  create-turtles 1
+  [
+    setxy 130 130
+    set shape "pentagon"
+    set color brown
+    set size 10
+    set mode "stop"
+  ]
+	;; creating all the other turtles
+  create-turtles num-robots
+ 	[
+		;; change these to change where the turtles are initialized. 
+    ;; Currently they are centered at (100, 100) and spread out by (100, 100) (randomness). 
+    let x 100 + (random 100)		    
+    let y 100 + (random 100)
+    ;; if the random patch is occupied, repeat. 
+    while [[occupied] of patch x y = true]
+    [
+      set x 100 + (random 100)	;; change the same here also. 
+      set y 100 + (random 100)
+    ]
+    setxy x y
+    set color grey
+    set size 8
+    set mode "stop"	;; they are initially in the stopped state
+  ]
+  update-neighbors	;; updates the links
+  set selected (turtles with [who != 0 and reachable = true])	;; by default all turtles that are reachable are selected
 end
 
-;; this is the forever main loop that runs once the task starts
+;; this is a recursive function that starts at the base station and 
+;; sets every connected agent to reachable. it is used at every step to update the reachable variable
+;; this is called by update-neighbours, after the neighbours have been updated. 
+to activate-neighbors
+  if reachable  = false [
+    set reachable true
+    ask link-neighbors [activate-neighbors]
+  ]
+end
+
+
+;; this function uses the delta disk graph to determine which agents are connected. 
+;; agent i is connected to agent j if they are within disk-radius and if they do not have 
+;; an obstacle in between
+to update-neighbors
+  ;; sets neighbours based on distance alone
+  clear-links
+    foreach (range (num-robots + 1)) [agent1 ->
+      foreach (range (num-robots + 1)) [ agent2 ->
+        if (agent1 != agent2)  and (([distance turtle agent1] of turtle agent2) <= disk-radius) [
+          ask turtle agent1 [create-link-with turtle agent2]
+        ]
+      ]
+    ]
+  ;; removes links that have obstacle between them. this is done by scanning along the line 
+  ;; connecting the two agents in steps of delta. 
+  let delta 0.5	;; step size
+  ask links [
+    let start_x [xcor] of end1		;; starting at first agent 
+    let start_y [ycor] of end1
+    let end_x [xcor] of end2			;; upto second agent
+    let end_y [ycor] of end2
+    
+    let mag sqrt (((end_x - start_x) ^ 2) + ((end_y - start_y) ^ 2)) ;; distance between agents
+    if mag != 0
+    [
+      ;; direction towards end from start
+      let dir_x ((end_x - start_x) / mag)
+      let dir_y ((end_y - start_y) / mag)
+      ;; step along the direction in steps of delta, check if patch occupied
+      (foreach (range 0.0 mag delta) [ i ->
+        if [occupied] of patch (round (start_x + (i * dir_x))) (round (start_y + (dir_y * i))) [
+          ;; if patch is occupied, kill this link
+          die
+        ]
+      ])
+    ]
+  ]
+  ;; updating reachability
+  ask turtles [ set reachable false ] ;; set all of them to be not reachable
+  ask turtle 0 [activate-neighbors]		;; recurse from the base station
+end
+
+;; all the set-mode-<> functions. These functions are called when the buttons for the corresponding 
+;; modes are clicked. Some modes are "pointed" - they need a heading input (clicking on arena). 
+
+;; If it is a pointed-mode Clear the select-on, clicked-once and clicked-twice flags, set the pointed-mode flag to true. 
+;; Mode starts executing when the clicking is completed. Which is later. pointed-mode and pointed-color is used to cache until then. 
+to set-mode-heading
+  set pointed-mode "heading"
+  set pointed-color violet
+  set pointed-mode-on true
+  set select-on false
+  set clicked-once false
+  set clicked-twice false
+end
+
+to set-mode-come
+  set pointed-mode "come"
+  set pointed-color blue
+  set pointed-mode-on true
+  set select-on false
+  set clicked-once false
+  set clicked-twice false
+end
+
+to set-mode-leave
+  set pointed-mode "leave"
+  set pointed-color pink
+  set pointed-mode-on true
+  set select-on false
+  set clicked-once false
+  set clicked-twice false
+end
+
+;; deploy behavior has not been implemented yet #TODO
+to set-mode-deploy
+  ask selected [
+    set mode "deploy"
+    set color green
+  ]
+end
+
+;; If it is not a pointed mode, start executing the behavior for the selected agents. 
+;; Also set their color. 
+to set-mode-stop
+  ask selected [
+    set mode "stop"
+    set color grey
+  ]
+end
+
+to set-mode-rendezvous
+  ask selected [
+    set mode "rendezvous"
+    set color yellow
+  ]
+end
+
+to set-mode-random
+  ask selected [
+    set mode "random"
+    set color turquoise
+  ]
+end
+
+;; runs when user clicks select
+to set-select-on
+  set select-on true
+  set pointed-mode-on false
+  set clicked-once false
+  set clicked-twice false
+end
+
+;; runs when user clicks clear - clears the current selection
+;; by default - all reachable agents are selected
+to clear-selection
+  set selected (turtles with [who != 0 and reachable = true])
+end
+
+;; the sliding behavior on obstacles
+;; since the obstacles are rectangular, when an agent hits an obstacle it has 4 options - 
+;; move left, right, up, down. Choosing one depends on the wall direction and the heading. 
+;; if horizontal and heading right, go right, else left
+;; if vertical and heading down, go down, else go up. 
+;; takes as argument the patch in front of the agent
+to slide-on-obstacle [infront]
+  let x ([pxcor] of infront)
+  let y ([pycor] of infront)
+
+  let head_x 0
+  let head_y 0
+  ifelse (heading <= 90 or heading >= 270) [
+    set head_y 1
+  ][ set head_y -1 ]
+  ifelse (heading <= 180) [
+    set head_x 1
+  ][ set head_x -1 ]
+
+  (ifelse ((patch x (y + 1)) != nobody and [occupied] of (patch x (y + 1)) = true) and 
+    ((patch x (y - 1)) != nobody and [occupied] of (patch x (y - 1)) = true) and 
+    ((patch (x - head_x) y) != nobody and [occupied] of (patch (x - head_x) y) = false)[
+      ifelse [occupied] of (patch xcor (ycor + head_y)) = false [
+      	set ycor (ycor + head_y)
+      ][ set heading random 360 ]
+    ]((patch (x + 1) y) != nobody and [occupied] of (patch (x + 1) y) = true) and 
+    ((patch (x - 1) y) != nobody and [occupied] of (patch (x - 1) y) = true) and 
+    ((patch x (y - head_y)) != nobody and [occupied] of (patch x (y - head_y)) = false)[
+      ifelse [occupied] of (patch (xcor + head_x) ycor) = false [
+      	set xcor (xcor + head_x)
+      ][ set heading random 360 ]
+    ]((patch (x + head_x) y) != nobody and [occupied] of (patch (x + head_x) y) = true) and 
+    ((patch x (y + head_y)) != nobody and [occupied] of (patch x (y + head_y)) = true) [
+      ifelse [occupied] of (patch (xcor + head_x) ycor) = false [
+      	set xcor (xcor + head_x)
+      ][ set heading random 360 ]
+    ][ forward 1 ]
+  )
+end
+
+;; the main actuation function
+;; what the agent does depends on which behavior it is in
+;; so this is basically a ladder of if-else for behaviors
+to act
+  ask turtles [
+    let infront (patch-ahead 1)
+    (ifelse infront = nobody [
+      ;; end of the world scenario
+        set heading random 360
+     ]mode = "random" [
+       ;; keep moving straight, if you hit an obstacle turn randomly
+	      ifelse ([occupied] of infront) = false [
+        forward 1
+       ][ set heading random 360 ]
+	   ]mode = "rendezvous" and count link-neighbors != 0 [
+       ;; classic consensus
+        let sumx (sum [xcor] of link-neighbors) / count link-neighbors
+        let sumy (sum [ycor] of link-neighbors) / count link-neighbors
+        facexy sumx sumy
+        (ifelse ([occupied] of infront) = false [
+          forward 1
+         ][
+          slide-on-obstacle infront
+	       ])
+     ] mode = "come" [
+       ;; move to the target
+        facexy xtarget ytarget
+        (ifelse ([occupied] of infront) = false [
+          forward 1
+         ][
+          slide-on-obstacle infront
+	       ])
+     ] mode = "leave" [
+       ;; move away from target
+        facexy (xcor + (xcor - xtarget)) (ycor + (ycor - ytarget))
+        (ifelse ([occupied] of infront) = false [
+          forward 1
+         ][
+          slide-on-obstacle infront
+	       ])
+    ])
+  ]
+end
+
+
+to update-mode
+  (ifelse select-on and clicked-twice [
+    set selected turtles with 
+    [(who != 0) and (xcor > clicked1_x) and (xcor < clicked2_x) and (ycor < clicked1_y) and (ycor > clicked2_y) and reachable]
+    ask selected [set color red]
+    set clicked-once false
+    set clicked-twice false
+    set select-on false
+   ] pointed-mode-on and clicked-once[
+      ask selected [
+        set mode pointed-mode
+        set color pointed-color
+        set xtarget clicked1_x
+        set ytarget clicked1_y
+      ]
+      set pointed-mode-on false
+      set clicked-once false
+  ])
+end
+
+;; this is the forever main loop that runs once the task starts (user clicks "go"). 
+;; we just listen for clicks and change modes here
+;; and then we call update-neighbours and act functions
 to main
-  ;; step 1 - check for user input
-  ;; user can change the behavior of any robot, checking for their input can happen here
-  
-  ;; step 2 - update turtle positions
-  ;; this update rule is dependent on what mode it is in, 
-  ;; foreach turtle, check its mode and write update rule. 
-  
-  ;; step 3 - update adjacency matrix based on new positions
+  ;; listen for mouse click, either for mode setting or for selecting agents
+  if (select-on or pointed-mode-on) and mouse-down? [
+    ;; if this is the first click 
+    ifelse clicked-once = false [
+      set clicked-once true
+      set clicked1_x mouse-xcor
+      set clicked1_y mouse-ycor
+      update-mode
+      show "clicked once"
+      show clicked1_x
+      show clicked1_y
+    ][
+      ;; if this is the second click - used for selection only
+      if clicked-twice = false [
+        ifelse mouse-xcor != clicked1_x or mouse-ycor != clicked1_y [
+          set clicked-twice true
+          set clicked2_x mouse-xcor
+          set clicked2_y mouse-ycor
+          update-mode
+          show "clicked twice"
+          show clicked2_x
+          show clicked2_y
+        ][
+          show "clicked same thing again"
+        ]
+      ]
+    ]
+  ]
+  act
+  update-neighbors
+  set selected (selected with [reachable = true])
+  tick
 end
 
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-1012
-812
+309
+17
+1111
+819
 -1
 -1
 2
@@ -91,12 +412,182 @@ ticks
 30
 
 BUTTON
-62
-44
-152
-94
+50
+30
+130
+70
 setup
 setup
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+150
+30
+229
+70
+go
+main
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+50
+570
+125
+610
+random
+set-mode-random
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+160
+570
+250
+610
+rendezvous
+set-mode-rendezvous
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+170
+480
+230
+520
+stop
+set-mode-stop
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+120
+400
+190
+440
+leave
+set-mode-leave
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+210
+400
+280
+440
+come
+set-mode-come
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+60
+480
+130
+520
+deploy
+set-mode-deploy
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+20
+400
+95
+440
+heading
+set-mode-heading
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+60
+190
+135
+230
+Select
+set-select-on
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+150
+190
+220
+230
+Clear
+clear-selection
 NIL
 1
 T
