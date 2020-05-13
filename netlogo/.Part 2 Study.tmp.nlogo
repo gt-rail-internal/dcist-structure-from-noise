@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-extensions [http-req]
+;;extensions [http-req]
 globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz waitcounter]
 
 to setup
@@ -35,11 +35,14 @@ to setup
   if state = 5 [
     start-experiment-five
   ]
-  if state = 6[
+  if state = 6 [
+    start-experiment-six
+  ]
+  if state = 7[
     print-instructions 100
     finish
   ]
-  if state = 7[
+  if state = 8[
   ]
   tick
 end
@@ -125,7 +128,6 @@ to start-experiment-one
     set querystate 0
     set expstate expstate + 1
     print-instructions 1
-    ;;user-message ("Click on three items you feel will propogate the fastest")
     ask turtles [set color red]
   ]
   if expstate = 7[
@@ -135,11 +137,17 @@ to start-experiment-one
     ]
   ]
   if expstate = 8[
+    ifelse clicked = 10 [
+      set expstate 12
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 2
     ;;user-message ("Click on another item")
     ask turtles [set color red]
+    ]
   ]
   if expstate = 9[
     queryUser
@@ -148,12 +156,16 @@ to start-experiment-one
     ]
   ]
   if expstate = 10[
+    ifelse clicked = 10 [
+      set expstate 12
+      set logStr word logStr word -1 ","
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 3
     ;;user-message ("Click on another item")
     ask turtles [set color red]
-
+    ]
   ]
   if expstate = 11[
     queryUser
@@ -216,11 +228,17 @@ to start-experiment-two  ;;top left square                                      
     ]
   ]
   if expstate = 8[
+    ifelse clicked = 8 or clicked = 9[
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+      set expstate 12
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 2
     ;user-message ("Click on another item")
     ask turtles [set color red]
+    ]
   ]
   if expstate = 9[
     queryUser
@@ -229,12 +247,16 @@ to start-experiment-two  ;;top left square                                      
     ]
   ]
   if expstate = 10[
+    ifelse clicked = 8 or clicked = 9[
+      set logStr word logStr word -1 ","
+      set expstate 12
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 3
     ;user-message ("Click on another item")
     ask turtles [set color red]
-
+    ]
   ]
   if expstate = 11[
     queryUser
@@ -391,11 +413,17 @@ to start-experiment-four
     ]
   ]
     if expstate = 9[
+    ifelse clicked = 0 or clicked = 20[
+      set expstate 13
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 2
     ;user-message ("Click on another item")
     ask turtles [set color red]
+    ]
   ]
   if expstate = 10[
     queryUser
@@ -404,11 +432,16 @@ to start-experiment-four
     ]
   ]
     if expstate = 11[
+    ifelse clicked = 0 or clicked = 20[
+      set expstate 13
+      set logStr word logStr word -1 ","
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 3
     ;user-message ("Click on another item")
     ask turtles [set color red]
+    ]
   ]
   if expstate = 12[
     queryUser
@@ -485,10 +518,16 @@ to start-experiment-five
     ]
   ]
     if expstate = 9[
+    ifelse clicked = 6 or clicked = 7[
+      set expstate 13
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 2
     ask turtles [set color red]
+    ]
   ]
   if expstate = 10[
     queryUser
@@ -497,11 +536,16 @@ to start-experiment-five
     ]
   ]
     if expstate = 11[
+    ifelse clicked = 6 or clicked = 7[
+      set expstate 13
+      set logStr word logStr word -1 ","
+    ] [
     set querystate 0
     set expstate expstate + 1
     print-instructions 3
     ;user-message ("Click on another item")
     ask turtles [set color red]
+    ]
   ]
   if expstate = 12[
     queryUser
@@ -510,7 +554,115 @@ to start-experiment-five
     ]
   ]
   if expstate = 13[
-    user-message ("Experiment Complete!  isReturn to Mechanical Turk")
+    user-message ("Round Five Complete")
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
+
+
+
+
+
+to start-experiment-six
+  let adj
+  [[0 1 0 0 0 0 0 0 0 0 0 0 0]
+   [1 0 1 0 0 0 0 0 0 0 0 0 0]
+   [0 1 0 1 0 0 0 0 0 0 0 0 0]
+   [0 0 1 0 1 0 0 0 0 0 0 0 0]
+   [0 0 0 1 0 1 0 0 0 0 0 0 0]
+   [0 0 0 0 1 0 1 0 0 0 0 0 0]
+   [0 0 0 0 0 1 0 1 0 0 0 0 0]
+   [0 0 0 0 0 0 1 0 1 0 0 0 0]
+   [0 0 0 0 0 0 0 1 0 1 0 0 0]
+   [0 0 0 0 0 0 0 0 1 0 1 0 0]
+   [0 0 0 0 0 0 0 0 0 1 0 1 0]
+   [0 0 0 0 0 0 0 0 0 0 1 0 1]
+   [0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+  if expstate = 0[
+    print-instructions 0
+    set loc [[-3 0] [-2 1.25] [-1 2] [0 0] [1 -1] [2 0] [3 -2.5] [0.5 3] [0.75 2] [0 1.25] [-1 -1] [1.7 -2] [-0.4 -3]]
+    setup-turtles
+    set expstate 1
+    set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink-neighbors 0 adj
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink-neighbors 4 adj
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink-neighbors 7 adj
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 1
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 9[
+    ifelse clicked = 6 [  ;;if in the previous they clicked on the right one then lets go to the end.
+      set expstate 13
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
+      set querystate 0
+      set expstate expstate + 1
+      print-instructions 2
+      ask turtles [set color red]
+    ]
+  ]
+  if expstate = 10[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 11[
+    ifelse clicked = 6 [
+      set expstate 13
+      set logStr word logStr word -1 ","
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 3
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 12[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 13[
+    user-message ("Experiment Complete!  Return to Mechanical Turk with your code: 31247")
     clear-turtles
     set state state + 1
     set expstate 0
@@ -668,15 +820,13 @@ to print-instructions [choice]
   ]
   if choice = 2 [
     clear-output
-    output-print "Great!  Let's do it again"
+    output-print "Close!  Let's try again"
     output-print "on the same graph. Start"
     output-print "a new color change by clicking"
-    output-print "a block. Try to pick a block"
-    output-print "that will make the color "
+    output-print "a block. Try to pick a different"
+    output-print " block that will make the color "
     output-print "change happen in the FEWEST time"
-    output-print "steps possible.  You can pick "
-    output-print "the same or a different block "
-    output-print "as last time."
+    output-print "steps possible."
   ]
   if choice = 3[
     clear-output
@@ -703,20 +853,22 @@ to print-instructions [choice]
     output-print "Return to Mechanical Turk"
     output-print ""
     output-print "Your Exit Code is:"
-    output-print "Your Exit Code is:"
+    output-print "31247"
   ]
 
 
 end
 
 to finish
-  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
-  ifelse (first response-triplet) = "200" [
-    show "logs successfully sent"
-  ]
-  [
-   show "log transmission failed"
-  ]
+  show "Logging:"
+  show logStr
+;;  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+;;  ifelse (first response-triplet) = "200" [
+;;    show "logs successfully sent"
+;;  ]
+;;  [
+;;   show "log transmission failed"
+;;  ]
   set state state + 1
 end
 @#$#@#$#@
