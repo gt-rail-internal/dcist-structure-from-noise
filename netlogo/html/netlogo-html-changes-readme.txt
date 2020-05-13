@@ -24,7 +24,10 @@ hide them by adding a style=\"visibility: hidden;\" attribute
 
 
 To grab a CSV:
-Run Mysql, then use this command:
+delete old one
+sudo rm /var/lib/mysql-files/db.tablename.txt  
+
+Run Mysql, using "sudo mysql" then use this command:
 
 SELECT * INTO OUTFILE '/var/lib/mysql-files/db.tablename.txt' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' FROM logger.response;
 

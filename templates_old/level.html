@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>M Turk DCIST</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='level.css') }}">
+    <script type="text/javascript" src="static/level.js"></script>
+    <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.5.0/fabric.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body onload = draw();>
+
+    <nav class="navbar navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">To Be Decided</a>
+      <!-- Navbar content -->
+    </nav>
+  <div class = "container-fluid">
+  <div class="row">
+    <div class="column left">
+      <div style = "padding-left: 10%;">
+      <canvas id="main" class = container></canvas>
+      </div>
+    </div>
+    <div class="column right">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="my-0 font-weight-normal">Welcome Mechanical Turkers!</h4>
+        </div>
+        <div class="card-body">
+          The objective of this challenge is to figure out which cube is
+
+
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">1. To start, some circles will be flashed, and they will continue to pass the message to their neighbors. </li>
+          <li class="list-group-item">2. After observing, pick the circle that has the most neighbors.</li>
+          <li class="list-group-item">3. If you guess wrong, you will start back at step 1 for a maximum of three tries.</li>
+        </ul>
+      </div>
+      <br>
+      <div class="card text-center">
+        <div class="card-header">
+          Info
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Click start</h5>
+          <p class="card-text">Begin the observation phase</p>
+          <button onclick="observation()" class="btn btn-primary">Start</button>
+        </div>
+        <div class="card-footer text-muted">
+          Trial:  1/3
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  </body>
+</html>
