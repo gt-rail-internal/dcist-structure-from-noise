@@ -824,20 +824,19 @@ to print-instructions [choice]
     output-print "on the same graph. Start"
     output-print "a new color change by clicking"
     output-print "a block. Try to pick a different"
-    output-print " block that will make the color "
+    output-print "block that will make the color "
     output-print "change happen in the FEWEST time"
     output-print "steps possible."
   ]
   if choice = 3[
     clear-output
-    output-print "One last time!  Let's do it again"
-    output-print "on the same graph.  Start a new"
-    output-print "color change by clicking a block."
-    output-print "Try to pick a block that will make"
-    output-print "the color change happen in the"
-    output-print "FEWEST time steps possible.  You"
-    output-print "can pick the same or a different"
-    output-print "block as last time."
+    output-print "Almost, one last time!  Let's try"
+    output-print "again on the same graph. Start"
+    output-print "a new color change by clicking"
+    output-print "a block. Try to pick a different"
+    output-print "block that will make the color "
+    output-print "change happen in the FEWEST time"
+    output-print "steps possible."
   ]
   if choice = 10[
     clear-output
@@ -862,7 +861,7 @@ end
 to finish
   show "Logging:"
   show logStr
-;;  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+;  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
 ;;  ifelse (first response-triplet) = "200" [
 ;;    show "logs successfully sent"
 ;;  ]
