@@ -1,10 +1,10 @@
 import pymysql.cursors
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import csv
 import statistics
 import random
 
-conn = pymysql.connect(host = 'localhost', user='', password='', db='logger',charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+conn = pymysql.connect(host = 'localhost', user='rail', password='R0b0tsAr3C00l!', db='logger',charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
 crsr = conn.cursor()
 crsr.execute("select * from response;")
 data = crsr.fetchall()
@@ -105,7 +105,7 @@ for row in data:
 		time = timeStringToFloat(row['pretest_reactions'])
 		keys = stringListToInt(row['pretest_keys'])
 		key_status = stringListToInt(row['pretest_key_status'])
-		if len(key_status) >= 630:
+		if row['user_id'] == 'test333':
 			target_long = randomWalk(adj_list, 1500)
 			print("---------------------------------------------------------------------")
 			print("user ", row['user_id'])
@@ -116,10 +116,10 @@ for row in data:
 			print("keys ", keys, len(keys))
 			print("key status ", key_status, len(key_status))
 			print('---------------------------------------------------------------------')			
-			wrong = [(i, time[i] - time[i-1]) for i, x in enumerate(key_status) if x == 0 and i != 0]
-			correct = [(i, time[i]) for i, x in enumerate(key_status) if x == 1 and i != 0]
+			wrong = [(i, time[i] - time[i-1]) for i, x in enumerate(key_status) if x == 0 or i == 0]
+			correct = [(i, time[i]) for i, x in enumerate(key_status) if x == 1 or i == 0]
 			rt = [(correct[i][0], int((correct[i][1] - correct[i-1][1])*1000)) for i in range(1, len(correct))]
-			a, b = zip(*wrong)
+			print("delta t", rt, len(rt)) # a, b = zip(*wrong)
 			# plt.ylim(-0.5, 5)
 			# plt.scatter(list(a), list(b), c='r', s=2)
 
@@ -136,7 +136,8 @@ for row in data:
 			synthetic_bad = [0]
 			synthetic_regular = [0]
 
-			# 1 - out of cluster 0 is in cluster
+			print(ind, len(ind), '\n', rtf, len(rtf), '\n', target, len(target))
+                        # 1 - out of cluster 0 is in cluster
 			for i in range(1, len(target)):
 				synthetic_bad.append(random.gauss(high_rt, rt_std))
 				synthetic_great.append(random.gauss(low_rt, rt_std))
@@ -180,6 +181,6 @@ for row in data:
 				graph_type_writer.writerow([20])
 			for adj in adj_list:
 				graph_writer.writerow(adj)
-			plt.scatter(list(ind), list(rtf), c='g', s=2)
-			plt.title(row['user_id']+" "+row['pretest_graph_type'])
-			plt.show()
+			#plt.scatter(list(ind), list(rtf), c='g', s=2)
+			#plt.title(row['user_id']+" "+row['pretest_graph_type'])
+			#plt.show()

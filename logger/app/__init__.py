@@ -9,7 +9,7 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, compare_type=True)
 
 if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
