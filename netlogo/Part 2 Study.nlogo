@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-extensions [http-req]
+;;extensions [http-req]
 globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz waitcounter]
 
 to setup
@@ -65,7 +65,7 @@ end
 to setup-turtles-shapes [heters]
   let a 0
   foreach loc [ [x] ->
-  show item a heters
+  ;;show item a heters
   create-turtles 1 [setxy (item 0 x)  (item 1 x)]
 
   if item a heters = 0[
@@ -175,6 +175,7 @@ to start-experiment-one
   ]
   if expstate = 12[
     user-message ("Round One Complete")
+    show logstr
     clear-turtles
     set state state + 1
     set expstate 0
@@ -266,6 +267,7 @@ to start-experiment-two  ;;top left square                                      
   ]
   if expstate = 12[
     user-message ("Round Two Complete")
+    show logstr
     clear-turtles
     set state state + 1
     set expstate 0
@@ -327,6 +329,7 @@ to start-experiment-three
   ]
   if expstate = 9[
     user-message ("Round Three Complete")
+    show logstr
     clear-turtles
     set state state + 1
     set expstate 0
@@ -451,6 +454,7 @@ to start-experiment-four
   ]
   if expstate = 13[
     user-message ("Round Four Complete")
+    show logstr
     clear-turtles
     set state state + 1
     set expstate 0
@@ -555,6 +559,7 @@ to start-experiment-five
   ]
   if expstate = 13[
     user-message ("Round Five Complete")
+    show logstr
     clear-turtles
     set state state + 1
     set expstate 0
@@ -663,6 +668,7 @@ to start-experiment-six
   ]
   if expstate = 13[
     user-message ("Experiment Complete!  Return to Mechanical Turk with your code: 31247")
+    show logstr
     clear-turtles
     set state state + 1
     set expstate 0
@@ -709,8 +715,8 @@ to blink-neighbors [starter network]
           set t 1
         ]
       ]
-      show lit
-      show iter
+      ;;show lit
+      ;;show iter
       if t =  0 and iter != 30[
         set iter 29
       ];;check if we are all done if so then go to the next one
@@ -768,8 +774,8 @@ to blink [starter]  ;;this is regular blink
           set t 1
         ]
       ]
-      show lit
-      show iter
+      ;;show lit
+      ;;show iter
       if t =  0 and iter != 30[
         set iter 29
       ];;check if we are all done if so then go to the next one
@@ -861,13 +867,13 @@ end
 to finish
   show "Logging:"
   show logStr
-  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
-  ifelse (first response-triplet) = "200" [
-    show "logs successfully sent"
-  ]
-  [
-   show "log transmission failed"
-  ]
+  ;;let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+  ;;ifelse (first response-triplet) = 200 [
+  ;;  show "logs successfully sent"
+  ;;]
+  ;;[
+  ;; show "log transmission failed"
+  ;;]
   set state state + 1
 end
 @#$#@#$#@

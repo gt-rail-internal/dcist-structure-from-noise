@@ -306,7 +306,7 @@ to move-collison-avoid
 
     let x-head-turt cos heading
     let y-head-turt sin heading
-    let alpha-force 0.7
+    let alpha-force 0.9
 
     let x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
     let y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
