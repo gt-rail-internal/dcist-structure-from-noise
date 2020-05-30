@@ -297,8 +297,8 @@ to move-collison-avoid
       ;show link-length
       let x-head-link cos link-heading
       let y-head-link sin link-heading
-      set x-sum x-sum + ((x-head-link) / (sqrt link-length))
-      set y-sum y-sum + ((y-head-link) / (sqrt link-length))
+      set x-sum x-sum + ((x-head-link) / (sqrt link-length - sqrt disk-radius))
+      set y-sum y-sum + ((y-head-link) / (sqrt link-length - sqrt disk-radius))
     ]
     set x-sum x-sum / link-count
     set y-sum y-sum / link-count
@@ -306,10 +306,10 @@ to move-collison-avoid
 
     let x-head-turt cos heading
     let y-head-turt sin heading
-    let alpha-force 0.7
+    let alpha-force 0.5
 
-    let x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
-    let y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
+    let x-final (alpha-force * cos heading) - ((1 - alpha-force) * x-sum)
+    let y-final (alpha-force * sin heading) - ((1 - alpha-force) * y-sum)
 
     set heading atan y-final x-final
     ;show heading
