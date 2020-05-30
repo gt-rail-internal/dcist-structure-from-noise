@@ -30,6 +30,8 @@ turtles-own [mode xtarget ytarget reachable]
 
 to setup
   clear-all
+  set select-on false
+  set pointed-mode-on false
   set num-robots 30			;; change this to control number of robots
   set disk-radius 35		;; change this to control the connectivity radius
   setup-patches
@@ -288,17 +290,18 @@ to move-collison-avoid
   ;show heading
   let x-sum 0
   let y-sum 0
+  let x-cor-turt xcor
+  let y-cor-turt ycor
   let link-count count my-out-links
   ifelse link-count = 0[  ;;if no other agents then move forward
     forward 1
   ] [
     ask my-out-links [  ;;else try to weight and avoid them
-      ;show link-heading
       ;show link-length
-      let x-head-link cos link-heading
-      let y-head-link sin link-heading
-      set x-sum x-sum + ((x-head-link) / (sqrt link-length - sqrt disk-radius))
-      set y-sum y-sum + ((y-head-link) / (sqrt link-length - sqrt disk-radius))
+      let x-head-link x-cor-turt - [xcor] of other-end
+      let y-head-link y-cor-turt - [ycor] of other-end
+      set x-sum x-sum + ((x-head-link) / (sqrt link-length)) - (1 / sqrt disk-radius)
+      set y-sum y-sum + ((y-head-link) / (sqrt link-length)) - (1 / sqrt disk-radius)
     ]
     set x-sum x-sum / link-count
     set y-sum y-sum / link-count
@@ -306,15 +309,13 @@ to move-collison-avoid
 
     let x-head-turt cos heading
     let y-head-turt sin heading
-    let alpha-force 0.5
+    let alpha-force 0.985
 
-    let x-final (alpha-force * cos heading) - ((1 - alpha-force) * x-sum)
-    let y-final (alpha-force * sin heading) - ((1 - alpha-force) * y-sum)
+    let x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
+    let y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
 
     set heading atan y-final x-final
-    ;show heading
     forward sqrt (x-final * x-final + y-final * y-final)
-    ;show sqrt (x-final * x-final + y-final * y-final)
   ]
 end
 

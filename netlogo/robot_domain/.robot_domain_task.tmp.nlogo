@@ -6,7 +6,11 @@ globals
   ;; or to provide direction for the come or similar behaviors (which I refer to as pointed modes).
   ;; In the first case select-on flag is true, and in the second case, pointed-mode-on flag is true.
   ;; We listen for mouse clicks only when either of these flags are true.
-  select-on 			 ;; turns true when user clicks "select"
+
+  num-robots 		;; number of robots including base station
+  disk-radius 	;; radius for the delta-disk connectivity graph
+  ;; The user needs to click on the screen only in two cases - to select a bunch of robots,
+  ;; select-on 			 ;; turns true when user clicks "select"
   pointed-mode-on  ;; turns true when user clicks "come" or "heading" or other modes that need a heading input
   ;; I use flags to check how many times the user has clicked on the arena. These flags are reset every time
   ;; select or a pointed mode is clicked.
@@ -30,6 +34,8 @@ turtles-own [mode xtarget ytarget reachable]
 
 to setup
   clear-all
+  set select-on false
+  set pointed-mode-on false
   set num-robots 30			;; change this to control number of robots
   set disk-radius 35		;; change this to control the connectivity radius
   setup-patches
@@ -288,17 +294,18 @@ to move-collison-avoid
   ;show heading
   let x-sum 0
   let y-sum 0
+  let x-cor-turt xcor
+  let y-cor-turt ycor
   let link-count count my-out-links
   ifelse link-count = 0[  ;;if no other agents then move forward
     forward 1
   ] [
     ask my-out-links [  ;;else try to weight and avoid them
-      ;show link-heading
       ;show link-length
-      let x-head-link cos link-heading
-      let y-head-link sin link-heading
-      set x-sum x-sum + ((x-head-link) / (sqrt link-length - sqrt cosdisk-radius))
-      set y-sum y-sum + ((y-head-link) / (sqrt link-length  - sqrt sin disk-radius))
+      let x-head-link x-cor-turt - [xcor] of other-end
+      let y-head-link y-cor-turt - [ycor] of other-end
+      set x-sum x-sum + ((x-head-link) / (sqrt link-length)) - (1 / sqrt disk-radius)
+      set y-sum y-sum + ((y-head-link) / (sqrt link-length)) - (1 / sqrt disk-radius)
     ]
     set x-sum x-sum / link-count
     set y-sum y-sum / link-count
@@ -306,15 +313,13 @@ to move-collison-avoid
 
     let x-head-turt cos heading
     let y-head-turt sin heading
-    let alpha-force 0.5
+    let alpha-force 0.985
 
-    let x-final (alpha-force * cos heading) - ((1 - alpha-force) * x-sum)
-    let y-final (alpha-force * sin heading) - ((1 - alpha-force) * y-sum)
+    let x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
+    let y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
 
     set heading atan y-final x-final
-    ;show heading
     forward sqrt (x-final * x-final + y-final * y-final)
-    ;show sqrt (x-final * x-final + y-final * y-final)
   ]
 end
 
