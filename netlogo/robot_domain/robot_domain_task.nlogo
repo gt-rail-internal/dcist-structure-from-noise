@@ -17,7 +17,17 @@ globals
   pointed-mode ;; Stores name of the pointed mode if any pointed mode is currently being executed
   selected ;; "agentset" of selected robots. Any further commands will be executed by these robots. Empty by default.
   pointed-color ;; stores the color for the pointed mode behavior
+  boundary
+  second-click
+  new-selection
+  points
+  info-rate
+  info-decay-rate
 ]
+
+breed [bases base]
+breed [robots robot]
+breed [persons person]
 
 ;; each patch has a local variable named occupied - a boolean that is true if it is occupied
 patches-own [occupied]
@@ -25,8 +35,9 @@ patches-own [occupied]
 ;; mode is the variable for each turtle that decides which behavior it should have eg: come, rendezvous, deploy
 ;; (xtarget, ytarget) stores the coordinates of the target that the agent has to either move towards
 ;; reachable - flag that is true if the agent is connected to the base station. Only agents that are reachable can be selected.
-turtles-own [mode xtarget ytarget reachable]
-
+robots-own [mode xtarget ytarget reachable vx vy]
+persons-own [info retreived]
+bases-own [reachable]
 
 to setup
   clear-all
@@ -36,6 +47,9 @@ to setup
   set disk-radius 35		;; change this to control the connectivity radius
   setup-patches
   setup-turtles
+  set points 0
+  set info-rate 0.1
+  set info-decay-rate 0.001
   reset-ticks
 end
 
@@ -76,22 +90,23 @@ to setup-patches
       set pcolor black
     ]
   ]
+  set boundary nobody
 end
 
 
 ;; agents setup function.
 to setup-turtles
   ;; creating the base station
-  create-turtles 1
+  create-bases 1
   [
     setxy 130 130
     set shape "pentagon"
     set color brown
     set size 10
-    set mode "stop"
+    ;set mode "stop"
   ]
 	;; creating all the other turtles
-  create-turtles num-robots
+  create-robots num-robots
  	[
 		;; change these to change where the turtles are initialized.
     ;; Currently they are centered at (100, 100) and spread out by (100, 100) (randomness).
@@ -109,7 +124,12 @@ to setup-turtles
     set mode "stop"	;; they are initially in the stopped state
   ]
   update-neighbors	;; updates the links
-  set selected (turtles with [who != 0 and reachable = true])	;; by default all turtles that are reachable are selected
+  set selected (robots with [reachable = true])	;; by default all turtles that are reachable are selected
+  set new-selection false
+end
+
+to-report get-points
+  report points
 end
 
 ;; this is a recursive function that starts at the base station and
@@ -122,6 +142,35 @@ to activate-neighbors
   ]
 end
 
+to color-turtles
+  ask robots [
+     (ifelse mode = "stop" [
+        set color grey
+        ] mode = "rendezvous" [
+          set color yellow 
+        ] mode = "random" [
+          set color turquoise
+        ] mode = "deploy" [
+          set color green
+        ] mode = "leave" [
+          set color pink
+        ] mode = "heading" [
+          set color violet
+        ] mode = "come" [
+          set color blue
+     ])
+    ifelse not reachable [
+      set color scale-color color 180 0 255
+    ][
+      set color scale-color color 128 0 255
+    ]
+  ]
+  if new-selection [
+    ask selected [
+      set color red
+    ]
+  ]
+end
 
 ;; this function uses the delta disk graph to determine which agents are connected.
 ;; agent i is connected to agent j if they are within disk-radius and if they do not have
@@ -129,13 +178,17 @@ end
 to update-neighbors
   ;; sets neighbours based on distance alone
   clear-links
-    foreach (range (num-robots + 1)) [agent1 ->
-      foreach (range (num-robots + 1)) [ agent2 ->
-        if (agent1 != agent2)  and (([distance turtle agent1] of turtle agent2) <= disk-radius) [
-          ask turtle agent1 [create-link-with turtle agent2]
-        ]
-      ]
-    ]
+	ask robots [
+    let nearby-robots (robots in-radius disk-radius)
+    let myid who
+    let nearby-robots-without-myself (nearby-robots with [who != myid])
+    create-links-with nearby-robots-without-myself
+    create-links-with bases in-radius disk-radius
+  ]
+  ask bases [
+    create-links-with robots in-radius disk-radius
+  ]
+  
   ;; removes links that have obstacle between them. this is done by scanning along the line
   ;; connecting the two agents in steps of delta.
   let delta 0.5	;; step size
@@ -161,8 +214,10 @@ to update-neighbors
     ]
   ]
   ;; updating reachability
-  ask turtles [ set reachable false ] ;; set all of them to be not reachable
-  ask turtle 0 [activate-neighbors]		;; recurse from the base station
+  ask robots [ set reachable false ] ;; set all of them to be not reachable
+  ask bases [set reachable false]
+  ask bases [activate-neighbors]		;; recurse from the base station
+  color-turtles
 end
 
 ;; all the set-mode-<> functions. These functions are called when the buttons for the corresponding
@@ -177,6 +232,7 @@ to set-mode-heading
   set select-on false
   set clicked-once false
   set clicked-twice false
+  set new-selection false
 end
 
 to set-mode-come
@@ -186,6 +242,7 @@ to set-mode-come
   set select-on false
   set clicked-once false
   set clicked-twice false
+  set new-selection false
 end
 
 to set-mode-leave
@@ -195,6 +252,7 @@ to set-mode-leave
   set select-on false
   set clicked-once false
   set clicked-twice false
+  set new-selection false
 end
 
 ;; deploy behavior has not been implemented yet #TODO
@@ -203,6 +261,7 @@ to set-mode-deploy
     set mode "deploy"
     set color green
   ]
+  set new-selection false
 end
 
 ;; If it is not a pointed mode, start executing the behavior for the selected agents.
@@ -212,6 +271,7 @@ to set-mode-stop
     set mode "stop"
     set color grey
   ]
+  set new-selection false
 end
 
 to set-mode-rendezvous
@@ -219,6 +279,7 @@ to set-mode-rendezvous
     set mode "rendezvous"
     set color yellow
   ]
+  set new-selection false
 end
 
 to set-mode-random
@@ -226,6 +287,7 @@ to set-mode-random
     set mode "random"
     set color turquoise
   ]
+  set new-selection false
 end
 
 ;; runs when user clicks select
@@ -239,7 +301,7 @@ end
 ;; runs when user clicks clear - clears the current selection
 ;; by default - all reachable agents are selected
 to clear-selection
-  set selected (turtles with [who != 0 and reachable = true])
+  set selected (robots with [reachable = true])
 end
 
 ;; the sliding behavior on obstacles
@@ -284,8 +346,6 @@ end
 
 ;; Move forward collision avoidance
 ;; This queries the links and then adjusts the heading like a sort of potential field from other nearby robots
-;;
-
 to move-collison-avoid
   ;show heading
   let x-sum 0
@@ -293,6 +353,8 @@ to move-collison-avoid
   let x-cor-turt xcor
   let y-cor-turt ycor
   let link-count count my-out-links
+  let x-final 0
+  let y-final 0
   ifelse link-count = 0[  ;;if no other agents then move forward
     forward 1
   ] [
@@ -306,13 +368,12 @@ to move-collison-avoid
     set x-sum x-sum / link-count
     set y-sum y-sum / link-count
 
-
     let x-head-turt cos heading
     let y-head-turt sin heading
     let alpha-force 0.985
 
-    let x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
-    let y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
+    set x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
+    set y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
 
     set heading atan y-final x-final
     forward sqrt (x-final * x-final + y-final * y-final)
@@ -323,13 +384,13 @@ end
 ;; what the agent does depends on which behavior it is in
 ;; so this is basically a ladder of if-else for behaviors
 to act
-  ask turtles [
+  ask robots [
     let infront (patch-ahead 1)
     (ifelse infront = nobody [
       ;; end of the world scenario
         set heading random 360
      ]mode = "random" [
-       ;; keep moving straight, if you hit an obstacle turn randomly
+        ;; keep moving straight, if you hit an obstacle turn randomly
 	      ifelse ([occupied] of infront) = false [
         move-collison-avoid
        ][ set heading random 360 ]
@@ -364,24 +425,24 @@ to act
 end
 
 
-to update-mode
-  (ifelse select-on and clicked-twice [
-    set selected turtles with
-    [(who != 0) and (xcor > clicked1_x) and (xcor < clicked2_x) and (ycor < clicked1_y) and (ycor > clicked2_y) and reachable]
-    ask selected [set color red]
-    set clicked-once false
-    set clicked-twice false
-    set select-on false
-   ] pointed-mode-on and clicked-once[
-      ask selected [
-        set mode pointed-mode
-        set color pointed-color
-        set xtarget clicked1_x
-        set ytarget clicked1_y
-      ]
-      set pointed-mode-on false
-      set clicked-once false
-  ])
+to update-points
+	ask persons [
+    create-links-with robots in-radius disk-radius
+    let close-robots robots in-radius disk-radius
+    ifelse (count close-robots) = 0 [
+      set info (info - info-decay-rate)
+      if info <= 0 [die]
+      hide-turtle
+      set retreived 0
+    ][
+	    set info (info - ((count close-robots) * info-rate))
+      set retreived (count close-robots) * info-rate
+      if info <= 0 [die]
+      show-turtle
+    ]      
+    set label int info
+  ]
+  set points (points + sum [retreived] of persons)
 end
 
 ;; this is the forever main loop that runs once the task starts (user clicks "go").
@@ -389,49 +450,98 @@ end
 ;; and then we call update-neighbours and act functions
 to main
   ;; listen for mouse click, either for mode setting or for selecting agents
-  if (select-on or pointed-mode-on) and mouse-down? [
+  ifelse mouse-down? [
     ;; if this is the first click
-    ifelse clicked-once = false [
-      set clicked-once true
-      set clicked1_x mouse-xcor
-      set clicked1_y mouse-ycor
-      update-mode
-      show "clicked once"
-      show clicked1_x
-      show clicked1_y
-    ][
-      ;; if this is the second click - used for selection only
-      if clicked-twice = false [
-        ifelse mouse-xcor != clicked1_x or mouse-ycor != clicked1_y [
-          set clicked-twice true
-          set clicked2_x mouse-xcor
-          set clicked2_y mouse-ycor
-          update-mode
-          show "clicked twice"
-          show clicked2_x
-          show clicked2_y
-        ][
-          show "clicked same thing again"
-        ]
+    (ifelse pointed-mode-on [
+      show "in pointed mode"
+      ask selected [
+        set mode pointed-mode
+        set color pointed-color
+        set xtarget mouse-xcor
+        set ytarget mouse-ycor
       ]
-    ]
+			set clicked-once true      
+      ] second-click [
+	      show "second click"
+    	  set selected robots with
+      	;; TODO: change this - right now top left corner has to be specified first - should be generic? 
+      	[(xcor > clicked1_x) and (xcor < mouse-xcor) and (ycor < clicked1_y) and (ycor > mouse-ycor) and reachable]
+      	ask selected [set color red]
+      	set clicked-twice true
+        set new-selection true
+	    ][
+  	    show "clicked first"
+    	  set clicked1_x mouse-xcor
+      	set clicked1_y mouse-ycor
+      	set clicked-once true
+    ])
+  ][
+    (ifelse pointed-mode-on and clicked-once [
+      set pointed-mode-on false
+      set clicked-once false
+      ] clicked-twice [
+        set clicked-twice false
+        set clicked-once false
+        set second-click false
+        foreach (range -6 6) [ i ->
+          ask patch clicked1_x (clicked1_y + i) [
+            ifelse occupied [
+              set pcolor black
+            ][ set pcolor white ]
+          ]
+          ask patch (clicked1_x + i) clicked1_y [
+            ifelse occupied [
+              set pcolor black
+            ][ set pcolor white ]
+          ]
+        ]
+	    	] clicked-once [
+        set second-click true
+        foreach (range -6 6) [ i ->
+          ask patch clicked1_x (clicked1_y + i) [
+            set pcolor red
+          ]
+          ask patch (clicked1_x + i) clicked1_y [
+            set pcolor red
+          ]
+        ]
+    	])
   ]
   act
   update-neighbors
   set selected (selected with [reachable = true])
+  if ((random 20) = 1) [
+    create-persons 1 [
+      set size 12
+      set label-color black
+      set info ((random 50) + 1)
+	    set shape "person"
+  	  set color red
+      let x -200 + (random 401)
+ 	    let y -200 + (random 401)
+      while [[occupied] of patch x y = true]
+    	[
+      	set x -200 + (random 401)	;; change the same here also.
+      	set y -200 + (random 401)
+    	]
+      setxy x y
+      set label int info
+    ]
+  ]
+  update-points
   tick
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-309
-17
-1119
-828
+301
+16
+1103
+818
 -1
 -1
-2.0
+2
 1
-6
+10
 1
 1
 1
@@ -447,7 +557,7 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-30.0
+30
 
 BUTTON
 50
@@ -484,10 +594,10 @@ NIL
 1
 
 BUTTON
-50
-570
-125
-610
+110
+475
+185
+515
 random
 set-mode-random
 NIL
@@ -501,10 +611,10 @@ NIL
 1
 
 BUTTON
-160
-570
-250
-610
+195
+475
+285
+515
 rendezvous
 set-mode-rendezvous
 NIL
@@ -518,10 +628,10 @@ NIL
 1
 
 BUTTON
-170
-480
-230
-520
+120
+540
+180
+580
 stop
 set-mode-stop
 NIL
@@ -535,9 +645,9 @@ NIL
 1
 
 BUTTON
-120
+115
 400
-190
+185
 440
 leave
 set-mode-leave
@@ -552,9 +662,9 @@ NIL
 1
 
 BUTTON
-210
+205
 400
-280
+275
 440
 come
 set-mode-come
@@ -569,10 +679,10 @@ NIL
 1
 
 BUTTON
-60
-480
-130
-520
+20
+475
+90
+515
 deploy
 set-mode-deploy
 NIL
@@ -602,51 +712,23 @@ NIL
 NIL
 1
 
-BUTTON
-60
-190
-135
-230
-Select
-set-select-on
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-150
-190
-220
-230
-Clear
-clear-selection
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 MONITOR
 99
 100
 177
-145
-Information
+159
+Points
+get-points
+2
 1
-17
-1
-11
+18
 
+OUTPUT
+30
+190
+270
+330
+12
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -989,22 +1071,22 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 default
-0.0
--0.2 0 0.0 1.0
-0.0 1 1.0 0.0
-0.2 0 0.0 1.0
+0
+-0.2 0 0 1
+0 1 1 0
+0.2 0 0 1
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-0
+
 @#$#@#$#@
