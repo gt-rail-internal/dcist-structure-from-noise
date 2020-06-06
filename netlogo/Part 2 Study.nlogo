@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-extensions [http-req]
+;;extensions [http-req]
 globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz waitcounter]
 
 to setup
@@ -21,7 +21,7 @@ to setup
     reset-ticks
   ]
   if state = 1 [
-    start-experiment-one
+    start-experiment-ten
   ]
   if state = 2 [
     start-experiment-two
@@ -1341,14 +1341,14 @@ end
 to finish
   show "Logging:"
   show logStr
-  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
-  ifelse (first response-triplet) = 200 [
-    show "logs successfully sent"
-  ]
-  [
-   show "log transmission failed"
-  ]
-  set state state + 1
+  ;;let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+  ;;ifelse (first response-triplet) = 200 [
+  ;;  show "logs successfully sent"
+  ;;]
+  ;;[
+  ;; show "log transmission failed"
+  ;;]
+  ;;set state state + 1
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
