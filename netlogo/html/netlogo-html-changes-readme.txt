@@ -11,7 +11,7 @@ make the numbers all 0 - repeat for all keys
 div classes to be hidden:
 netlogo-subheader
 netlogo-display-horizontal
-flex-column
+flex-column  (its where the Export: and buttons are)
 netlogo-speed-slider
 netlogo-tab-area
 

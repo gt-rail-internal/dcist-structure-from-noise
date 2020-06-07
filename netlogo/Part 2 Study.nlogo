@@ -21,7 +21,7 @@ to setup
     reset-ticks
   ]
   if state = 1 [
-    start-experiment-one
+    start-experiment-ten
   ]
   if state = 2 [
     start-experiment-two
@@ -38,11 +38,23 @@ to setup
   if state = 6 [
     start-experiment-six
   ]
-  if state = 7[
+  if state = 7 [
+    start-experiment-seven
+  ]
+  if state = 8 [
+    start-experiment-eight
+  ]
+    if state = 9 [
+    start-experiment-nine
+  ]
+    if state = 10 [
+    start-experiment-ten
+  ]
+  if state = 11[
     print-instructions 100
     finish
   ]
-  if state = 8[
+  if state = 12[
   ]
   tick
 end
@@ -667,7 +679,162 @@ to start-experiment-six
     ]
   ]
   if expstate = 13[
-    user-message ("Experiment Complete!  Return to Mechanical Turk with your code: 31247")
+    user-message ("Round Six Complete")
+    show logstr
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
+
+to start-experiment-seven
+  let adj
+ [[0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1]
+  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+  if expstate = 0[
+    print-instructions 0
+    set loc [[-3 3] [-2 3] [-1 3] [0 3] [1 3] [2 3] [3 3]
+      [-3 2] [-2 2] [-1 2] [0 2] [1 2] [2 2] [3 2]
+      [-3 1] [-2 1] [-1 1] [0 1] [1 1] [2 1] [3 1]
+      [-3 0] [-2 0] [-1 0] [0 0] [1 0] [2 0] [3 0]
+      [-3 -1] [-2 -1] [-1 -1] [0 -1] [1 -1] [2 -1] [3 -1]
+      [-3 -2] [-2 -2] [-1 -2] [0 -2] [1 -2] [2 -2] [3 -2]
+      [-3 -3] [-2 -3] [-1 -3] [0 -3] [1 -3] [2 -3] [3 -3]
+    ]
+    setup-turtles
+    set blinkrounds 0
+    set starterAr [9  20] ;;these are the items to start with
+    set expstate 1
+    set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink-neighbors 0 adj
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink-neighbors 10 adj
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink-neighbors 20 adj
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 1
+    ;user-message ("Click on three items you feel will propogate the fastest")
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+    if expstate = 9[
+    ifelse clicked = 26[
+      set expstate 13
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 2
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 10[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+    if expstate = 11[
+    ifelse clicked = 26[
+      set expstate 13
+      set logStr word logStr word -1 ","
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 3
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 12[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 13[
+    user-message ("Round Seven Complete")
     show logstr
     clear-turtles
     set state state + 1
@@ -676,6 +843,313 @@ to start-experiment-six
 end
 
 
+to start-experiment-eight
+  if expstate = 0[
+    set loc [[-3 2] [-2.4 2.1] [-1.8 1.9] [-1.2 1.8] [-2.8 1.4] [-2.2 1.3] [-1.6 1.1] ;;top cluster
+      [-0.25 2.0]  [0.5 2.3] [1.2 2.4]  [2 2.5] [2.5 2.0] [2.4 1.4] [2.3 0.8] [2.2 0.2] [2.0 -0.4] [2.1  -0.9] [2.0 -1.6]  ;; right path
+      [1.8 -2.3] [2.6 -2.4] [2.6 -2.9] [2 -2.8] [1.3 -2.9] ;;bottom cluster
+      [1.1 -2.4] [0.6 -1.9] [0 -1.4] [-0.2 -0.7] [-0.6 0] [-1 0.5]]
+  setup-turtles
+  set blinkrounds 0
+  set starterAr [0 13 25] ;;these are the items to start with
+  ;wait 1.5
+   set expstate 1
+   set iter 0
+    set lit n-values count turtles [0]
+    print-instructions 0
+  ]
+  if expstate = 1[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set blinkrounds blinkrounds + 1
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink item blinkrounds starterAr
+  ]
+  if expstate = 6[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 1
+    ;user-message ("Click on three items you feel will propogate the fastest")
+    ask turtles [set color red]
+  ]
+  if expstate = 7[
+    queryUser
+        if querystate = 1[
+     blink clicked
+    ]
+  ]
+  if expstate = 8[
+    ifelse clicked = 24[
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+      set expstate 12
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 2
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 9[
+    queryUser
+        if querystate = 1[
+     blink clicked
+    ]
+  ]
+  if expstate = 10[
+    ifelse clicked = 24[
+      set logStr word logStr word -1 ","
+      set expstate 12
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 3
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 11[
+    queryUser
+        if querystate = 1[
+     blink clicked
+    ]
+  ]
+  if expstate = 12[
+    user-message ("Round Eight Complete")
+    show logstr
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
+
+to start-experiment-nine
+let adj
+  [[0 1 0 0 0 0 0 0 0 0 0 0 0]
+   [1 0 1 0 0 0 0 0 0 0 0 0 0]
+   [0 1 0 1 0 0 0 0 0 0 0 0 0]
+   [0 0 1 0 1 0 0 0 0 0 0 0 0]
+   [0 0 0 1 0 1 0 0 0 0 0 0 0]
+   [0 0 0 0 1 0 1 0 0 0 0 0 0]
+   [0 0 0 0 0 1 0 1 0 0 0 0 0]
+   [0 0 0 0 0 0 1 0 1 0 0 0 0]
+   [0 0 0 0 0 0 0 1 0 1 0 0 0]
+   [0 0 0 0 0 0 0 0 1 0 1 0 0]
+   [0 0 0 0 0 0 0 0 0 1 0 1 0]
+   [0 0 0 0 0 0 0 0 0 0 1 0 1]
+   [0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+  if expstate = 0[
+    print-instructions 0
+    set loc [[-3 0] [-2 1.25] [-1 -1]   [0 0] [1 -1] [2 0] [-0.4 -3] [0.5 3] [0.75 2] [0 1.25] [-1 2] [1.7 -2] [3 -2.5] ]
+    setup-turtles
+    set expstate 1
+    set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink-neighbors 0 adj
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink-neighbors 4 adj
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink-neighbors 7 adj
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 1
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 9[
+    ifelse clicked = 6 [  ;;if in the previous they clicked on the right one then lets go to the end.
+      set expstate 13
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
+      set querystate 0
+      set expstate expstate + 1
+      print-instructions 2
+      ask turtles [set color red]
+    ]
+  ]
+  if expstate = 10[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 11[
+    ifelse clicked = 6 [
+      set expstate 13
+      set logStr word logStr word -1 ","
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 3
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 12[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 13[
+    user-message ("Round Nine Complete")
+    show logstr
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
+
+
+to start-experiment-ten
+let adj
+  [[0 1 0 0 0 0 0 0 0 0 0 0 0 0]
+   [1 0 1 0 0 0 0 0 0 0 0 0 0 0]
+   [0 1 0 1 0 0 0 0 0 0 0 0 0 0]
+   [0 0 1 0 1 0 0 0 0 0 0 0 0 0]
+   [0 0 0 1 0 1 0 0 0 0 0 0 0 0]
+   [0 0 0 0 1 0 1 0 0 0 0 0 0 0]
+   [0 0 0 0 0 1 0 1 0 0 0 0 0 0]
+   [0 0 0 0 0 0 1 0 1 0 0 0 0 0]
+   [0 0 0 0 0 0 0 1 0 1 0 0 0 0]
+   [0 0 0 0 0 0 0 0 1 0 1 0 0 0]
+   [0 0 0 0 0 0 0 0 0 1 0 1 0 0]
+   [0 0 0 0 0 0 0 0 0 0 1 0 1 0]
+   [0 0 0 0 0 0 0 0 0 0 0 1 0 1]
+   [0 0 0 0 0 0 0 0 0 0 0 0 1 0]]
+
+  if expstate = 0[
+    print-instructions 0
+    set loc [[-2 1] [-3 1] [1 1] [-1 1] [0 -1]  [2 -1] [3 1]
+    [-3 -1] [-2 -1] [-1 -1] [0 1] [1 -1] [2 1]  [3 -1]]
+    setup-turtles
+    set expstate 1
+    set iter 0
+    set lit n-values count turtles [0]
+  ]
+  if expstate = 1[
+    blink-neighbors 0 adj
+  ]
+  if expstate = 2[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 3[
+    blink-neighbors 4 adj
+  ]
+  if expstate = 4[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 5[
+    blink-neighbors 7 adj
+  ]
+  if expstate = 6[
+    ask turtles [set color red]
+    set expstate expstate + 1
+    set iter 0
+  ]
+  if expstate = 7[
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 1
+    ask turtles [set color red]
+  ]
+  if expstate = 8[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 9[
+    ifelse clicked = 6 or clicked = 7[  ;;if in the previous they clicked on the right one then lets go to the end.
+      set expstate 13
+      set logStr word logStr word -1 ","
+      set logStr word logStr word -1 ","
+    ] [
+      set querystate 0
+      set expstate expstate + 1
+      print-instructions 2
+      ask turtles [set color red]
+    ]
+  ]
+  if expstate = 10[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 11[
+    ifelse clicked = 6 or clicked = 7[
+      set expstate 13
+      set logStr word logStr word -1 ","
+    ] [
+    set querystate 0
+    set expstate expstate + 1
+    print-instructions 3
+    ;user-message ("Click on another item")
+    ask turtles [set color red]
+    ]
+  ]
+  if expstate = 12[
+    queryUser
+    if querystate = 1[
+     blink-neighbors clicked adj
+    ]
+  ]
+  if expstate = 13[
+    user-message ("Experiment Complete!  Return to Mechanical Turk with your code: 31247")
+    show logstr
+    clear-turtles
+    set state state + 1
+    set expstate 0
+  ]
+end
 
 
 
@@ -717,8 +1191,8 @@ to blink-neighbors [starter network]
       ]
       ;;show lit
       ;;show iter
-      if t =  0 and iter != 30[
-        set iter 29
+      if t =  1[
+        set iter 28
       ];;check if we are all done if so then go to the next one
     ]
     if iter = 30[
@@ -798,7 +1272,7 @@ to queryUser []
     let turt 0
     if clicked = -1[
       if mouse-down? [
-        ask turtles with [distancexy mouse-xcor mouse-ycor < 0.5] [
+        ask turtles with [distancexy mouse-xcor mouse-ycor < 0.35] [
           set clicked who
           set querystate 1
           set logStr word logStr word clicked ","
@@ -874,7 +1348,7 @@ to finish
   ;;[
   ;; show "log transmission failed"
   ;;]
-  set state state + 1
+  ;;set state state + 1
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
