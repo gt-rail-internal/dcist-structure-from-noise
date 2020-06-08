@@ -22,6 +22,8 @@ globals [
   points
   info-rate
   info-decay-rate
+  deployed-robots
+  downsampled-patches
 ]
 
 breed [bases base]
@@ -29,7 +31,7 @@ breed [robots robot]
 breed [persons person]
 
 ;; each patch has a local variable named occupied - a boolean that is true if it is occupied
-patches-own [occupied]
+patches-own [occupied closest-robot]
 ;; local variables for turtles
 ;; mode is the variable for each turtle that decides which behavior it should have eg: come, rendezvous, deploy
 ;; (xtarget, ytarget) stores the coordinates of the target that the agent has to either move towards
@@ -94,6 +96,7 @@ to setup-patches
     ]
   ]
   set boundary nobody
+  set downsampled-patches patches with [pxcor mod 12 = 0 and pycor mod 12 = 0]
 end
 
 
@@ -112,17 +115,18 @@ to setup-turtles
   create-robots num-robots
  	[
 		;; change these to change where the turtles are initialized.
-    ;; Currently they are centered at (100, 100) and spread out by (100, 100) (randomness).
-    let x 100 + (random 100)		
-    let y 100 + (random 100)
+    ;; Currently they are centered at (50, 50) and spread out by (150, 150) (randomness).
+    let x 50 + (random 150)
+    let y 50 + (random 150)
     ;; if the random patch is occupied, repeat.
-    while [[occupied] of patch x y = true]
+
+    while [[occupied] of patch x y = true and distance (min-one-of (other turtles) [distance myself]) < 15]
     [
-      set x 100 + (random 100)	;; change the same here also.
-      set y 100 + (random 100)
+      set x 50 + (random 150)	;; change the same here also.
+      set y 50 + (random 150)
     ]
     setxy x y
-    set color grey
+    set color orange
     set size 8
     set mode "stop"	;; they are initially in the stopped state
   ]
@@ -148,7 +152,7 @@ end
 to color-turtles
   ask robots [
      (ifelse mode = "stop" [
-        set color grey
+        set color orange
         ] mode = "rendezvous" [
           set color yellow
         ] mode = "random" [
@@ -272,7 +276,7 @@ end
 to set-mode-stop
   ask selected [
     set mode "stop"
-    set color grey
+    set color orange
   ]
   set new-selection false
 end
@@ -399,22 +403,26 @@ to act
        ][ set heading random 360 ]
 	   ]mode = "rendezvous" and count link-neighbors != 0 [
        ;; classic consensus
-        let sumx (sum [xcor] of link-neighbors) / count link-neighbors
-        let sumy (sum [ycor] of link-neighbors) / count link-neighbors
-        facexy sumx sumy
-        (ifelse ([occupied] of infront) = false [
-          forward 1
+       let sumx (sum [xcor] of link-neighbors) / count link-neighbors
+       let sumy (sum [ycor] of link-neighbors) / count link-neighbors
+       if distancexy sumx sumy > 2 [
+         facexy sumx sumy
+         (ifelse ([occupied] of infront) = false [
+           forward 1
          ][
-          slide-on-obstacle infront
+           slide-on-obstacle infront
 	       ])
-     ] mode = "come" [
+       ]
+      ] mode = "come" or mode = "deploy" [
        ;; move to the target
-        facexy xtarget ytarget
-        (ifelse ([occupied] of infront) = false [
-          forward 1
-         ][
-          slide-on-obstacle infront
-	       ])
+        if distancexy xtarget ytarget > 2 [
+        	facexy xtarget ytarget
+        	(ifelse ([occupied] of infront) = false [
+          	forward 1
+         	][
+          	slide-on-obstacle infront
+	       	])
+        ]
      ] mode = "leave" [
        ;; move away from target
         facexy (xcor + (xcor - xtarget)) (ycor + (ycor - ytarget))
@@ -423,10 +431,17 @@ to act
          ][
           slide-on-obstacle infront
 	       ])
+      ] mode = "heading" [
+       ;; move to the target
+        facexy (xcor + xtarget) (ycor + ytarget)
+        (ifelse ([occupied] of infront) = false [
+          forward 1
+         ][
+          slide-on-obstacle infront
+	       ])
     ])
   ]
 end
-
 
 to update-points
 	ask persons [
@@ -448,6 +463,24 @@ to update-points
   set points (points + sum [retreived] of persons)
 end
 
+to deploy-goal-update
+  ask downsampled-patches [
+    if not occupied [
+      set closest-robot [who] of (min-one-of robots [distance myself])
+    ]
+  ]
+  ask deployed-robots [
+    let myid who
+    let partition downsampled-patches with [closest-robot = myid]
+    let N (count partition)
+    if N != 0 [
+	    set xtarget (sum [pxcor] of partition) / N
+  	  set ytarget (sum [pycor] of partition) / N
+    ]
+  ]
+end
+
+
 ;; this is the forever main loop that runs once the task starts (user clicks "go").
 ;; we just listen for clicks and change modes here
 ;; and then we call update-neighbours and act functions
@@ -457,11 +490,18 @@ to main
     ;; if this is the first click
     (ifelse pointed-mode-on [
       show "in pointed mode"
+      let sourcex 0
+      let sourcey 0
+      let num-selected count selected
+      if pointed-mode = "heading" and num-selected [
+        set sourcex (sum [xcor] of selected) / num-selected
+        set sourcey (sum [ycor] of selected) / num-selected
+      ]
       ask selected [
         set mode pointed-mode
         set color pointed-color
-        set xtarget mouse-xcor
-        set ytarget mouse-ycor
+        set xtarget (mouse-xcor - sourcex)
+        set ytarget (mouse-ycor - sourcey)
       ]
 			set clicked-once true
       ] second-click [
@@ -509,6 +549,10 @@ to main
           ]
         ]
     	])
+  ]
+  set deployed-robots robots with [mode = "deploy"]
+  if (count deployed-robots) > 0 and (ticks mod 10) = 0 [
+    deploy-goal-update
   ]
   act
   update-neighbors
