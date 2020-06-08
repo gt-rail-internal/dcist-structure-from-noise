@@ -395,7 +395,7 @@ to act
      ]mode = "random" [
         ;; keep moving straight, if you hit an obstacle turn randomly
 	      ifelse ([occupied] of infront) = false [
-        move-collison-avoid ;;forward 1
+        move-collison-avoid
        ][ set heading random 360 ]
 	   ]mode = "rendezvous" and count link-neighbors != 0 [
        ;; classic consensus
