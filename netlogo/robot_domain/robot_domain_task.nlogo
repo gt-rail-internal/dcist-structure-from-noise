@@ -379,7 +379,7 @@ end
 
 ;; Move forward collision avoidance
 ;; This queries the links and then adjusts the heading like a sort of potential field from other nearby robots
-to move-collison-avoid
+to random-collison-avoid
   ;show heading
   let x-sum 0
   let y-sum 0
@@ -424,7 +424,7 @@ to act
      ]mode = "random" [
         ;; keep moving straight, if you hit an obstacle turn randomly
 	      ifelse ([occupied] of infront) = false [
-        move-collison-avoid ;;forward 1
+        random-collison-avoid ;;forward 1
        ][ set heading random 360 ]
 	   ]mode = "rendezvous" and count link-neighbors != 0 [
        ;; classic consensus

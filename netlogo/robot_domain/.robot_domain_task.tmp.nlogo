@@ -424,7 +424,7 @@ to act
      ]mode = "random" [
         ;; keep moving straight, if you hit an obstacle turn randomly
 	      ifelse ([occupied] of infront) = false [
-        move-collison-avoid ;;forward 1
+        moe-collison-avoid ;;forward 1
        ][ set heading random 360 ]
 	   ]mode = "rendezvous" and count link-neighbors != 0 [
        ;; classic consensus
@@ -440,7 +440,7 @@ to act
        ]
       ] mode = "come" or mode = "deploy" [
        ;; move to the target
-        if distancexy xtarget ytarget >  [
+        if distancexy xtarget ytarget > 5 [
         	facexy xtarget ytarget
         	(ifelse ([occupied] of infront) = false [
           	forward 1
