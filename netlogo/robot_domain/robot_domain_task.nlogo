@@ -42,7 +42,7 @@ patches-own [occupied closest-robot]
 ;; mode is the variable for each turtle that decides which behavior it should have eg: come, rendezvous, deploy
 ;; (xtarget, ytarget) stores the coordinates of the target that the agent has to either move towards
 ;; reachable - flag that is true if the agent is connected to the base station. Only agents that are reachable can be selected.
-robots-own [mode xtarget ytarget reachable vx vy]
+robots-own [mode xtarget ytarget reachable vx vy enabled]
 persons-own [info retreived]
 bases-own [reachable]
 
@@ -402,7 +402,7 @@ to random-collison-avoid
 
     let x-head-turt cos heading
     let y-head-turt sin heading
-    let alpha-force 0.93 ;;0.92 ;;0.985
+    let alpha-force 1 ;;0.92 ;;0.985
 
     set x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
     set y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
@@ -411,6 +411,61 @@ to random-collison-avoid
     forward sqrt (x-final * x-final + y-final * y-final)
   ]
 end
+
+to collison-avoid [neg]
+  ;show heading
+  let x-sum 0
+  let y-sum 0
+  let x-cor-turt xcor
+  let y-cor-turt ycor
+  let link-count count my-out-robotlinks
+  let x-final 0
+  let y-final 0
+
+  let xvec xtarget - x-cor-turt
+  let yvec ytarget - y-cor-turt
+  let magdesiredvec sqrt ((xvec * xvec) + (yvec * yvec))
+  set xvec xvec / magdesiredvec
+  set yvec yvec / magdesiredvec
+
+  let minlinklength 1000
+
+  ifelse link-count = 0[  ;;if no other agents then move forward
+    set x-final xvec
+    set y-final yvec
+  ] [
+    ask my-out-robotlinks [  ;;else try to weight and avoid them
+      let x-head-link x-cor-turt - [xcor] of other-end
+      let y-head-link y-cor-turt - [ycor] of other-end
+      set x-sum x-sum + ((x-head-link) / (sqrt link-length)) - disk-radius-invsqrt  ;;linklength instead of sqrt
+      set y-sum y-sum + ((y-head-link) / (sqrt link-length)) - disk-radius-invsqrt
+      if link-length < minlinklength [
+        set minlinklength link-length
+      ]
+
+    ]
+    set x-sum x-sum / link-count
+    set y-sum y-sum / link-count
+
+    let alpha-force 0.9   ;;0.6 if no sqrt on link-length
+    set x-final (alpha-force * xvec) + ((1 - alpha-force) * x-sum)
+    set y-final (alpha-force * yvec) + ((1 - alpha-force) * y-sum)
+
+  ]
+    if neg [
+    set x-final (- x-final)
+    set y-final (- y-final)
+  ]
+  ;;show minlinklength
+  ifelse distancexy xtarget ytarget < link-count * 3 and minlinklength < link-count * 3[
+    forward 0
+    set enabled false
+  ][
+    set heading atan x-final y-final
+    forward sqrt (x-final * x-final + y-final * y-final)
+  ]
+end
+
 
 ;; the main actuation function
 ;; what the agent does depends on which behavior it is in
@@ -440,11 +495,11 @@ to act
        ]
       ] mode = "come" or mode = "deploy" [
        ;; move to the target
-        if distancexy xtarget ytarget > 5 [
-        	facexy xtarget ytarget
+        if enabled = 0 or enabled [       	
         	(ifelse ([occupied] of infront) = false [
-          	forward 1
+          	collison-avoid false;;forward 1
          	][
+          facexy xtarget ytarget
           	slide-on-obstacle infront
 	       	])
         ]
@@ -452,7 +507,7 @@ to act
        ;; move away from target
         facexy (xcor + (xcor - xtarget)) (ycor + (ycor - ytarget))
         (ifelse ([occupied] of infront) = false [
-          forward 1
+          collison-avoid true
          ][
           slide-on-obstacle infront
 	       ])
@@ -528,6 +583,7 @@ to main
         set color pointed-color
         set xtarget (mouse-xcor - sourcex)
         set ytarget (mouse-ycor - sourcey)
+        set enabled true
       ]
 			set clicked-once true
       print-instructions "select-robots-one"
@@ -818,9 +874,9 @@ ticks
 30.0
 
 BUTTON
-50
+57
 30
-130
+137
 70
 setup
 setup
@@ -835,9 +891,9 @@ NIL
 1
 
 BUTTON
-150
+195
 30
-229
+274
 70
 go
 main
@@ -954,10 +1010,10 @@ NIL
 1
 
 MONITOR
-99
-100
-177
-173
+123
+96
+201
+169
 Points
 get-points
 2
