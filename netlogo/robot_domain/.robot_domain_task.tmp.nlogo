@@ -440,7 +440,7 @@ to act
        ]
       ] mode = "come" or mode = "deploy" [
        ;; move to the target
-        if distancexy xtarget ytarget > 5 [
+        if distancexy xtarget ytarget >  [
         	facexy xtarget ytarget
         	(ifelse ([occupied] of infront) = false [
           	forward 1
