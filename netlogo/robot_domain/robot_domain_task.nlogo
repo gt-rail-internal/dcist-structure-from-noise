@@ -402,7 +402,7 @@ to random-collison-avoid
 
     let x-head-turt cos heading
     let y-head-turt sin heading
-    let alpha-force 1 ;;0.92 ;;0.985
+    let alpha-force 0.93 ;;0.985
 
     set x-final (alpha-force * cos heading) + ((1 - alpha-force) * x-sum)
     set y-final (alpha-force * sin heading) + ((1 - alpha-force) * y-sum)
@@ -654,7 +654,7 @@ to main
       set size 12
       set label-color black
       set info ((random 50) + 75)
-	    set shape "person"
+	    set shape "flag"
   	  set color red
       let x -200 + (random 401)
  	    let y -200 + (random 401)
@@ -725,6 +725,10 @@ to print-instructions [choice]
     output-print "Remember, these robots must be"
     output-print "communicating with the base"
     output-print "to be controlled"
+    output-print ""
+    output-print "You are collecting points"
+    output-print "by keeping robots close to"
+    output-print "the people."
   ]
   if choice = "select-robots-two"[
     clear-output
