@@ -62,18 +62,17 @@ to setup
   set disk-radius 45		;; change this to control the connectivity radius
   setup-patches
   setup-turtles
-  set pointed-mode "false"
   set points 0
   set info-rate 0.02
   set info-decay-rate 0.001
   set disk-radius-invsqrt (1 / sqrt disk-radius)
-  reset-ticks
-
   set-default-shape sides "line"
+  reset-ticks
 end
 
 to setup-tut
   clear-all
+  set selected no-turtles
   set basex 130
   set basey 130
   set tut-mode true
@@ -87,6 +86,7 @@ to setup-tut
   set info-rate 0.02
   set info-decay-rate 0.001
   set disk-radius-invsqrt (1 / sqrt disk-radius)
+  set-default-shape sides "line"
   reset-ticks
 end
 
@@ -606,7 +606,10 @@ to main
     set clicked2_y mouse-ycor
   ] (click-mode = "holding" or click-mode = "selected") and not mouse-down? [
     select clicked1_x clicked1_y clicked2_x clicked2_y
-      set click-mode "selected"
+      if click-mode = "holding"[
+        print-instructions "choose-action"
+        set click-mode "selected"
+      ]
    ] mouse-down?[
     set clicked1_x mouse-xcor
     set clicked1_y mouse-ycor
@@ -642,37 +645,20 @@ end
 
 to make-persons
   ifelse tut-mode[   ;;tutorial map
-    if count persons = 0[
+    if ((random 200) = 1) [   ;;regular map
       create-persons 1 [
         set size 12
         set label-color black
-        set info (50)
+        set info ((random 50) + 50)
         	    set shape "flag"
         	  set color lime
-        let x 75
-        let y -75
-        setxy x y
-        set label int info
-      ]
-      create-persons 1 [
-        set size 12
-        set label-color black
-        set info (50)
-        	    set shape "flag"
-        	  set color lime
-        let x -75
-        let y 75
-        setxy x y
-        set label int info
-      ]
-      create-persons 1 [
-        set size 12
-        set label-color black
-        set info (50)
-        	    set shape "flag"
-        	  set color lime
-        let x -75
-        let y -75
+        let x -200 + (random 401)
+        	    let y -200 + (random 401)
+        while [[occupied] of patch x y = true or ( x > 0 and y > 0)]
+        	[
+          	set x -200 + (random 401)	;; change and try again
+          	set y -200 + (random 401)
+        	]
         setxy x y
         set label int info
       ]
@@ -744,8 +730,9 @@ to print-instructions [choice]
     output-print "they must be communicating"
     output-print "to the base."
     output-print ""
-    output-print "To select robots, click twice, once"
-    output-print "at each corner of an imaginary box."
+    output-print "To select robots, click and drag"
+    output-print "one corner to another corner"
+    output-print "of your imaginary box."
     output-print "When successfully selected, they"
     output-print "will turn lime green."
     output-print ""
@@ -757,7 +744,7 @@ to print-instructions [choice]
     output-print "Do not click on GO again"
     output-print "or leave this tab."
     output-print "Activity will end when you"
-    output-print "achieve xxxx points"
+    output-print "achieve 10000 points"
   ]
     if choice = "start-tut" [
     clear-output
@@ -768,10 +755,9 @@ to print-instructions [choice]
     output-print "they must be communicating"
     output-print "to the base."
     output-print ""
-    output-print "To select robots, click twice, once"
-    output-print "at each corner of an imaginary box."
-    output-print "When successfully selected, they"
-    output-print "will turn lime green."
+    output-print "To select robots, click and drag"
+    output-print "one corner to another corner"
+    output-print "of your imaginary box."
     output-print ""
     output-print "Once selected, click an action"
     output-print "button. If needed, you will be"
@@ -781,8 +767,9 @@ to print-instructions [choice]
     output-print "Do not click on GO again"
     output-print "or leave this tab."
     output-print "Tutorial will end when you"
-    output-print "achieve 150 points by finding each"
-    output-print "flags, one per quadron of the map."
+    output-print "achieve 150 points by finding flags"
+    output-print "in all quadrons other than where"
+    output-print "the robots and base start in."
   ]
   if choice = "end-tut" [
     clear-output
@@ -798,13 +785,10 @@ to print-instructions [choice]
   ]
   if choice = "select-robots-one" [
     clear-output
-    output-print "Continue controlling robots"
-    output-print "you already selected and are"
-    output-print "still in range with buttons or"
-    output-print "select new robots to control."
+    output-print "Select new robots to control."
     output-print ""
-    output-print "Click twice, once at one corner"
-    output-print "and again at the other corner"
+    output-print "Click and drag one corner"
+    output-print "to another corner"
     output-print "of your imaginary box."
     output-print ""
     output-print "Remember, these robots must be"
@@ -814,18 +798,6 @@ to print-instructions [choice]
     output-print "You are collecting points"
     output-print "by keeping robots close to"
     output-print "the flags."
-  ]
-  if choice = "select-robots-two"[
-    clear-output
-    output-print "Click once more at the other"
-    output-print "corner of your imaginary box."
-    output-print ""
-    output-print "Robots in this box will be selected"
-    output-print "at that time"
-    output-print "and will turn lime green"
-    output-print ""
-    output-print "Once fully selected you can pick an"
-    output-print "action button below."
   ]
   if choice = "select-heading"[
     clear-output
