@@ -28,6 +28,9 @@ globals [
   first-flag ;;first time hit main for instructions
 
   tut-mode  ;;this is a tutorial mode flag, true if we are in tut mode
+
+  basex ;;coords of the base
+  basey
 ]
 ;;these are breeds for the different types of turtles
 breed [bases base]
@@ -51,6 +54,8 @@ bases-own [reachable]
 
 to setup
   clear-all
+  set basex 130
+  set basey 130
   set tut-mode false
   print-instructions "start"
   set select-on false
@@ -72,6 +77,8 @@ end
 
 to setup-tut
   clear-all
+  set basex 130
+  set basey 130
   set tut-mode true
   print-instructions "start-tut"
   set select-on false
@@ -147,7 +154,7 @@ to setup-turtles
   ;; creating the base station
   create-bases 1
   [
-    setxy 130 130
+    setxy basex basey
     set shape "pentagon"
     set color brown
     set size 10
@@ -352,7 +359,7 @@ to set-mode-random
   ask selected [
     set mode "random"
     set color turquoise
-    set countdown 300
+    set countdown 600
   ]
   print-instructions "select-robots-one"
   set new-selection false
@@ -512,10 +519,19 @@ to act
       ;; end of the world scenario
         set heading random 360
      ]mode = "random" [
-        ;; keep moving straight, if you hit an obstacle turn randomly
-	      ifelse ([occupied] of infront) = false [
-        random-collison-avoid ;;forward 1
-       ][ set heading random 360 ]
+        set countdown countdown - 1
+      (ifelse countdown < 0 [ ;;after a time come back to the enter
+            set mode "come"
+            set xtarget basex
+            set ytarget basey
+        ][
+            ;; keep moving straight, if you hit an obstacle turn randomly
+        	  ifelse ([occupied] of infront) = false [
+               random-collison-avoid ;;forward 1
+            ][ set heading random 360 ]
+        ]
+      )
+
 	   ]mode = "rendezvous" and count link-neighbors != 0 [
        ;; classic consensus
        let sumx (sum [xcor] of link-neighbors) / count link-neighbors
