@@ -357,19 +357,22 @@ to slide-on-obstacle [infront]
     ((patch (x - head_x) y) != nobody and [occupied] of (patch (x - head_x) y) = false)[
       ifelse [occupied] of (patch xcor (ycor + head_y)) = false [
       	set ycor (ycor + head_y)
-      ][ set heading random 360 ]
+      ][; set heading random 360
+      ]
     ]((patch (x + 1) y) != nobody and [occupied] of (patch (x + 1) y) = true) and
     ((patch (x - 1) y) != nobody and [occupied] of (patch (x - 1) y) = true) and
     ((patch x (y - head_y)) != nobody and [occupied] of (patch x (y - head_y)) = false)[
       ifelse [occupied] of (patch (xcor + head_x) ycor) = false [
       	set xcor (xcor + head_x)
-      ][ set heading random 360 ]
+      ][ ;set heading random 360
+      ]
     ]((patch (x + head_x) y) != nobody and [occupied] of (patch (x + head_x) y) = true) and
     ((patch x (y + head_y)) != nobody and [occupied] of (patch x (y + head_y)) = true) [
       ifelse [occupied] of (patch (xcor + head_x) ycor) = false [
       	set xcor (xcor + head_x)
-      ][ set heading random 360 ]
-    ][ forward 1 ]
+      ][ ;set heading random 360
+      ]
+    ][ forward 1  ]
   )
 end
 
@@ -511,18 +514,21 @@ to act
      ] mode = "leave" [
        ;; move away from target
         facexy (xcor + (xcor - xtarget)) (ycor + (ycor - ytarget))
-        (ifelse ([occupied] of infront) = false [
+        (ifelse ([occupied] of infront) = false and (xcor > (min-pxcor + 1) and xcor < (max-pxcor - 1) and ycor > (min-pycor + 1) and ycor < (max-pycor - 1)) [
           collison-avoid true
-         ][
+         ] ([occupied] of infront) = true and (xcor > (min-pxcor + 1) and xcor < (max-pxcor - 1) and ycor > (min-pycor + 1) and ycor < (max-pycor - 1))[
           slide-on-obstacle infront
-	       ])
+	       ] [
+          set mode "stop"
+        ]
+        )
       ] mode = "heading" [
        ;; move to the target
         facexy (xcor + xtarget) (ycor + ytarget)
-        (ifelse ([occupied] of infront) = false [
+        (ifelse ([occupied] of infront) = false and (xcor > (min-pxcor + 1) and xcor < (max-pxcor - 1) and ycor > (min-pycor + 1) and ycor < (max-pycor - 1) ) [
           forward 1
          ][
-          slide-on-obstacle infront
+          set mode "stop"
 	       ])
     ])
   ]
@@ -1048,10 +1054,10 @@ NIL
 1
 
 BUTTON
-193
-726
-278
-776
+116
+729
+201
+779
 stop
 set-mode-stop
 NIL
@@ -1150,23 +1156,6 @@ BUTTON
 93
 Tutorial Setup
 setup-tut
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-47
-727
-131
-777
-deploy
-set-mode-deploy
 NIL
 1
 T
