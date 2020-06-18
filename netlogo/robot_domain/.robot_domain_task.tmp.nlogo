@@ -227,7 +227,7 @@ to update-neighbors
     create-robotlinks-with bases in-radius disk-radius
   ]
   ask bases [
-    create-robotlinks-with robots in-radius (disk-radius * 1.5)
+    create-robotlinks-with robots in-radius disk-radius
   ]
 
   ;; removes links that have obstacle between them. this is done by scanning along the line
