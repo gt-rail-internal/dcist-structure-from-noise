@@ -176,9 +176,9 @@ end
 
 to-report get-points
   ifelse tut-mode [
-    report word (floor points) "/10000"
+    report word (floor points) "/175"
   ] [
-   report word (floor points) "/"
+   report word (floor points) "/10000"
   ]
 end
 
@@ -450,7 +450,7 @@ to collison-avoid [neg]
     set x-sum x-sum / link-count
     set y-sum y-sum / link-count
 
-    let alpha-force 0.9   ;;0.6 if no sqrt on link-length
+    let alpha-force 0.94   ;;0.6 if no sqrt on link-length
     set x-final (alpha-force * xvec) + ((1 - alpha-force) * x-sum)
     set y-final (alpha-force * yvec) + ((1 - alpha-force) * y-sum)
 
@@ -481,8 +481,8 @@ to act
       ;; end of the world scenario
         set heading random 360
      ] reachable = false [
+      forward -1
       set mode "stop"
-
     ]mode = "random" [
         set countdown countdown - 1
       (ifelse countdown < 0 [ ;;after a time come back to the enter
