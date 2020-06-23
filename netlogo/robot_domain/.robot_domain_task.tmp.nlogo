@@ -175,7 +175,11 @@ to setup-turtles
 end
 
 to-report get-points
-  report word (floor points) "/10000"
+  ifelse tut-mode [
+    report word (floor points) "/10000"
+  ] [
+   report word (floor points) "/"
+  ]
 end
 
 ;; this is a recursive function that starts at the base station and
@@ -472,10 +476,14 @@ end
 to act
   ask robots [
     let infront (patch-ahead 1)
+
     (ifelse infront = nobody [
       ;; end of the world scenario
         set heading random 360
-     ]mode = "random" [
+     ] reachable = false [
+      set mode "stop"
+
+    ]mode = "random" [
         set countdown countdown - 1
       (ifelse countdown < 0 [ ;;after a time come back to the enter
             set mode "come"
@@ -489,7 +497,7 @@ to act
         ]
       )
 
-	   ]mode = "rendezvous" and count link-neighbors != 0 [
+	   ] mode = "rendezvous" and count link-neighbors != 0 [
        ;; classic consensus
        let sumx (sum [xcor] of link-neighbors) / count link-neighbors
        let sumy (sum [ycor] of link-neighbors) / count link-neighbors
@@ -530,8 +538,8 @@ to act
          ][
           set mode "stop"
 	       ])
-    ])
-  ]
+       ])
+   ]
 end
 
 ;;This finds robots near the people and then updates the decay which updates the points
@@ -768,8 +776,8 @@ to print-instructions [choice]
     output-print "or leave this tab."
     output-print "Tutorial will end when you"
     output-print "achieve 150 points by finding flags"
-    output-print "in all quadrons but the one where"
-    output-print "trobots and your base starts in."
+    output-print "in all quadrons other than where"
+    output-print "the robots and base start in."
   ]
   if choice = "end-tut" [
     clear-output
@@ -948,10 +956,10 @@ to-report selected? [x y]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-329
-19
-1139
-830
+328
+22
+1138
+833
 -1
 -1
 2.0
@@ -1141,9 +1149,9 @@ NIL
 TEXTBOX
 1152
 48
-1380
+1385
 689
-Robot Modes:\n\nHeading: Robots will face at the\n         same angle and move in\n         the same direction.\n    \nCome: Robots will move towards\n      the target you will select\n     \nLeave: Robots will move away\n       from the target location.\n     \nRandom: Robots will move randomly\n    \nDeploy: Robots will spread\n        out evenly around the map.\n     \nStop: Robots will stop
+Robot Modes:\n\nHeading: Robots will face at the\n               same angle and move in\n               the same direction.\n    \nCome: Robots will move towards\n            the target you will select\n     \nLeave: Robots will move away\n             from the target location.\n     \nRandom: Robots will move randomly\n    \nDeploy: Robots will spread\n              out evenly around the map.\n     \nStop: Robots will stop
 14
 0.0
 1

@@ -16,6 +16,15 @@ netlogo-speed-slider
 netlogo-tab-area
 
 hide them by adding a style=\"visibility: hidden;\" attribute
+display: none; attribute removes the area for it?
+
+
+body {
+    -moz-transform: scale(0.8, 0.8); /* Moz-browsers */
+    zoom: 0.8; /* Other non-webkit browsers */
+    zoom: 80%; /* Webkit browsers */
+}
+add to the top css part to make it smaller
 
 
 

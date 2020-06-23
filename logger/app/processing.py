@@ -9,7 +9,7 @@ def responseDictFromString(response):
             if values[0] == 'time':
                 dataDict['pretest_reactions'] = ", ".join(values[1:])
             elif values[0] == 'user':
-                            dataDict['user_id'] = values[1]
+                dataDict['user_id'] = values[1]
             elif values[0] == 'keys':
                 dataDict['pretest_keys'] = ", ".join(values[1:])
             elif values[0] == 'graph':
