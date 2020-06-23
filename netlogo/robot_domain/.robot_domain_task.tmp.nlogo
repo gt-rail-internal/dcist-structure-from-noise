@@ -460,10 +460,11 @@ to collison-avoid [neg]
     set y-final (- y-final)
   ]
   ;;show minlinklength
-  ifelse distancexy xtarget ytarget < (link-count + 0.1) * 2.5 and minlinklength < link-count * 2.5[
+  show minlinklength
+  show link-count
+  ifelse distancexy xtarget ytarget < (link-count + 0.1) * 2.5 and minlinklength < link-count * 2 [
     forward 0
     set enabled false
-
   ][
     set heading atan x-final y-final
     forward sqrt (x-final * x-final + y-final * y-final)

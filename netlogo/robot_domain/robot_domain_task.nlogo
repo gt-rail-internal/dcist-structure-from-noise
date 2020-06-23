@@ -460,7 +460,7 @@ to collison-avoid [neg]
     set y-final (- y-final)
   ]
   ;;show minlinklength
-  ifelse distancexy xtarget ytarget < (link-count + 0.1) * 2.5 and minlinklength < link-count * 2.5[
+  ifelse (distancexy xtarget ytarget < (link-count + 0.1) * 2.5 and minlinklength < link-count * 2 ) or distancexy xtarget ytarget < 2 [
     forward 0
     set enabled false
   ][
@@ -1068,9 +1068,9 @@ NIL
 1
 
 BUTTON
-191
+194
 583
-279
+282
 630
 come
 set-mode-come

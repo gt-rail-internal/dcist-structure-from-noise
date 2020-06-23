@@ -10,13 +10,13 @@ make the numbers all 0 - repeat for all keys
 
 div classes to be hidden:
 netlogo-subheader
-netlogo-display-horizontal
+netlogo-display-horizontal: this doesn't like display none
 flex-column  (its where the Export: and buttons are)
 netlogo-speed-slider
 netlogo-tab-area
 
 hide them by adding a style=\"visibility: hidden;\" attribute
-display: none; attribute removes the area for it?
+style= "display: none;" attribute removes the area for it?
 
 
 body {
