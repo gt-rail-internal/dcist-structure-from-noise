@@ -3,7 +3,7 @@ globals [
   disk-radius 	;; radius for the delta-disk connectivity graph
   disk-radius-invsqrt
   ;; The user needs to click on the screen only in two cases - to select a bunch of robots,
-  ;; or to provide direction for the come or similar behaviors (which I refer to as pointed modes).
+  ;; or to provide direction for the go-to or similar behaviors (which I refer to as pointed modes).
   ;; In the first case select-on flag is true, and in the second case, pointed-mode-on flag is true.
   ;; We listen for mouse clicks only when either of these flags are true.
   ;; I use flags to check how many times the user has clicked on the arena. These flags are reset every time
@@ -15,10 +15,7 @@ globals [
   pointed-color ;; stores the color for the pointed mode behavior
   boundary
   points
-  info-rate
   info-decay-rate
-  deployed-robots
-  downsampled-patches
   first-flag ;;first time hit main for instructions
 
   tut-mode  ;;this is a tutorial mode flag, true if we are in tut mode
@@ -43,12 +40,12 @@ undirected-link-breed [robotlinks robotlink]
 ;; each patch has a local variable named occupied - a boolean that is true if it is occupied
 patches-own [occupied closest-robot]
 ;; local variables for turtles
-;; mode is the variable for each turtle that decides which behavior it should have eg: come, rendezvous, deploy
+;; mode is the variable for each turtle that decides which behavior it should have eg: go-to, rendezvous, deploy
 ;; (xtarget, ytarget) stores the coordinates of the target that the agent has to either move towards
 ;; reachable - flag that is true if the agent is connected to the base station. Only agents that are reachable can be selected.
 ;;countdown tells you how long until you have to go back to the base
-robots-own [mode xtarget ytarget reachable vx vy enabled countdown]
-persons-own [info retreived]
+robots-own [mode xtarget ytarget reachable vx vy countdown]
+persons-own [info retreived info-str]
 bases-own [reachable]
 
 to setup
@@ -58,12 +55,11 @@ to setup
   set basey 130
   set tut-mode false
   print-instructions "start"
-  set num-robots 30			;; change this to control number of robots
-  set disk-radius 45		;; change this to control the connectivity radius
+  set num-robots 40			;; change this to control number of robots
+  set disk-radius 40		;; change this to control the connectivity radius
   setup-patches
   setup-turtles
   set points 0
-  set info-rate 0.02
   set info-decay-rate 0.001
   set disk-radius-invsqrt (1 / sqrt disk-radius)
   set-default-shape sides "line"
@@ -78,12 +74,11 @@ to setup-tut
   set tut-mode true
   print-instructions "start-tut"
   set num-robots 30			;; change this to control number of robots
-  set disk-radius 45		;; change this to control the connectivity radius
+  set disk-radius 40		;; change this to control the connectivity radius
   setup-patches
   setup-turtles
 
   set points 0
-  set info-rate 0.02
   set info-decay-rate 0.001
   set disk-radius-invsqrt (1 / sqrt disk-radius)
   set-default-shape sides "line"
@@ -102,8 +97,18 @@ to setup-patches
   let map-x [0]
   let map-y [0]
   ifelse tut-mode [
-    set map-x [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0                                                                                                                                   0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20 -21 -22 -23 -24 -25 -26 -27 -28 -29 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 -46 -47 -48 -49 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17  33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49]
-    set map-y [0 -1 -2 -3 -4 -5 -6 -7 -8 -9  -24 -25 -26 -27 -28 -29 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 -46 -47 -48 -49  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0                                                                                               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0  0 0 0 0 0 0 0]
+    set map-x [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0                                                                                                                                   0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20 -21 -22 -23 -24 -25 -26 -27 -28 -29 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 -46 -47 -48 -49 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17  33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49]
+    set map-y [0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20 -21 -22 -23 -24 -25 -26 -27 -28 -29 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 -46 -47 -48 -49  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0                                                                                               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0  0 0 0 0 0 0 0]
+    let i -200
+
+    while [i < 0] [
+      let j -200
+      while [j < 0] [
+        ask patch (i) (j) [set occupied true]
+        set j j + 1
+      ]
+      set i i + 1
+    ]
   ][
   set map-x [49 49 49 49 49 49 49 49 48 48 48 48 48 48 48 48 47 47 47 47 47 47 47 47 47 47 47 47 47 47 47 47 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 42 42 42 42 42 42 42 41 41 41 41 41 41 41 40 40 40 40 40 40 40 40 40 40 40 40 40 39 39 39 39 39 39 39 39 38 38 38 38 38 38 38 38 38 38 38 38 38 37 37 37 37 37 37 37 37 37 37 37 37 37 37 37 37 37 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 33 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 29 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 27 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 26 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 24 24 24 23 23 23 22 22 22 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 19 19 19 19 19 19 19 19 19 19 19 19 18 18 18 18 18 18 18 18 18 17 17 17 17 17 17 16 16 16 16 16 16 15 15 15 15 15 15 14 14 14 14 14 14 14 13 13 13 13 13 13 13 12 12 12 12 12 12 12 11 11 11 11 11 11 11 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 7 7 7 7 7 7 7 7 7 6 6 6 6 6 6 6 6 6 6 6 5 5 5 5 5 5 5 5 5 5 5 5 5 4 4 4 4 4 4 4 4 3 3 3 3 2 2 2 2 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -3 -3 -3 -3 -3 -3 -3 -3 -3 -3 -3 -3 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -5 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -8 -8 -8 -9 -9 -9 -10 -10 -10 -11 -11 -11 -12 -12 -12 -12 -12 -12 -13 -13 -13 -13 -13 -14 -14 -14 -14 -14 -14 -15 -15 -15 -15 -15 -15 -15 -15 -15 -15 -15 -15 -16 -16 -16 -16 -16 -16 -16 -16 -16 -16 -16 -16 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -17 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -18 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -19 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -20 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -22 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -23 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -24 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -25 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -26 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -27 -28 -28 -29 -29 -29 -29 -29 -29 -29 -30 -30 -30 -30 -30 -30 -30 -30 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -31 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -32 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -33 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -34 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -35 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -36 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -37 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -38 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -39 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -40 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -41 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -42 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -43 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -44 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -45 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -46 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -48 -49 -50]
   set map-y [26 25 24 23 5 4 3 2 26 25 24 23 5 4 3 2 34 33 32 31 30 29 28 27 26 25 24 23 5 4 3 2 34 33 32 31 30 29 28 27 26 5 4 3 2 -27 -28 -29 -30 -31 44 43 42 41 40 34 33 32 31 30 29 28 27 26 5 4 3 2 -27 -28 -29 -30 -31 -47 -48 44 43 42 41 40 34 33 32 31 30 29 28 27 26 5 4 3 2 1 -27 -28 -29 -30 -31 -47 -48 44 43 42 41 40 34 33 32 31 30 29 28 27 26 2 1 -47 -48 44 43 42 41 40 -47 -48 44 43 42 41 40 -47 -48 44 43 42 41 40 2 1 0 -1 -2 -3 -47 -48 2 1 0 -1 -2 -3 -47 -48 2 1 0 -1 -2 -3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 2 1 0 -1 -2 -3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 9 8 7 6 5 4 3 2 1 0 -1 -2 -3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 -47 -48 13 12 11 10 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 47 46 45 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 -26 -27 -28 -29 -30 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 -15 -16 -17 -18 -19 -20 -26 -27 -28 -29 -30 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 -15 -16 -17 -18 -19 -20 -34 -35 -36 -37 -38 -39 -40 47 46 45 9 8 7 6 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -34 -35 -36 -37 -38 -39 -40 9 8 7 6 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -33 -34 -35 -36 -37 -38 -39 -40 -43 -44 -45 -46 28 27 26 25 24 9 8 7 6 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -43 -44 -45 -46 48 47 46 28 27 26 25 24 5 4 3 2 1 -15 -16 -17 -18 -19 -20 -43 -44 -45 -46 48 47 46 28 27 26 25 24 -15 -16 -17 -18 -19 -20 -43 -44 -45 -46 48 47 46 48 47 46 48 47 46 -21 -22 -23 -24 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 49 48 47 46 37 36 35 34 33 32 31 30 29 -35 -36 -37 -38 -39 -40 -41 -42 -43 -44 -45 37 36 35 34 33 32 31 30 29 -43 -44 -45 30 29 28 27 26 25 -43 -44 -45 30 29 28 27 26 25 30 29 28 27 26 25 30 29 28 27 26 25 -8 -9 -10 -11 -12 -13 -14 -8 -9 -10 -11 -12 -13 -14 -8 -9 -10 -11 -12 -13 -14 -8 -9 -10 -11 -12 -13 -14 45 44 43 42 41 36 35 34 -8 -9 -10 -11 -12 -13 -14 -27 -28 -29 -30 -37 -38 -39 -40 45 44 43 42 41 36 35 34 -8 -9 -10 -11 -12 -13 -14 -27 -28 -29 -30 -37 -38 -39 -40 45 44 43 42 41 -8 -9 -10 -11 -12 -13 -14 -27 -28 -29 -30 -37 -38 -39 -40 45 44 43 42 41 -27 -28 -29 -30 45 44 43 42 41 4 3 -27 -28 -29 -30 45 44 43 42 41 30 29 4 3 -27 -28 -29 -30 30 29 4 3 -27 -28 -29 -30 30 29 4 3 30 29 4 3 30 29 4 3 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 30 29 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 32 31 30 29 28 27 26 25 24 23 -23 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 48 30 29 -23 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 48 30 29 -23 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 48 -23 49 48 -23 49 48 -23 49 48 -23 49 48 -13 -14 -15 -23 49 48 -13 -14 -15 14 13 12 -13 -14 -15 45 44 43 42 41 40 39 38 14 13 12 11 45 44 43 42 41 40 39 38 14 13 12 11 45 44 43 42 41 40 39 38 14 13 12 11 -14 -15 -16 -17 45 44 43 42 41 40 39 38 14 13 12 11 -14 -15 -16 -17 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -18 -19 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -18 -19 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -18 -19 -25 -26 -27 -28 -29 45 44 43 42 41 40 39 38 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 13 12 11 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -46 -47 -48 -4 -5 -6 -7 -8 -9 -10 -11 -14 -15 -16 -17 -37 -38 -46 -47 -48 -37 -38 -30 -31 -32 -33 -34 -37 -38 42 -30 -31 -32 -33 -34 -37 -38 47 46 45 44 43 42 16 15 14 -30 -31 -32 -33 -34 -37 -38 -45 -46 47 46 45 44 43 42 16 15 14 -30 -31 -32 -33 -34 -37 -38 -45 -46 47 46 45 44 43 42 16 15 14 -37 -38 -45 -46 47 46 45 44 43 42 31 16 15 14 -37 -38 -45 -46 47 46 45 44 43 42 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 47 46 45 44 43 42 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 42 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 31 30 29 28 27 26 25 24 23 22 16 15 14 -37 -38 -45 -46 30 29 28 27 26 25 24 23 22 16 15 14 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -45 -46 49 30 29 28 27 26 25 24 23 22 16 15 14 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -45 -46 49 30 29 28 27 26 25 24 23 22 16 15 14 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -45 -46 49 30 29 28 27 26 25 24 23 22 16 15 14 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -13 -14 -21 -22 -23 -45 -46 49 30 29 28 27 26 25 24 23 22 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 -45 -46 49 24 23 22 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 49 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 49 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -21 -22 -23 49 8 7 6 5 4 3 -3 -4 -5 -6 -7 -8 -9 -10 -11 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 7 6 5 4 -3 -4 -30 -31 -32 -33 -34 -35 -36 -37 -38 -39 -40 49 49]
@@ -128,6 +133,21 @@ to setup-patches
     ask patch (4 * a + 3) (4 * b + 2) [set occupied true]
     ask patch (4 * a + 3) (4 * b + 3) [set occupied true]
   ])
+
+  let i -199   ;;this creates a boarder around the map
+  let j 0
+  let arr [-200 -199 -198 -197 -196 200 199 198 197 196]
+  (foreach arr [
+    [a] ->
+    set i -199
+    while [i < 200] [
+      ask patch (i) (a) [set occupied true]
+      ask patch (a) (i) [set occupied true]
+      set i i + 1
+    ]
+  ])
+
+
   ;; occupied patches have to be black :)
   ask patches
   [if occupied = true
@@ -136,7 +156,6 @@ to setup-patches
     ]
   ]
   set boundary nobody
-  set downsampled-patches patches with [pxcor mod 12 = 0 and pycor mod 12 = 0]
 end
 
 
@@ -155,15 +174,15 @@ to setup-turtles
   create-robots num-robots
  	[
 		;; change these to change where the turtles are initialized.
-    ;; Currently they are centered at (50, 50) and spread out by (150, 150) (randomness).
-    let x 50 + (random 150)
-    let y 50 + (random 150)
+    ;; Currently they are centered at (50, 50) and spread out to (150, 150) (randomness).
+    let x 25 + (random 170)
+    let y 25 + (random 170)
     ;; if the random patch is occupied, repeat.
 
     while [[occupied] of patch x y = true and distance (min-one-of (other turtles) [distance myself]) < 15]
     [
-      set x 50 + (random 150)	;; change the same here also.
-      set y 50 + (random 150)
+      set x 25 + (random 170)	;; change the same here also.
+      set y 25 + (random 170)
     ]
     setxy x y
     set color orange
@@ -176,9 +195,9 @@ end
 
 to-report get-points
   ifelse tut-mode [
-    report word (floor points) "/175"
+    report word (floor points) "/150"
   ] [
-   report word (floor points) "/10000"
+   report word (floor points) "/2500"
   ]
 end
 
@@ -196,17 +215,13 @@ to color-turtles
   ask robots with [not member? self selected] [
      (ifelse mode = "stop" [
         set color red
-        ] mode = "rendezvous" [
-          set color blue
         ] mode = "random" [
-          set color sky
-        ] mode = "deploy" [
-          set color 44
-        ] mode = "leave" [
-          set color pink
+          set color yellow - 2
+        ] mode = "repel-from" [
+          set color brown
         ] mode = "heading" [
           set color violet
-        ] mode = "come" [
+        ] mode = "go-to" [
           set color blue
      ])
     ifelse not reachable [
@@ -281,36 +296,26 @@ to set-mode-heading
   deselect
 end
 
-to set-mode-come
+to set-mode-go-to
   ifelse count selected = 0[
   print-instructions "failed-button"
   ][
-  print-instructions "select-come"
-  set pointed-mode "come"
+  print-instructions "select-go-to"
+  set pointed-mode "go-to"
   set pointed-color blue
   ]
   deselect
 end
 
-to set-mode-leave
+to set-mode-repel-from
   ifelse count selected = 0[
   print-instructions "failed-button"
   ][
-  print-instructions "select-leave"
-  set pointed-mode "leave"
+  print-instructions "select-repel-from"
+  set pointed-mode "repel-from"
   set pointed-color pink
   ]
   deselect
-end
-
-to set-mode-deploy
-  ask selected [
-    set mode "deploy"
-    set color green
-  ]
-  deselect
-  set selected no-turtles
-  print-instructions "select-robots-one"
 end
 
 ;; If it is not a pointed mode, start executing the behavior for the selected agents.
@@ -462,7 +467,7 @@ to collison-avoid [neg]
   ;;show minlinklength
   ifelse (distancexy xtarget ytarget < (link-count + 0.1) * 2.5 and minlinklength < link-count * 2 ) or distancexy xtarget ytarget < 2 [
     forward 0
-    set enabled false
+    set mode "stop-back"
   ][
     set heading atan x-final y-final
     forward sqrt (x-final * x-final + y-final * y-final)
@@ -480,15 +485,17 @@ to act
     (ifelse infront = nobody [
       ;; end of the world scenario
         set heading random 360
-     ] reachable = false [
-      forward -1
-      set mode "stop"
+     ] mode = "stop-back" [
+      ifelse reachable [
+        forward 0
+        set mode "stop"
+      ] [
+        forward -1
+      ]
     ]mode = "random" [
         set countdown countdown - 1
-      (ifelse countdown < 0 [ ;;after a time come back to the enter
-            set mode "come"
-            set xtarget basex
-            set ytarget basey
+      (ifelse countdown < 0 or not reachable [ ;;after a time go-to back to the enter
+            set mode "stop-back"
         ][
             ;; keep moving straight, if you hit an obstacle turn randomly
         	  ifelse ([occupied] of infront) = false [
@@ -496,47 +503,34 @@ to act
             ][ set heading random 360 ]
         ]
       )
-
-	   ] mode = "rendezvous" and count link-neighbors != 0 [
-       ;; classic consensus
-       let sumx (sum [xcor] of link-neighbors) / count link-neighbors
-       let sumy (sum [ycor] of link-neighbors) / count link-neighbors
-       if distancexy sumx sumy > 2 [
-         facexy sumx sumy
-         (ifelse ([occupied] of infront) = false [
-           forward 1
-         ][
-           slide-on-obstacle infront
-	       ])
-       ]
-      ] mode = "come" or mode = "deploy" [
-       ;; move to the target
-        if enabled = 0 or enabled [       	
-        	(ifelse ([occupied] of infront) = false [
+	   ] mode = "go-to" [
+       ;; move to the target   	
+      (ifelse not reachable [
+      	set mode "stop-back"
+      ]([occupied] of infront) = false [
           	collison-avoid false;;forward 1
-         	][
-          facexy xtarget ytarget
-          	slide-on-obstacle infront
-	       	])
-        ]
-     ] mode = "leave" [
+     	][
+      facexy xtarget ytarget
+      	slide-on-obstacle infront
+	    ])
+     ] mode = "repel-from" [
        ;; move away from target
         facexy (xcor + (xcor - xtarget)) (ycor + (ycor - ytarget))
-        (ifelse ([occupied] of infront) = false and (xcor > (min-pxcor + 1) and xcor < (max-pxcor - 1) and ycor > (min-pycor + 1) and ycor < (max-pycor - 1)) [
+        (ifelse ([occupied] of infront) = false and reachable [
           collison-avoid true
-         ] ([occupied] of infront) = true and (xcor > (min-pxcor + 1) and xcor < (max-pxcor - 1) and ycor > (min-pycor + 1) and ycor < (max-pycor - 1))[
+         ] ([occupied] of infront) = true and reachable[
           slide-on-obstacle infront
 	       ] [
-          set mode "stop"
+          set mode "stop-back"
         ]
         )
       ] mode = "heading" [
        ;; move to the target
         facexy (xcor + xtarget) (ycor + ytarget)
-        (ifelse ([occupied] of infront) = false and (xcor > (min-pxcor + 1) and xcor < (max-pxcor - 1) and ycor > (min-pycor + 1) and ycor < (max-pycor - 1) ) [
+        (ifelse ([occupied] of infront) = false and reachable [
           forward 1
          ][
-          set mode "stop"
+          set mode "stop-back"
 	       ])
        ])
    ]
@@ -547,40 +541,29 @@ to update-points
 	ask persons [
     create-peoplelinks-with robots in-radius disk-radius
     let close-robots robots in-radius disk-radius
-    ifelse (count close-robots) = 0 [
-      if not tut-mode [
-        set info (info - info-decay-rate)
-      ]
+      set info (info - 0.04)
       if info <= 0 [die]
+    ifelse (count close-robots) = 0 [
       hide-turtle
       set retreived 0
     ][
-	    set info (info - ((count close-robots) * info-rate))
-      set retreived (count close-robots) * info-rate
+	    ;;set info (info - ((count close-robots) * 0.02))
+      set retreived 0.04 ;;(count close-robots) * 0.02
       if info <= 0 [die]
       show-turtle
     ]
-    set label precision info 2
+    set info precision info 2
+    set info-str (word info)   ;;manually add decimal stuff so it doesn't stutter around
+    (ifelse ((info - precision info 0) = 0) [
+      set info-str (word info-str ".00")
+    ] (info - precision info 1) = 0 [
+      set info-str (word info-str "0")
+    ])
+    set label info-str
   ]
   set points (points + sum [retreived] of persons)
 end
 
-to deploy-goal-update
-  ask downsampled-patches [
-    if not occupied [
-      set closest-robot [who] of (min-one-of robots [distance myself])
-    ]
-  ]
-  ask deployed-robots [
-    let myid who
-    let partition downsampled-patches with [closest-robot = myid]
-    let N (count partition)
-    if N != 0 [
-	    set xtarget (sum [pxcor] of partition) / N
-  	  set ytarget (sum [pycor] of partition) / N
-    ]
-  ]
-end
 
 
 ;; this is the forever main loop that runs once the task starts (user clicks "go").
@@ -603,7 +586,6 @@ to main
       set color pointed-color
       set xtarget (mouse-xcor - sourcex)
       set ytarget (mouse-ycor - sourcey)
-      set enabled true
     ]
     print-instructions "select-robots-one"
     set pointed-mode "false"
@@ -627,10 +609,6 @@ to main
   ])
 
 
-  set deployed-robots robots with [mode = "deploy"]
-  if (count deployed-robots) > 0 and (ticks mod 10) = 0 [
-    deploy-goal-update
-  ]
   act
   update-neighbors
   ;;set selected (selected with [reachable = true])
@@ -644,8 +622,14 @@ to main
 
   tick
 
-  if tut-mode and  points > 145 [
+  if tut-mode and  points > 150 [
     print-instructions "end-tut"
+    user-message ("Tutorial Complete!  Now begin the main experiment!")
+    stop
+  ]
+  if not tut-mode and  points > 2500.1 [
+    print-instructions "end-main"
+    user-message ("Experiment Complete!  Your exit code is 48371.")
     stop
   ]
 end
@@ -653,22 +637,21 @@ end
 
 to make-persons
   ifelse tut-mode[   ;;tutorial map
-    if ((random 200) = 1) [   ;;regular map
+    if ((random 200) = 1) [
       create-persons 1 [
         set size 12
         set label-color black
-        set info ((random 50) + 50)
-        	    set shape "flag"
-        	  set color lime
+        set info 50 ;;((random 50) + 50)
+        set shape "flag"
+        set color lime
         let x -200 + (random 401)
-        	    let y -200 + (random 401)
-        while [[occupied] of patch x y = true or ( x > 0 and y > 0)]
-        	[
+        let y -200 + (random 401)
+        while [[occupied] of patch x y = true or ( x > 0 and y > 0)] [
           	set x -200 + (random 401)	;; change and try again
           	set y -200 + (random 401)
-        	]
+        ]
         setxy x y
-        set label int info
+        set label info
       ]
     ]
   ] [
@@ -676,7 +659,7 @@ to make-persons
       create-persons 1 [
         set size 12
         set label-color black
-        set info ((random 50) + 50)
+        set info 50 ;;((random 50) + 50)
         	    set shape "flag"
         	  set color lime
         let x -200 + (random 401)
@@ -687,10 +670,9 @@ to make-persons
           	set y -200 + (random 401)
         	]
         setxy x y
-        set label int info
+        set label (word info ".0")
       ]
     ]
-
   ]
   update-points  ;;update persons too
 end
@@ -703,7 +685,6 @@ to startup
   ] [
     print-instructions "intro"
   ]
-
 end
 
 ;;This is the instructions for the game
@@ -752,7 +733,7 @@ to print-instructions [choice]
     output-print "Do not click on GO again"
     output-print "or leave this tab."
     output-print "Activity will end when you"
-    output-print "achieve 10000 points"
+    output-print "achieve 2500 points"
   ]
     if choice = "start-tut" [
     clear-output
@@ -817,7 +798,7 @@ to print-instructions [choice]
     output-print "same angle and move in"
     output-print "the same direction."
   ]
-    if choice = "select-come"[
+    if choice = "select-go-to"[
     clear-output
     output-print "Click on a target location"
     output-print "that selected robots should go to."
@@ -825,62 +806,25 @@ to print-instructions [choice]
     output-print "Remember in come robots will move"
     output-print "towards the target you will select."
   ]
-  if choice = "select-leave"[
+  if choice = "select-repel-from"[
     clear-output
     output-print "Click on a target location"
     output-print "that the selected robots "
-    output-print "should leave."
+    output-print "should Repel From."
     output-print ""
-    output-print "Remember in leave robots"
+    output-print "Remember in Repel From robots"
     output-print "will move away from the"
     output-print "target you will select."
   ]
   if choice = "choose-action"[
     clear-output
-    output-print "Choose an action button for your"
-    output-print "selected lime green robots. If "
-    output-print "required, you will next be asked"
-    output-print "to select a target location"
+    output-print "Choose an action button"
+    output-print "(or shortcut key) for your"
+    output-print "selected lime green robots. "
+    output-print "If required, you will next be"
+    output-print "asked to select a target location."
     output-print ""
-    output-print "Heading: Robots will face at the"
-    output-print "         same angle and move in"
-    output-print "         the same direction."
-    output-print ""
-    output-print "Come: Robots will move towards"
-    output-print "      the target you will select"
-    output-print ""
-    output-print "Leave: Robots will move away"
-    output-print "       from the target location."
-    output-print ""
-    output-print "Random: Robots will move randomly"
-    output-print ""
-    output-print "Deploy: Robots will spread"
-    output-print "        out evenly around the map."
-    output-print ""
-    output-print "Stop: Robots will stop"
-  ]
-  if choice = "failed-select"[
-    clear-output
-    output-print "You selected no robots!"
-    output-print "Make sure they are connected to"
-    output-print "the base.Try again selecting robots"
-    output-print ""
-    output-print "Heading: Robots will face at the"
-    output-print "         same angle and move in"
-    output-print "         the same direction."
-    output-print ""
-    output-print "Come: Robots will move towards"
-    output-print "      the target you will select"
-    output-print ""
-    output-print "Leave: Robots will move away"
-    output-print "       from the target location."
-    output-print ""
-    output-print "Random: Robots will move randomly"
-    output-print ""
-    output-print "Deploy: Robots will spread"
-    output-print "        out evenly around the map."
-    output-print ""
-    output-print "Stop: Robots will stop"
+    print-modes
   ]
   if choice = "failed-button"[
     clear-output
@@ -888,33 +832,35 @@ to print-instructions [choice]
     output-print "Make sure they are connected to"
     output-print "the base.Try again selecting robots"
     output-print ""
-    output-print "Heading: Robots will face at the"
-    output-print "         same angle and move in"
-    output-print "         the same direction."
-    output-print ""
-    output-print "Come: Robots will move towards"
-    output-print "      the target you will select"
-    output-print ""
-    output-print "Leave: Robots will move away"
-    output-print "       from the target location."
-    output-print ""
-    output-print "Random: Robots will move randomly"
-    output-print ""
-    output-print "Deploy: Robots will spread"
-    output-print "        out evenly around the map."
-    output-print ""
-    output-print "Stop: Robots will stop"
+    print-modes
   ]
-  if choice = 100[
+  if choice = "end-main"[
     clear-output
     output-print "Study Complete!"
     output-print "Return to Mechanical Turk"
     output-print ""
     output-print "Your Exit Code is:"
-    output-print "31247"
+    output-print "48371"
   ]
 end
-
+to print-modes  ;;this prints mode directions for a bunch of these
+    output-print "Set Heading: (H)"
+    output-print "  Robots will face the same angle"
+    output-print "  and move in the same direction."
+    output-print ""
+    output-print "Go to: (G)"
+    output-print "  Robots will move towards"
+    output-print "  the target you will select"
+    output-print ""
+    output-print "Repel From: (F)"
+    output-print "  Robots will move away"
+    output-print "  from the target location"
+    output-print ""
+    output-print "Random: (R) "
+    output-print "  Robots will move randomly"
+    output-print ""
+    output-print "Stop: (S) Robots will stop"
+end
 
 to deselect
   ask sides [ die ]
@@ -987,7 +933,7 @@ BUTTON
 129
 155
 179
-setup
+Setup
 setup
 NIL
 1
@@ -1004,7 +950,7 @@ BUTTON
 130
 295
 180
-go
+Go
 main
 T
 1
@@ -1021,14 +967,14 @@ BUTTON
 652
 279
 703
-random
+Random
 set-mode-random
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+R
 NIL
 NIL
 1
@@ -1038,14 +984,14 @@ BUTTON
 729
 201
 779
-stop
+Stop
 set-mode-stop
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+S
 NIL
 NIL
 1
@@ -1053,50 +999,50 @@ NIL
 BUTTON
 46
 653
-133
+140
 703
-leave
-set-mode-leave
+Repel From
+set-mode-repel-from
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+F
 NIL
 NIL
 1
 
 BUTTON
-194
-583
-282
-630
-come
-set-mode-come
+192
+579
+280
+626
+Go To
+set-mode-go-to
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+G
 NIL
 NIL
 1
 
 BUTTON
-47
-583
-132
-630
-heading
+44
+579
+142
+626
+Set Heading
 set-mode-heading
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+H
 NIL
 NIL
 1
@@ -1104,13 +1050,13 @@ NIL
 MONITOR
 186
 21
-291
-94
+295
+90
 Points
 get-points
 2
 1
-18
+17
 
 OUTPUT
 10
@@ -1147,13 +1093,63 @@ NIL
 1
 
 TEXTBOX
-1152
-48
-1385
-689
-Robot Modes:\n\nHeading: Robots will face at the\n               same angle and move in\n               the same direction.\n    \nCome: Robots will move towards\n            the target you will select\n     \nLeave: Robots will move away\n             from the target location.\n     \nRandom: Robots will move randomly\n    \nDeploy: Robots will spread\n              out evenly around the map.\n     \nStop: Robots will stop
+1155
+182
+1423
+233
+Repel From:  Robots will move away\n              (F)   from the target location.\n     \n
 14
+34.0
+1
+
+TEXTBOX
+1152
+32
+1302
+53
+Robot Modes:
+17
 0.0
+1
+
+TEXTBOX
+1157
+266
+1408
+304
+Stop:    (S)   Robots will stop
+15
+15.0
+1
+
+TEXTBOX
+1152
+67
+1417
+131
+Set Heading:  Robots will face at the\n           (H)    same angle and move in\n                    the same direction.
+15
+115.0
+1
+
+TEXTBOX
+1154
+132
+1423
+189
+Go To:        Robots will move towards\n           (G)  the target you will select
+15
+105.0
+1
+
+TEXTBOX
+1154
+229
+1441
+267
+Random: (R)  Robots will move randomly
+15
+43.0
 1
 
 @#$#@#$#@
