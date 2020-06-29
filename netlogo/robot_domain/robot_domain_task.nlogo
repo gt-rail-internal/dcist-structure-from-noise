@@ -2,28 +2,21 @@ globals [
   num-robots 		;; number of robots including base station
   disk-radius 	;; radius for the delta-disk connectivity graph
   disk-radius-invsqrt
-  ;; The user needs to click on the screen only in two cases - to select a bunch of robots,
-  ;; or to provide direction for the go-to or similar behaviors (which I refer to as pointed modes).
-  ;; In the first case select-on flag is true, and in the second case, pointed-mode-on flag is true.
-  ;; We listen for mouse clicks only when either of these flags are true.
-  ;; I use flags to check how many times the user has clicked on the arena. These flags are reset every time
-  ;; select or a pointed mode is clicked.
+
   clicked1_x clicked1_y 	;; used to cache the coordinates for the first click.
   clicked2_x clicked2_y		;; used to cache the coordinates for the second click.
   pointed-mode ;; Stores name of the pointed mode if any pointed mode is currently being executed
   selected ;; "agentset" of selected robots. Any further commands will be executed by these robots. Empty by default.
   pointed-color ;; stores the color for the pointed mode behavior
-  boundary
   points
   info-decay-rate
-  first-flag ;;first time hit main for instructions
+  mode-flag ;;first time hit main for instructions
 
   tut-mode  ;;this is a tutorial mode flag, true if we are in tut mode
 
   basex ;;coords of the base
   basey
-
-  click-mode
+  click-mode  ;;mode for selecting stuff
 ]
 ;;these are breeds for the different types of turtles
 breed [bases base]
@@ -47,6 +40,8 @@ patches-own [occupied closest-robot]
 robots-own [mode xtarget ytarget reachable vx vy countdown]
 persons-own [info retreived info-str]
 bases-own [reachable]
+
+
 
 to setup
   clear-all
@@ -155,7 +150,6 @@ to setup-patches
       set pcolor black
     ]
   ]
-  set boundary nobody
 end
 
 
@@ -570,9 +564,20 @@ end
 ;; we just listen for clicks and change modes here
 ;; and then we call update-neighbours and act functions
 to main
+
+  if mode-flag = 0 [  ;;We are running this for the first time, tutorial baby!
+    print-instructions "select-robots-one"
+    setup-tut
+    set mode-flag 1
+  ]
+  if mode-flag = 2 [
+    setup
+    set mode-flag 3
+  ]
+
   ;; listen for mouse click, either for mode setting or for selecting agents
   (ifelse pointed-mode != "false" and mouse-down? [ ;;pointed mode is when we're waiting for the third click
-    show "in pointed mode"
+    ;show "in pointed mode"
     let sourcex 0
     let sourcey 0
     let num-selected count selected
@@ -580,7 +585,7 @@ to main
       set sourcex (sum [xcor] of selected) / num-selected
       set sourcey (sum [ycor] of selected) / num-selected
     ]
-    show selected
+    ;show selected
     ask selected [
       set mode pointed-mode
       set color pointed-color
@@ -615,17 +620,14 @@ to main
 
   make-persons
 
-  if first-flag = 0 [
-    print-instructions "select-robots-one"
-    set first-flag 1
-  ]
 
   tick
 
   if tut-mode and  points > 150 [
     print-instructions "end-tut"
     user-message ("Tutorial Complete!  Now begin the main experiment!")
-    stop
+    set mode-flag 2
+    ;;stop
   ]
   if not tut-mode and  points > 2500.1 [
     print-instructions "end-main"
@@ -637,7 +639,7 @@ end
 
 to make-persons
   ifelse tut-mode[   ;;tutorial map
-    if ((random 200) = 1) [
+    if ((random 175) = 1) [
       create-persons 1 [
         set size 12
         set label-color black
@@ -655,7 +657,7 @@ to make-persons
       ]
     ]
   ] [
-    if ((random 200) = 1) [   ;;regular map
+    if ((random 150) = 1) [   ;;regular map
       create-persons 1 [
         set size 12
         set label-color black
@@ -692,7 +694,7 @@ to print-instructions [choice]
  if choice = "intro"[
     clear-output
     output-print "Welcome to the experiment."
-    output-print "Click on Setup to setup"
+    output-print "Click on Go to setup"
     output-print "the robot map on the right."
     output-print ""
     output-print "The next screen will refresh"
@@ -729,9 +731,6 @@ to print-instructions [choice]
     output-print "button. If needed, you will be"
     output-print "asked to click a target location."
     output-print ""
-    output-print "To begin click GO."
-    output-print "Do not click on GO again"
-    output-print "or leave this tab."
     output-print "Activity will end when you"
     output-print "achieve 2500 points"
   ]
@@ -752,9 +751,8 @@ to print-instructions [choice]
     output-print "button. If needed, you will be"
     output-print "asked to click a target location."
     output-print ""
-    output-print "To begin click GO."
-    output-print "Do not click on GO again"
-    output-print "or leave this tab."
+    output-print "Start moving robots whenever you"
+    output-print "are ready."
     output-print "Tutorial will end when you"
     output-print "achieve 150 points by finding flags"
     output-print "in all quadrons other than where"
@@ -765,12 +763,9 @@ to print-instructions [choice]
     output-print "Congrats on finishing the"
     output-print "tutorial."
     output-print ""
-    output-print "Click on Setup to"
-    output-print "setup the map on the right."
-    output-print "for the main challenge."
-    output-print ""
     output-print "The next screen will refresh"
     output-print "you on the instructions."
+    output-print "for the main challenge."
   ]
   if choice = "select-robots-one" [
     clear-output
@@ -929,27 +924,10 @@ ticks
 30.0
 
 BUTTON
-36
-129
-155
-179
-Setup
-setup
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-188
-130
-295
-180
+97
+123
+229
+187
 Go
 main
 T
@@ -1015,9 +993,9 @@ NIL
 
 BUTTON
 192
-579
+575
 280
-626
+622
 Go To
 set-mode-go-to
 NIL
@@ -1048,10 +1026,10 @@ NIL
 1
 
 MONITOR
-186
-21
-295
-90
+109
+39
+218
+108
 Points
 get-points
 2
@@ -1075,29 +1053,12 @@ Instructions:
 0.0
 1
 
-BUTTON
-36
-36
-152
-93
-Tutorial Setup
-setup-tut
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 TEXTBOX
 1155
 182
 1423
 233
-Repel From:  Robots will move away\n              (F)   from the target location.\n     \n
+NIL
 14
 34.0
 1
@@ -1117,39 +1078,19 @@ TEXTBOX
 266
 1408
 304
-Stop:    (S)   Robots will stop
+NIL
 15
 15.0
 1
 
 TEXTBOX
-1152
-67
-1417
-131
-Set Heading:  Robots will face at the\n           (H)    same angle and move in\n                    the same direction.
+1151
+73
+1451
+320
+Set Heading:  Robots will face at the\n           (H)    same angle and move in\n                    the same direction.\n\nGo To:        Robots will move towards\n           (G)  the target you will select\n\nRepel From:  Robots will move away\n           (F)   from the target location.\n\nRandom: (R)  Robots will move randomly\n\nStop:    (S)   Robots will stop
 15
-115.0
-1
-
-TEXTBOX
-1154
-132
-1423
-189
-Go To:        Robots will move towards\n           (G)  the target you will select
-15
-105.0
-1
-
-TEXTBOX
-1154
-229
-1441
-267
-Random: (R)  Robots will move randomly
-15
-43.0
+0.0
 1
 
 @#$#@#$#@
