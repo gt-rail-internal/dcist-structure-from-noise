@@ -11,10 +11,11 @@
     <div>
         <strong>Instructions: </strong>  <br>
         <span>
-          This HIT requires you to complete a robot task where you need to find flags to collect points.  There will be two phases, a tutorial mode and a final mode.
-
-          This task will take you to another web page and is expected to take around 15 minutes.
-          Please read the instructions below carefully before attempting it.
+          In this task, you will control a team of virtual robots exploring a building.  Your goal is to have the robots explore the building to find flags.  Each flagged location represents an information cache.  Robots will download information from each cache, and once all information is obtained the cache flag will disappear and a new flag will spawn somewhere in the space.  The task ends when the required amount of information is collected.
+          <br>
+          <br>
+          The task has two stages, a tutorial stage and the trial stage.  In total, the task is expected to take 20 minutes.
+          The task will take you to another web page.  Please read the following instructions first:
         </span>
         <div>
             <br><br>
@@ -23,72 +24,76 @@
              Copy your Worker ID before you begin.
              <br>
              <br>
-             When you go to the external webpage, you will be greeted by this as below.  Zoom out your browser window (usually ctrl -) if needed to see the whole thing.
+             When you go to the external webpage, you will see a blank map.  Zoom out your browser window (usually ctrl -) if needed to see the whole map.
              <br><br>
-             <div>
-             <img src="http://34.227.18.144/static/instructions_3/1_intro.PNG" width=50%>
-             </div>
-             <br>
-             <br>
-             Click on the 'GO’' button, you will be asked for your Worker ID in a dialog box.
+             Once you click on the 'GO’' button, you will be asked for your Worker ID in a dialog box.
              <br>
              <br>
             <div>
             <img src="http://34.227.18.144/static/images/user_id.png">
             </div>
             <br>
-            After entering your ID, click OK.
+            After entering your ID, click OK and the tutorial mode will begin.  Once you are finished with the tutorial stage, the trial stage will begin.
             <br>
                 **Note if you go back to this page when the dialog box is open, your browser will crash.  Refresh the page and try again.
             <br><br>
-            <br><br>
-            <br><strong>Task Objective:</strong><br>
-            Your task will be to find randomly appearing and disappearing flags around the map.  They will become visible and give you points when your robots that you control are nearby.
+            <br>
+            <br>
+            <div class="container" style="width: 75%; display: inline-block;">
+              <strong>Task Objective:</strong><br>
+              Your task will be to find randomly appearing and disappearing flags around the map.  They will become visible and give you points when your robots that you control are nearby.
+              <br>
+              <video width="75%" loop autoplay muted controls>
+                <source src="http://34.227.18.144/static/instructions_3/2.mp4" type="video/mp4">
+              </video>
+              <br><br>
+            </div>
 
-            <video width="50%" loop autoplay muted controls>
-              <source src="http://34.227.18.144/static/instructions_3/2.mp4" type="video/mp4">
-            </video>
-            <br><br>
-            <br><strong>Controls:</strong><br>
-
-            You will be able to select robots by click and dragging across them.  Robots can be controlled whenever they are “connected” either directly or indirectly to the pentagon orange base on the top right.  Disconnected agents can’t be controlled.
-            <br><br>
-            <video width="50%"  loop autoplay muted controls>
-              <source src="http://34.227.18.144/static/instructions_3/1.mp4" type="video/mp4">
-            </video>
+            <div class="container" style="width: 75%; display: inline-block;">
+              <strong>Controls:</strong><br>
+              You will be able to select robots by click and dragging across them.  Robots can be controlled whenever they are “connected” either directly or indirectly to the pentagon orange base on the top right.  Disconnected agents can’t be controlled.
+              <br><br>
+              <video width="75%"  loop autoplay muted controls>
+                <source src="http://34.227.18.144/static/instructions_3/1.mp4" type="video/mp4">
+              </video>
+            </div>
             <br><br>
             Below the instruction box are five buttons (with associated keyboard shortcut letters) which will enable you to control the selected robots.  If needed, an additional action click will be asked for the control. The button’s functionality are as below:
             <br>
-
-            <strong>Set Heading (H):</strong> Robots will face at the same angle and move in the same direction as your additional action click.
             <br>
-              <video width="50%"loop autoplay muted controls>
+            <br>
+            <div class="container" style="width: 30%; display: inline-block;">
+              <video width="100%" loop autoplay muted controls>
                 <source src="http://34.227.18.144/static/instructions_3/heading.mp4" type="video/mp4">
               </video>
-              <br>
-            <strong>Go To (G):</strong> Robots will move towards the target you select with your additional action click.
-              <br>
-                <video width="50%"loop autoplay muted controls>
+              <strong>Set Heading (H):</strong> Robots will face at the same angle and move in the same direction as your additional action click.
+            </div>
+            <div class="container" style="width: 30%; display: inline-block;">
+                <video width="100%" loop autoplay muted controls>
                   <source src="http://34.227.18.144/static/instructions_3/goto.mp4" type="video/mp4">
                 </video>
-              <br>
-            <strong>Repel From (F):</strong> Robots will move away from the target you select with your additional action click.
-            <br>
-              <video width="50%"loop autoplay muted controls>
-                <source src="http://34.227.18.144/static/instructions_3/repelfrom.mp4" type="video/mp4">
-              </video>
-            <br>
-            <strong>Random (R):</strong> Robots will move randomly.
-            <br>
-              <video width="50%"loop autoplay muted controls>
-                <source src="http://34.227.18.144/static/instructions_3/random.mp4" type="video/mp4">
-              </video>
-            <br>
-            <strong>Stop (S):</strong> Robots will stop.
-            <br>
-              <video width="50%"loop autoplay muted controls>
-                <source src="http://34.227.18.144/static/instructions_3/stop.mp4" type="video/mp4">
-              </video>
+                <strong>Go To (G):</strong> Robots will move towards the target you select with your additional action click.
+            </div>
+            <div class="container" style="width: 30%; display: inline-block;">
+                <video width="100%"loop autoplay muted controls>
+                  <source src="http://34.227.18.144/static/instructions_3/repelfrom.mp4" type="video/mp4">
+                </video>
+                <strong>Repel From (F):</strong> Robots will move away from the target you select with your additional action click.
+            </div>
+            <div class="container" style="width: 30%; display: inline-block;">
+                <video width="100%"loop autoplay muted controls>
+                  <source src="http://34.227.18.144/static/instructions_3/random.mp4" type="video/mp4">
+                </video>
+                <strong>Random (R):</strong> Robots will move randomly.
+            </div>
+            <div class="container" style="width: 30%; display: inline-block;">
+                <video width="100%"loop autoplay muted controls>
+                  <source src="http://34.227.18.144/static/instructions_3/stop.mp4" type="video/mp4">
+                </video>
+                <strong>Stop (S):</strong> Robots will stop.
+                <br>
+                <br>
+            </div>
               <br><br><br><br>
               The tutorial task will end after 150 points or a few minutes and the main task will end after 2500 points or about 15 minutes.  You are required to complete the tasks in a single sitting, and will not be allowed to re-attempt it.  Do not refresh your web page before completing it.  The webpage will remind you of these instructions and tell you when to return here.
               <div>
