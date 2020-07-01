@@ -7,7 +7,7 @@ from app.models import Response
 @app.route('/')
 @app.route('/index')
 def index():
-    app.logger.debug("Index function accessed from app")    
+    app.logger.debug("Index function accessed from app")
     return "Hello, world!"
 
 @app.route('/pretest-data', methods=['POST'])
@@ -61,3 +61,18 @@ def logPostTestData():
     app.logger.debug("exiting posttest route")
     return {}, 200
 
+@app.route('/robotdomain-data', methods=['POST'])
+def logRobotDomainData():
+    app.logger.debug("post test data received")
+    data = request.data.decode('ASCII')
+    list_data = data.split(",")
+    user_id = list_data[0]
+    list_data.remove(user_id)
+    robot_domain_data = ",".join(list_data)
+    response = processing.newResponse(user_id)
+    response.robot_domain_data = robot_domain_data
+    db.session.add(response)
+    app.logger.debug("new response added with robotdomain data")
+    db.session.commit()
+    app.logger.debug("exiting robotdomain route")
+    return {}, 200

@@ -327,7 +327,7 @@ end
 to set-mode-stop
   let temp ""
   ask selected [
-     set temp (word temp precision xcor 2 "_" precision ycor 2 "_ _ _" mode "_" "stop")
+     set temp (word temp precision xcor 2 "_" precision ycor 2 "_ " mode "_" "stop")
     set mode "stop"
     set color orange
   ]
@@ -340,7 +340,7 @@ end
 to set-mode-random
   let temp ""
   ask selected [
-    set temp (word temp precision xcor 2 "_" precision ycor 2 "_ _ _" mode "_" "random")
+    set temp (word temp precision xcor 2 "_" precision ycor 2 "_" mode "_" "random")
     set mode "random"
     set color turquoise
     set countdown 600

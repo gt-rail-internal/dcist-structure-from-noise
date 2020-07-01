@@ -12,6 +12,6 @@ class Response(db.Model):
     pretest_token = db.Column(db.String(12), default= "")
     post_test_agents = db.Column(db.Text, default="")
 
+    robot_domain_data = db.Column(db.Text, default="")
     def __repr__(self):
         return '<Response from {} {}>'.format(self.user_id, self.pretest_reactions)
-
