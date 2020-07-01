@@ -49,7 +49,12 @@ bases-own [reachable]
 
 
 to setup
-  clear-all
+  clear-ticks
+  clear-turtles
+  clear-patches
+  clear-drawing
+  clear-all-plots
+  clear-output
   set selected no-turtles
   set logstate 0
   set basex 130
@@ -86,8 +91,8 @@ to setup-tut
   set info-decay-rate 0.001
   set disk-radius-invsqrt (1 / sqrt disk-radius)
   set-default-shape sides "line"
-  reset-ticks
   reset-timer
+  reset-ticks
 end
 
 
@@ -925,9 +930,9 @@ end
 
 to log-action [action-list]
   show "Logging:"
-  let finallogstr (word logStr" _" precision timer 2 ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
+  let finallogstr (word logStr "_" precision timer 2 ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
   show finallogstr
-  let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" logStr "text/plain")
+  let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogstr "text/plain")
   ifelse (first response-triplet) = 200 [
     show "logs successfully sent"
   ]
