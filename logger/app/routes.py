@@ -65,10 +65,10 @@ def logPostTestData():
 def logRobotDomainData():
     app.logger.debug("post test data received")
     data = request.data.decode('ASCII')
-    list_data = data.split(",")
+    list_data = data.split(";")
     user_id = list_data[0]
     list_data.remove(user_id)
-    robot_domain_data = ",".join(list_data)
+    robot_domain_data = ";".join(list_data)
     response = processing.newResponse(user_id)
     response.robot_domain_data = robot_domain_data
     db.session.add(response)
