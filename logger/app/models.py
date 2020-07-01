@@ -14,4 +14,4 @@ class Response(db.Model):
 
     robot_domain_data = db.Column(db.Text, default="")
     def __repr__(self):
-        return '<Response from {} {}>'.format(self.user_id, self.pretest_reactions)
+        return '<Response from {} {}>'.format(self.user_id, self.preteslst_reactions)

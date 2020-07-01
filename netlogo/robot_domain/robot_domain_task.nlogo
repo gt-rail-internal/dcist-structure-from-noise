@@ -649,7 +649,7 @@ to main
     set mode-flag 2
     ;;stop
   ]
-  if not tut-mode and  points > 2500.1 [
+  if not tut-mode and (points > 2500.1 or timer > 900)  [  ;;or longer than 15 minutes
     log-state true
     print-instructions "end-main"
     user-message ("Experiment Complete!  Your exit code is 48371.")
@@ -927,7 +927,7 @@ to log-action [action-list]
   show "Logging:"
   let finallogstr (word logStr ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
   show finallogstr
-  ;;let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+  ;;let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" logStr "text/plain")
   ;;ifelse (first response-triplet) = 200 [
   ;;  show "logs successfully sent"
   ;;]
@@ -942,7 +942,7 @@ to log-state [force]
     show "Logging:"
     let finallogstr (word logStr ";" "state" ";" tut-mode ";" precision points 4";"  precision timer 2 ";" log-robotperson-list)
     show finallogstr
-    ;;let response-triplet (http-req:post "http://34.227.18.144/posttest-data" finallogStr "text/plain")
+    ;;let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
     ;;ifelse (first response-triplet) = 200 [
     ;;  show "logs successfully sent"
     ;;]
