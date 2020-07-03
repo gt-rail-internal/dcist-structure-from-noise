@@ -657,7 +657,7 @@ to main
   if not tut-mode and (points > 2500.1 or timer > 900)  [  ;;or longer than 15 minutes
     log-state true
     print-instructions "end-main"
-    user-message ("Experiment Complete!  Your exit code is 48371.")
+    user-message (word "Experiment Complete!  Your exit code is " precision timer 2 " " precision points 4)
     stop
   ]
 
@@ -686,7 +686,7 @@ to make-persons
       ]
     ]
   ] [
-    if ((random 150) = 1) [   ;;regular map
+    if ((random 100) = 1) [   ;;regular map
       create-persons 1 [
         set size 12
         set label-color black
@@ -864,7 +864,7 @@ to print-instructions [choice]
     output-print "Return to Mechanical Turk"
     output-print ""
     output-print "Your Exit Code is:"
-    output-print "48371"
+    output-print (word precision timer 2 " " precision points 4)
   ]
 end
 to print-modes  ;;this prints mode directions for a bunch of these
@@ -945,16 +945,17 @@ end
 to log-state [force]
   if logstate * 100 < points or force [
     show "Logging:"
-    let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4";"  precision timer 2 ";" log-robotperson-list)
+    let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
     show finallogstr
     let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
     ifelse (first response-triplet) = 200 [
       show "logs successfully sent"
+      set logstate logstate + 1
     ]
     [
      show "log transmission failed"
+      ;;log-state true
     ]
-    set logstate logstate + 1
   ]
 end
 
