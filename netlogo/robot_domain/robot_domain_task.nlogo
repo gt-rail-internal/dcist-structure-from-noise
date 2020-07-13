@@ -1024,7 +1024,7 @@ end
 
 
 to log-state [force]
-  if logstate * 100 < points or force [
+  if logstate * 25 < points or force [
     ;;show "Logging:"
     let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
     ;;show finallogstr
