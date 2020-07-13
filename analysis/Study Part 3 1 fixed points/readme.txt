@@ -1,0 +1,1 @@
+In this, flags were hidden when robots were far away, points were 2500, one map.  The flags spawned randomly and there was a time limit of 15 minutes hidden from the mechanical turk.

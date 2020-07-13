@@ -6,17 +6,19 @@
       please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
 
 <!-- You must include crowd-form so that your task submits answers to MTurk -->
-<div style = "padding:1.5%"">
 <crowd-form answer-format="flatten-objects">
 
-    <div>
+    <div style = "padding:1.5%">
         <strong>Instructions: </strong>  <br>
         <span>
-          In this task, you will control a team of virtual robots exploring a building.  Your goal is to have the robots explore the building to find flags.  Each flagged location represents an information cache.  Robots will download information from each cache, and once all information is obtained the cache flag will disappear and a new flag will spawn somewhere in the space.  The task ends when the required amount of information is collected.
-          <br>
-          <br>
-          The task has two stages, a tutorial stage and the trial stage.  In total, the task is expected to take 20 minutes.
-          The task will take you to another web page.  Please read the following instructions first:
+          In this HIT task, you will control a team of virtual robots exploring three maps.
+            Your goal is to have the robots explore the maps to find flags with information.
+            Robots will download information from each flag, and once all information is obtained the flag will disappear.
+
+          <br><br>
+          This task will take you to another web page and has three phases, a tutorial map (2 minutes) and two regular maps (7 minutes each).  It is expected to take under 20 minutes total.
+          <br><br>
+          Please read the instructions below carefully before attempting it.
         </span>
         <div>
             <br><br>
@@ -25,45 +27,47 @@
              Copy your Worker ID before you begin.
              <br>
              <br>
-             When you go to the external webpage, you will see a blank map.  Zoom out your browser window (usually ctrl -) if needed to see the whole map.
+             When you go to the external webpage, you will be greeted by this as below.  Zoom out your browser window (usually ctrl -) if needed to see the whole thing.
              <br><br>
-             Once you click on the GO button, you will be asked for your Worker ID in a dialog box.
+             <div>
+             <img src="http://34.227.18.144/static/instructions_3/1_intro.PNG" width=50%>
+             </div>
+             <br>
+             <br>
+             Click on the 'GO’' button, you will be asked for your Worker ID in a dialog box.
              <br>
              <br>
             <div>
             <img src="http://34.227.18.144/static/images/user_id.png">
             </div>
             <br>
-            After entering your ID, click OK and the tutorial mode will begin.  Once you are finished with the tutorial stage, the trial stage will begin.
+            After entering your ID, click OK.
             <br>
                 **Note if you go back to this page when the dialog box is open, your browser will crash.  Refresh the page and try again.
             <br><br>
-            <br>
-            <br>
-            <div class="container" style="width: 75%; display: inline-block;">
-              <strong>Task Objective:</strong><br>
-              Your task will be to find randomly appearing and disappearing flags around the map.  They will become visible and give you points when your robots that you control are nearby.
-              <br>
-              <video width="50%" loop autoplay muted controls>
-                <source src="https://videosstructurefromnoise.s3.amazonaws.com/2.mp4" type="video/mp4">
-              </video>
-              <br><br>
-            </div>
-
-            <div class="container" style="width: 75%; display: inline-block;">
-              <strong>Controls:</strong><br>
-              You will be able to select robots by click and dragging across them.  Robots can be controlled whenever they are connected either directly or indirectly to the pentagon orange base on the top right.  Disconnected agents can&#39;t be controlled.
-              <br><br>
-              <video width="50%"  loop autoplay muted controls>
-                <source src="https://videosstructurefromnoise.s3.amazonaws.com/1.mp4" type="video/mp4">
-              </video>
-            </div>
             <br><br>
-            Below the instruction box are five buttons (with associated keyboard shortcut letters) which will enable you to control the selected robots.  If needed, an additional action click will be asked for the control. The button functionality are as below:
+            <br><strong>Task Objective:</strong><br>
+            Your task will be to find flags dispersed around the map.  They will be visible for 5 seconds during the beginning of the map phase for you to remember their positions. Flags will appear when you are nearby and collecting information from them. They will disappear once all information is collected and will not reappear or respawn.
             <br>
-            <br>
-            <br>
-            <div class="container" style="width: 27%; display: inline-block; padding:3%;">
+            <video width="50%" loop autoplay muted controls>
+                            <source src="https://videosstructurefromnoise.s3.amazonaws.com/2.mp4" type="video/mp4">
+                          </video>
+                          <br><br>
+                        </div>
+
+                        <div class="container" style="width: 75%; display: inline-block;">
+                          <strong>Controls:</strong><br>
+                          You will be able to select robots by click and dragging across them.  Robots can be controlled whenever they are connected either directly or indirectly to the pentagon orange base on the top right.  Disconnected agents can't be controlled.
+                          <br><br>
+                          <video width="50%"  loop autoplay muted controls>
+                            <source src="https://videosstructurefromnoise.s3.amazonaws.com/1.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                        <br><br>
+                        Below the instruction box are five buttons (with associated keyboard shortcut letters) which will enable you to control the selected robots.  If needed, an additional action click will be asked for the control. The button functionality are as below:
+                        <br>
+                        <br>
+                        <br><div class="container" style="width: 27%; display: inline-block; padding:3%;">
               <video width="100%" loop autoplay muted controls>
                 <source src="https://videosstructurefromnoise.s3.amazonaws.com/heading_crop.mp4" type="video/mp4">
               </video>
@@ -95,16 +99,18 @@
                 <br>
             </div>
               <br><br><br><br>
-              The tutorial task will end after 150 points or a few minutes and the main task will end after 2500 points or about 15 minutes.  You are required to complete the tasks in a single sitting, and will not be allowed to re-attempt it.  Do not refresh your web page before completing it.  The webpage will remind you of these instructions and tell you when to return here.
+              Remember, you will be shown where the flags are in the beginning.  Try to remember those positions as it will help you during the task.
+
+              <br><br>
+               You are required to complete the tasks in a single sitting, and will not be allowed to re-attempt it.  Do not refresh your web page before completing it.  The webpage will remind you of these instructions and tell you when to return here.
               <div>
                 <p></p>
 
                 <!-- Your website URLs will be substituted for the "url" variable when you publish
                        a batch with an input file containing multiple website URLs -->
                  Copy your worker ID first and then:
-                <a href="http://34.227.18.144/static/robot_domain_task.html" target="http://34.227.18.144/static/robot_domain_task.html"><strong>Click here to start the subtask</strong></a>
+                <a href="http://34.227.18.144/static/Part%202%20Study.html" target="http://34.227.18.144/static/robot_domain_task.html"><strong>Click here to start the subtask</strong></a>
             <p><crowd-input name="token1" placeholder="Type the generated token here" required></crowd-input></p>
         </div>
     </div>
 </crowd-form>
-</div>
