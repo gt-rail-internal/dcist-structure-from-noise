@@ -15,7 +15,7 @@ flex-column  (its where the Export: and buttons are)
 netlogo-speed-slider
 netlogo-tab-area
 
-hide them by adding a style=\"visibility: hidden;\" attribute
+hide them by adding a style="visibility: hidden;" attribute
 style= "display: none;" attribute removes the area for it?
 
 
