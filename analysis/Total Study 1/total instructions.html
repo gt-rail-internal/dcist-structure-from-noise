@@ -1,0 +1,305 @@
+
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<crowd-form answer-format="flatten-objects">
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+
+<style>
+body {
+background-color: #fffff3
+}
+</style>
+
+<script>
+function nextOne(){
+    document.getElementById("part 1").style.display = "none";
+    document.getElementById("part 2").style.display = "block";
+    document.getElementById("part 3").style.display = "none";
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+
+function nextTwo(){
+    document.getElementById("part 1").style.display = "none";
+    document.getElementById("part 2").style.display = "none";
+    document.getElementById("part 3").style.display = "block";
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+
+function backTwo(){
+    document.getElementById("part 1").style.display = "block";
+    document.getElementById("part 2").style.display = "none";
+    document.getElementById("part 3").style.display = "none";
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+
+function backThree(){
+    document.getElementById("part 1").style.display = "none";
+    document.getElementById("part 2").style.display = "block";
+    document.getElementById("part 3").style.display = "none";
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+</script>
+
+    <div style = "padding:1.5%">
+      <div class="alert alert-primary" role="alert">
+        <h4>This HIT contains three parts, 15, 10 and 15 minutes, based on controlling and visualizing robots.</h4>
+        <br>
+        Each part will be presented to you in order and must be completed this way, click next when you are given the exit code from the previous stage.
+        <br>
+        You may take up to a 5 minute break in between each of the three parts but all three parts should be taken together in a single 1 hour time frame.
+        <br><br>
+        Have fun and good luck!
+      </div>
+      <div id = "part 1">
+        <strong>Instructions Part 1: </strong>  <br>
+               <span>
+                   This part requires you to complete a task, for which you will be taken to another web page. Please read the instructions below carefully before attempting it.
+               </span>
+                   <br><br>
+                   <strong>Pressing keys to match patterns</strong>
+                   <br>
+                   When you start, you will be first asked for your Amazon Mechanical Turk ID in a pop-up (see image below). After entering your ID, click OK.
+                   <br>
+                   <div>
+                   <img src="http://34.227.18.144/static/images/user_id.png">
+                   </div>
+                   <br><br>
+                   Click on the 'START' button. This will show you a pattern of 5 squares, and the web page should look like the image below. DO NOT click on the 'START' button again.
+                   <br>
+                   <div>
+                   <img src="http://34.227.18.144/static/images/pretest_start.png">
+                   </div>
+                   <br>
+                   Each square corresponds to a key on your keyboard - 'Space', 'H', J', 'K' and 'L' - in that order from left to right (see image below).
+                   <br>
+                   <div>
+                   <img src="http://34.227.18.144/static/images/key_correspondence.png">
+                   </div>
+                   <br><br>
+                   Your task is to press the key corresponding to the square in red border as soon as the square pattern is displayed.
+                   <br>
+                   If there are two keys with a red border, you are required to press both keys simultaneously.
+                   <br>Click on the rectangular area with the squares before beginning to press keys.
+                   <br><br><br>
+
+                   Examples:
+                   <br><br>
+                   Correct key - space
+                   <br>
+                   <div>
+                   <img src="http://34.227.18.144/static/images/space_keys.png">
+                   </div>
+                   <br><br>
+
+                   <br>
+                   Correct keys - H and L simultaneously
+                   <div>
+                   <img src="http://34.227.18.144/static/images/HL_keys.png">
+                   </div>
+                   <br><br>
+
+                   Pressing the wrong key will display the message 'Error!' until you press the correct key. <br>
+
+                   After you press the correct key, the pattern will change to show you the next pattern in the sequence. This will repeat 630 times. The number of keys you are left with to press is displayed in a yellow box saying “Keys to go:”.
+
+                   <br><br>Please complete the task as <b> quickly and accurately </b> as possible. You are required to complete the task in a single sitting, and will not be allowed to re-attempt it.
+                   You are expected to take around <b>10 minutes</b> to complete this task. Do not refresh your web page before completing it.
+
+                   <br><br>After you have completed the task, the web page will generate a token for you. Type the token in the space below.
+
+                   <div>
+                       <p></p>
+                       <!-- Your website URLs will be substituted for the "url" variable when you publish
+                              a batch with an input file containing multiple website URLs -->
+                        Copy your worker ID first and then:
+                       <a href="http://34.227.18.144/static/pretest.html" target="http://34.227.18.144/static/pretest.html"><strong>Click here to start task</strong></a>
+                   <p><crowd-input name="token1" placeholder="Type the generated token here" required></crowd-input></p>
+              </div>
+              <button type="button" class="btn btn-primary"  onclick="nextOne()"> Next </button>
+      </div>
+      <div id = "part 2" style = "display: none">
+        <strong>Instructions Part 2: </strong>  <br>
+        <span>
+            This part requires you to complete a task on 10 different "maps", for which you will be taken to another web page. This task is expected to take around 10 minutes. <br> Please read the instructions below carefully before attempting it.
+        </span>
+        <div>
+            <br><br>
+            <strong>1. Start</strong>
+            <br>
+             Copy your Worker ID before you begin.
+             <br>
+             When you go to the external webpage and click on the 'START' button, you will be asked for your Worker ID in a dialog box.
+             <br><br>
+            <div>
+            <img src="http://34.227.18.144/static/images/user_id.png">
+            </div>
+            After entering your ID, click OK.
+            <br>
+                **Note if you go back to this page when the dialog box is open, your browser will crash.  Refresh the page and try again.
+            <br><br>
+            <br><br>
+            Now the task will show you a pattern of many squares, and the web page should look like the image below. DO NOT click on the 'START' button again.
+            <br>
+            <div>
+            <img src="http://34.227.18.144/static/images/Part2/start.PNG" width=50%>
+            </div>
+            <br><strong>2. Observation</strong><br>
+            In this stage, you will watch the colors change after different nodes (squares) are selected by our task.  Observe carefully as you will not be able to go back to this stage.
+            <div>
+            <img src="http://34.227.18.144/static/images/Part2/propogating.PNG" width=50%>
+            </div>
+            <br><br>
+            <br><strong>3. Selection</strong><br>
+            In this stage, you will use the information that you have about the map to select the nodes that allow for the fastest propagation.<br>
+            You will continue to the next stage if you either pick the correct one(s) or perform three attempts at the previous stage.
+            <br>
+            <div>
+            <img src="http://34.227.18.144/static/images/Part2/clickoncursor.PNG" width=50%>
+            </div>
+            <br><br>
+
+
+            <br><br>The task will end with a total of 10 different maps.  You are required to complete the task in a single sitting, and will not be allowed to re-attempt it.
+            <br>
+            You are expected to take around <b>10 minutes</b> to complete this task. Do not refresh your web page before completing it.  The webpage will tell you when to return here.
+
+            <div>
+                <p></p>
+                <!-- Your website URLs will be substituted for the "url" variable when you publish
+                       a batch with an input file containing multiple website URLs -->
+                 Copy your worker ID first and then:
+                <a href="http://34.227.18.144/static/Part%202%20Study.html" target="http://34.227.18.144/static/pretest.html"><strong>Click here to start the subtask</strong></a>
+            <p><crowd-input name="token2" placeholder="Type the generated token here" required></crowd-input></p>
+        </div>
+        <button type="button" class="btn btn-primary"  onclick="nextTwo()"> Next </button>
+        <button type="button" class="btn btn-primary"  onclick="backTwo()"> Back </button>
+      </div>
+      </div>
+
+        <div id = "part 3" style = "display: none">
+          <strong>Instructions Part 3: </strong>  <br>
+          <span>
+            In this last part, you will control a team of virtual robots exploring three maps.
+              Your goal is to have the robots explore the maps to find flags with information.
+              Robots will download information from each flag, and once all information is obtained the flag will disappear.
+
+            <br><br>
+            This task will take you to another web page and has three phases, a tutorial map (2 minutes) and two regular maps where you must find 10 flags out of 15.  Depending on how fast you can find the hidden flags, it is expected to take under 20 minutes total
+            <br><br>
+            Please read the instructions below carefully before attempting it.
+          </span>
+          <div>
+              <br><br>
+              <strong>1. Start</strong>
+              <br>
+               Copy your Worker ID before you begin.
+               <br>
+               <br>
+               When you go to the external webpage, you will be greeted by this as below.  Zoom out your browser window (usually ctrl -) if needed to see the whole thing.
+               <br><br>
+               <div>
+               <img src="http://34.227.18.144/static/instructions_3/1_intro.PNG" width=50%>
+               </div>
+               <br>
+               <br>
+               Click on the 'GO’' button, you will be asked for your Worker ID in a dialog box.
+               <br>
+               <br>
+              <div>
+              <img src="http://34.227.18.144/static/images/user_id.png">
+              </div>
+              <br>
+              After entering your ID, click OK.
+              <br>
+                  **Note if you go back to this page when the dialog box is open, your browser will crash.  Refresh the page and try again.
+              <br><br>
+              <br><br>
+              <br><strong>Task Objective:</strong><br>
+              Your task will be to find flags dispersed around the map.  They will be visible for 5 seconds during the beginning of the map phase for you to remember their positions. Flags will appear when you are nearby and collecting information from them. They will disappear once all information is collected and will not reappear or respawn.
+              <br>
+              <video width="50%" loop autoplay muted controls>
+                              <source src="https://videosstructurefromnoise.s3.amazonaws.com/2.mp4" type="video/mp4">
+                            </video>
+                            <br><br>
+                          </div>
+
+                          <div class="container" style="width: 75%; display: inline-block;">
+                            <strong>Controls:</strong><br>
+                            You will be able to select robots by click and dragging across them.  Robots can be controlled whenever they are connected either directly or indirectly to the pentagon orange base on the top right.  Disconnected agents can't be controlled.
+                            <br><br>
+                            <video width="50%"  loop autoplay muted controls>
+                              <source src="https://videosstructurefromnoise.s3.amazonaws.com/1.mp4" type="video/mp4">
+                            </video>
+                          </div>
+                          <br><br>
+                          Below the instruction box are five buttons (with associated keyboard shortcut letters) which will enable you to control the selected robots.  If needed, an additional action click will be asked for the control. The button functionality are as below:
+                          <br>
+                          <br>
+                          <br><div class="container" style="width: 27%; display: inline-block; padding:3%;">
+                <video width="100%" loop autoplay muted controls>
+                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/heading_crop.mp4" type="video/mp4">
+                </video>
+                <strong>Set Heading (H):</strong> Robots will face at the same angle and move in the same direction as your additional action click.
+              </div>
+              <div class="container" style="width: 27%; display: inline-block;  padding:3%;">
+                  <video width="100%" loop autoplay muted controls>
+                    <source src="https://videosstructurefromnoise.s3.amazonaws.com/goto_crop.mp4" type="video/mp4">
+                  </video>
+                  <strong>Go To (G):</strong> Robots will move towards the target you select with your additional action click.
+              </div>
+              <div class="container" style="width: 27%; display: inline-block;  padding:3%;">
+                  <video width="100%"loop autoplay muted controls>
+                    <source src="https://videosstructurefromnoise.s3.amazonaws.com/repelfrom_crop.mp4" type="video/mp4">
+                  </video>
+                  <strong>Repel From (F):</strong> Robots will move away from the target you select with your additional action click.
+              </div>
+              <div class="container" style="width: 27%; display: inline-block;  padding:3%;">
+                  <video width="100%"loop autoplay muted controls>
+                    <source src="https://videosstructurefromnoise.s3.amazonaws.com/random_crop.mp4" type="video/mp4">
+                  </video>
+                  <strong>Random (R):</strong> Robots will move randomly.
+              </div>
+              <div class="container" style="width: 27%; display: inline-block;  padding:3%;">
+                  <video width="100%"loop autoplay muted controls>
+                    <source src="https://videosstructurefromnoise.s3.amazonaws.com/stop_crop.mp4" type="video/mp4">
+                  </video>
+                  <strong>Stop (S):</strong> Robots will stop.
+                  <br>
+              </div>
+                <br><br><br><br>
+                Remember, you will be shown where the flags are in the beginning.  Try to remember those positions as it will help you during the task.
+                <br><br>
+                 To get credit for the task, you must engage with the task and find at least 10 robots out of the 15 shown in each of the 2 regular maps.  <strong>The faster you can find the flags, the faster the activity will be completed!</strong>
+                 <br>
+                 You are required to complete the tasks in a single sitting, and will not be allowed to re-attempt it.  Do not refresh your web page before completing it.  The webpage will remind you of these instructions and tell you when to return here.
+                <div>
+                  <p></p>
+
+                  <!-- Your website URLs will be substituted for the "url" variable when you publish
+                         a batch with an input file containing multiple website URLs -->
+                   Copy your worker ID first and then:
+                      <a href="http://34.227.18.144/static/robot_domain_task.html" target="http://34.227.18.144/static/robot_domain_task.html"><strong>Click here to start the subtask</strong></a>
+                  <p><crowd-input name="token3" placeholder="Type the generated token here" required></crowd-input></p>
+                </div>
+                <crowd-button form-action = "submit" variant="primary">
+                  Submit
+                </crowd-button>
+                <br><br>
+                <button type="button" class="btn btn-primary"  onclick="backThree()"> Back </button>
+          </div>
+    </div>
+
+</crowd-form>

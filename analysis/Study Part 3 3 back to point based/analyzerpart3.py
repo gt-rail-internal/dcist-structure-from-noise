@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 
-USERNAME = ["A2GRJVN7B5YR96", "A21X7WZ7A7ROEH", "A3CFF2BT7P8FL4", "AVPW7AXI9AFSM"]# ["A3H7GCFS21E253", "AN15QS1604XRS","A141CB4BKDYKDF","A32W2O02CUQ2TO"]
+USERNAME = ["A1GNPQ5LM6YY5I", "A34OKMM1CM7ZSR", "A111ZFNLXK1TCO", "A3GAQNTZ1V1VO", "AAPL0LV4APHOR"]# ["A3H7GCFS21E253", "AN15QS1604XRS","A141CB4BKDYKDF","A32W2O02CUQ2TO"]
 np.set_printoptions(suppress=True)
 readTemp = []
 data = [780.44, 466.01, 709.72, 900.62, 570.79]
@@ -26,13 +26,13 @@ def parsePerson(reader,USERNAME):
         if USERNAME in row[0]:
             data = [row[9].replace("\"","").split(";")]
             #print(data)
-            if (len(data[0])) == 6 and data[0][1] == "2": #this is a state one
+            if (len(data[0])) == 6 and data[0][1] == "1": #this is a state one
                 stateTutArr = np.append(stateTutArr, data, axis = 0)
-            elif (len(data[0])) == 6 and data[0][1] == "1":
+            elif (len(data[0])) == 6 and data[0][1] == "2":
                 stateArr = np.append(stateArr, data, axis = 0)
-            elif (len(data[0])) == 5 and data[0][1] == "2":
-                actionTutArr = np.append(actionTutArr, data, axis = 0)
             elif (len(data[0])) == 5 and data[0][1] == "1":
+                actionTutArr = np.append(actionTutArr, data, axis = 0)
+            elif (len(data[0])) == 5 and data[0][1] == "2":
                 actionArr = np.append(actionArr, data, axis = 0)
     return stateTutArr, actionTutArr, stateArr, actionArr
 
@@ -69,7 +69,7 @@ def graphtwo(scoresYList, pointscoresList, data, actionList, pointactionList):
         plt.plot(np.sort(np.concatenate((timesXList[i], actionList[i]))), np.sort(np.concatenate((scoresYList[i], pointactionList[i]))), label='Participant ' + str(i + 1))
         #plt.plot(np.sort(np.concatenate((timesXList[i], actionList[i]))), np.sort(np.concatenate((x, pointactionList[i]))), label='Participant ' + str(i + 1))
         ax.scatter(np.sort(actionList[i]), np.sort(pointactionList[i]), 7, label="Action Click " + str(i + 1))
-    ax.set_xlim([0, 420])
+    ax.set_xlim([0, 660])
     ax.set_ylim([0, 750])
     plt.legend(loc=2)
 
