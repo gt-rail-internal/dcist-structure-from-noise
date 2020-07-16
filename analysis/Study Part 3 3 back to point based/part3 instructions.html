@@ -12,9 +12,6 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 
-<script>
-</script>
-
       <div style = "padding: 1%">
         <span>
         <h5>You will control a group of virtual robots in a tutorial map and two regular maps. This HIT should take less than 20 minutes, and will end as soon as you collect the specified number of points.</h5>
@@ -37,15 +34,15 @@
             <div class="list-group">
               <a  class="list-group-item list-group-item-action flex-column align-items-start" style = "background-color: #FFF1D1">
                   <h5 class="mb-1">1. Remember Hidden Flags</h5>
-                <p class="mb-1">All flags will be revealed in the beginning of the round.  Remember these flag positions as they will quickly be hidden.</p>
+                <p class="mb-1">All flags <img src="http://34.227.18.144/static/instructions_3/flag.PNG" width="35px">will be revealed in the beginning of the round.  Remember these flag positions as they will quickly be hidden.</p>
               </a>
               <a  class="list-group-item list-group-item-action flex-column align-items-start" style = "background-color: #FFF1D1">
                   <h5 class="mb-1">2. Create Chains</h5>
-                <p class="mb-1">Use Action Buttons (more on that below) to create chains of connected robots (<robot img>) in order to find the hidden flags (<flag img>) and download points! Robots can’t move or be controlled if they lose connectivity to the base station (<base img>)!  If this happens, position other robots to rebuild the chain.</p>
+                <p class="mb-1">Use Action Buttons (more on that below) to create chains of connected robots <img src="http://34.227.18.144/static/instructions_3/robot.PNG" width="35px"> in order to find the hidden flags <img src="http://34.227.18.144/static/instructions_3/flag.PNG" width="35px"> and download points! Robots can’t move or be controlled if they lose connectivity to the base station <img src="http://34.227.18.144/static/instructions_3/base.png" width="35px">.  If this happens, position other robots to rebuild the chain.</p>
               </a>
               <a class="list-group-item list-group-item-action flex-column align-items-start" style = "background-color: #FFF1D1">
                   <h5 class="mb-1">3. Collect Points</h5>
-                <p class="mb-1">When robots (<robot img>) are nearby, flags (<flag img>) will reappear and points will be slowly collected.  Once all 50 points are obtained from a flag, it will be destroyed and will not respawn. </p>
+                <p class="mb-1">When robots <img src="http://34.227.18.144/static/instructions_3/robot.PNG" width="35px"> are nearby, flags<img src="http://34.227.18.144/static/instructions_3/flag.PNG" width="35px"> will reappear and points will be slowly collected.  Once all 50 points are obtained from a flag, it will be destroyed and will not respawn. </p>
               </a>
             </div>
 
@@ -65,37 +62,37 @@
             <br>
             <br>
             <br>
-            <div class="container" style="width: 17%; display: inline-block; padding:1%;">
-              <video width="100%" loop autoplay muted controls>
-                <source src="https://videosstructurefromnoise.s3.amazonaws.com/heading_crop.mp4" type="video/mp4">
+            <div class="container" style="width: 17%; display: inline-block; padding:0.5%;">
+              <video width="100%" loop autoplay muted controls id ="1">
+                <source src="https://videosstructurefromnoise.s3.amazonaws.com/heading_crop2.mp4" type="video/mp4">
               </video>
               <strong>Set Heading (H):</strong> Robots will all face and move in the same direction as your additional click.
             </div>
-            <div class="container" style="width: 17%; display: inline-block;  padding: 0%;">
+            <div class="container" style="width: 17%; display: inline-block;  padding: 0.5%;">
                 <video width="100%" loop autoplay muted controls>
-                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/goto_crop.mp4" type="video/mp4">
+                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/goto_crop2.mp4" type="video/mp4" id ="2">
                 </video>
                 <strong>Go To (G):</strong> Robots will move towards the target you select with your additional click.
             </div>
-            <div class="container" style="width: 17%; display: inline-block;  padding:1%;">
+            <div class="container" style="width: 17%; display: inline-block;  padding:0.5%;">
                 <video width="100%"loop autoplay muted controls>
-                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/repelfrom_crop.mp4" type="video/mp4">
+                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/repelfrom_crop2.mp4" type="video/mp4" id ="3">
                 </video>
                 <strong>Repel From (F):</strong> Robots will move away from the target you select with your additional click.
                 <br>
 
             </div>
-            <div class="container" style="width: 17%; display: inline-block;  padding:0%;">
+            <div class="container" style="width: 17%; display: inline-block;  padding:0.5%;">
                 <video width="100%"loop autoplay muted controls>
-                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/random_crop.mp4" type="video/mp4">
+                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/random_crop2.mp4" type="video/mp4" id ="4">
                 </video>
                 <strong>Random (R):</strong> Robots will move randomly.
                 <br>
                 <br>
             </div>
-            <div class="container" style="width: 17%; display: inline-block;  padding:1%;">
+            <div class="container" style="width: 17%; display: inline-block;  padding:0.5%;">
                 <video width="100%"loop autoplay muted controls>
-                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/stop_crop.mp4" type="video/mp4">
+                  <source src="https://videosstructurefromnoise.s3.amazonaws.com/stop_crop2.mp4" type="video/mp4" id ="5">
                 </video>
                 <strong>Stop (S):</strong> Robots will stop.
                 <br>
@@ -124,3 +121,7 @@
        </ul>
        </div>
 </crowd-form>
+<script>
+  document.getElementById("1").PlaybackRate=2
+  document.getElementById("1").play()
+</script>
