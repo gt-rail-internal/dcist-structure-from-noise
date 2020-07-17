@@ -23,7 +23,7 @@ globals [
   logstr ;;this is the userID
   logstate ;;counter that counts up set interval
 
-  motivator-phase
+  started
 ]
 ;;these are breeds for the different types of turtles
 breed [bases base]
@@ -58,7 +58,6 @@ to setup [modet]
   clear-all-plots
   clear-output
   random-seed 47822
-  set motivator-phase 0
   set selected no-turtles
   set logstate 0
   set basex 130
@@ -80,13 +79,14 @@ end
 
 to setup-tut
   clear-all
+  set started 1
   set logStr user-input "What is your Mechanical Turk ID?"
   set logstate 0
   set selected no-turtles
   set basex 130
   set basey 130
   set tut-mode 0
-  set motivator-phase 0
+
   print-instructions "start-tut"
   set num-robots 30			;; change this to control number of robots
   set disk-radius 40		;; change this to control the connectivity radius
@@ -244,17 +244,19 @@ end
 
 to-report get-points
   ifelse tut-mode = 0 [
-    report word floor points "/150"
+    report floor points ;;"/150"
   ] [
-   report word floor points "/400"
+   report word floor points "/500"
   ]
 end
 
 to-report get-timer
-  ifelse tut-mode = 0 [
-    report floor timer ;;"/120"
-  ] [
-    report floor timer ;;"/420"
+  if started = 1 [
+    ifelse tut-mode = 0 [
+      report word floor timer "/120"
+    ] [
+      report floor timer ;;"/420"
+    ]
   ]
 end
 
@@ -496,7 +498,7 @@ to collison-avoid [neg]
 
   let xvec xtarget - x-cor-turt
   let yvec ytarget - y-cor-turt
-  let magdesiredvec sqrt ((xvec * xvec) + (yvec * yvec))
+  let magdesiredvec sqrt ((xvec * xvec) + (yvec * yvec) + 0.00001)
   set xvec xvec / magdesiredvec
   set yvec yvec / magdesiredvec
 
@@ -568,7 +570,7 @@ to act
         ]
       )
 	   ] mode = "go-to" [
-       ;; move to the target   	
+       ;; move to the target
       (ifelse not reachable [
       	set mode "stop-back"
       ]([occupied] of infront) = false [
@@ -606,11 +608,10 @@ to update-points
     create-peoplelinks-with robots in-radius disk-radius
     let close-robots robots in-radius disk-radius
     if info <= 0 [die]
-    (ifelse timer < 5[
-      ;show-turtle
-
-
-    ]count close-robots = 0 [
+    (ifelse timer < 12 and timer > 4[
+      set retreived 0
+      show-turtle
+    ] (count close-robots) = 0 [
       hide-turtle
       set retreived 0
     ][
@@ -644,6 +645,7 @@ end
 ;; we just listen for clicks and change modes here
 ;; and then we call update-neighbours and act functions
 to main
+
   if mode-flag = 0 [  ;;We are running this for the first time, tutorial baby!
     print-instructions "select-robots-one"
     setup-tut
@@ -706,34 +708,30 @@ to main
   ;;set selected (selected with [reachable = true])
 
   ;;make-persons ;; this used to call update points and spawned flags, no more!
-
-
-
   update-points
+  tick
 
-
-  if tut-mode = 0 and (timer > 300 or points > 150) [
+  if tut-mode = 0 and timer > 120 [
     log-state true
     print-instructions "end-tut"
     user-message ("Tutorial Complete!  Now begin the first main map!")
     set mode-flag 2
     ;;stop
   ]
-  if tut-mode = 1 and (timer > 660 or points > 399 )[
+  if tut-mode = 1 and (timer > 660 or points > 499 )[
     log-state true
     print-instructions "main-one"
     user-message ("Map 1 Complete!  Now begin the last map!")
     set mode-flag 4
   ]
 
-  if tut-mode = 2 and (timer > 660 or points > 399 )  [  ;;or longer than 15 minutes points > 2500.1
+  if tut-mode = 2 and (timer > 660 or points > 499 )  [  ;;or longer than 15 minutes points > 2500.1
     log-state true
     print-instructions "end-main"
     user-message (word "Experiment Complete!  Your exit code is " precision timer 2 " " precision points 4)
     stop
   ]
-  motivator
-  tick
+
   ;;logging stuff, this is called every time but only runs periodically
   log-state false
 end
@@ -791,69 +789,6 @@ to startup
   ]
 end
 
-to motivator
-  ifelse tut-mode = 0[
-    (ifelse motivator-phase = 0 and points >= 0 and timer > 1 [
-      ask persons [
-        show-turtle
-      ]
-      set motivator-phase motivator-phase + 1
-      ] motivator-phase = 1  [
-        user-message "Find 100 points or two green flags with your robots!"
-        set motivator-phase motivator-phase + 1
-      ] motivator-phase = 2  and points >= 100  [
-        ask persons [
-          show-turtle
-        ]
-      set motivator-phase motivator-phase + 1
-      ]motivator-phase = 3[
-      user-message "Great! Find 50 points or one more green flag and the tutorial will end!"
-      set motivator-phase motivator-phase + 1
-    ])
-  ] [
-    (ifelse motivator-phase = 0 and points >= 0 and timer > 2 [
-      ask persons [
-        show-turtle
-      ]
-      user-message "Find 100 points or two green flags with your robots as fast as possible!"
-      set motivator-phase motivator-phase + 1
-      ask persons [
-        hide-turtle
-      ]
-      ] motivator-phase = 1 and points >= 100 [
-      ask persons [
-        show-turtle
-      ]
-      user-message "Great job! Find 100 points or two more green flags!"
-      set motivator-phase motivator-phase + 1
-      ask persons [
-        hide-turtle
-      ]
-     ] motivator-phase = 2 and points >= 200[
-      ask persons [
-        show-turtle
-      ]
-      user-message "Great job! Find 100 points or two more green flags!"
-      set motivator-phase motivator-phase + 1
-      ask persons [
-        hide-turtle
-      ]
-    ] motivator-phase = 3 and points >= 300[
-      ask persons [
-        show-turtle
-      ]
-      user-message "Great job! Find 150 points or three more flags and this phase will end!"
-      set motivator-phase motivator-phase + 1
-      ask persons [
-        hide-turtle
-      ]
-    ])
-  ]
-end
-
-
-
-
 ;;This is the instructions for the game
 to print-instructions [choice]
  if choice = "intro"[
@@ -897,7 +832,7 @@ to print-instructions [choice]
     output-print "asked to click a target location."
     output-print ""
     output-print "Activity will end when you"
-    output-print "find at least 8 flags!"
+    output-print "find at least 10 flags!"
   ]
     if choice = "start-tut" [
     clear-output
@@ -919,8 +854,8 @@ to print-instructions [choice]
     output-print "Start moving robots whenever you"
     output-print "are ready after peeking the flags."
     output-print ""
-    output-print "Tutorial will end after"
-    output-print "you try to find at least 3 flags, "
+    output-print "Tutorial will end after 2 minutes"
+    output-print "and try to find at least 3 flags, "
     output-print "in all quadrons other than where"
     output-print "the robots and base start in."
   ]
@@ -1081,14 +1016,14 @@ end
 ;;;;;;;;;;;logging stuff below
 
 to log-action [action-list]
-  ;show "Logging:"
+  ;;show "Logging:"
   let finallogstr (word logStr "_" precision timer 2 ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
-  show finallogstr
+  ;;show finallogstr
   let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogstr "text/plain")
   ifelse (first response-triplet) = 200 [
-    show "logs successfully sent";
+    ;show "logs successfully sent";
   ] [
-   show "log transmission failed"
+   ;show "log transmission failed"
   ]
 end
 
@@ -1097,15 +1032,15 @@ to log-state [force]
   if logstate * 25 < points or force [
     ;;show "Logging:"
     let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
-    show finallogstr
+    ;;show finallogstr
     let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
     ifelse (first response-triplet) = 200 [
-      show "logs successfully sent"
+      ;;show "logs successfully sent"
       set logstate logstate + 1
     ]
     [
-     show "log transmission failed"
-    if force [
+     ;;show "log transmission failed"
+     if force [
         log-state true
       ]
     ]
@@ -1254,10 +1189,10 @@ NIL
 1
 
 MONITOR
-110
-40
-219
-109
+188
+43
+297
+112
 Points
 get-points
 2
@@ -1320,6 +1255,17 @@ Set Heading:  Robots will face at the\n           (H)    same angle and move in\
 15
 0.0
 1
+
+MONITOR
+39
+44
+149
+113
+Timer
+get-timer
+17
+1
+17
 
 @#$#@#$#@
 ## WHAT IS IT?
