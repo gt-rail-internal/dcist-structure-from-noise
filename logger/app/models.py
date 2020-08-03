@@ -10,8 +10,8 @@ class Response(db.Model):
     pretest_status = db.Column(db.Integer, default = 1)
     pretest_key_status = db.Column(db.Text, default="")
     pretest_token = db.Column(db.String(12), default= "")
-    post_test_agents = db.Column(db.Text, default="")
 
+    post_test_agents = db.Column(db.Text, default="")
     robot_domain_data = db.Column(db.Text, default="")
     def __repr__(self):
         return '<Response from {} {}>'.format(self.user_id, self.preteslst_reactions)

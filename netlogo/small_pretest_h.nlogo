@@ -1,7 +1,7 @@
 extensions [http-req]
-globals [adj key prevkey prevtime timelog keylog currtime 
+globals [adj key prevkey prevtime timelog keylog currtime
   simul keymap press-count initialized completed token
-	key-status total-count error-list error-count error-thresh 
+	key-status total-count error-list error-count error-thresh
   error-window terminated second-attempt user-invalid uname]
 
 to setup
@@ -13,7 +13,7 @@ to setup
   set adj modular-graph modular-clusters
   show "using modular graph"
   set keylog "::gtype, modular::keys"
-  
+
   set key-status "::status"
 	set timelog "::user, "
   set uname (user-input "Enter your Mechanical Turk Worker ID:")
@@ -64,7 +64,7 @@ to-report delta-time
 end
 
 to-report get-token
-	let token-set (shuffle n-of 8 ["a" "b" "c" "d" "e" "f" 
+	let token-set (shuffle n-of 8 ["a" "b" "c" "d" "e" "f"
     "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "1" "2" "3" "4" "5" "6" "7" "8"])
   let token-string ""
   foreach token-set [ element ->
@@ -91,7 +91,7 @@ to clear-view-labels
     initialize-user uname
     if not second-attempt [
       set initialized true
-      ask patches [set plabel ""]  
+      ask patches [set plabel ""]
       set press-count 1
       set prevkey -1
       set key item random 4 item key adj
@@ -167,7 +167,7 @@ to update-wrong [current-node mode]
   ]
   if (length error-list) > error-window
   [
-    if (item 0 error-list) = 0 
+    if (item 0 error-list) = 0
     [
       set error-count (error-count - 1)
     ]
@@ -184,13 +184,13 @@ end
 ;; function to transition to the next key according to the graph
 to update [current-node]
   ask patch 0 -1 [set plabel ""]
-  
+
   set error-list sentence error-list 1
   if (length error-list) > error-window
   [
     set error-list (remove-item 0 error-list)
   ]
-  
+
   set keylog (word keylog ", " current-node)
   set key-status (word key-status ", " 1)
   ;; clear previous key when transitioning to next node
@@ -234,7 +234,7 @@ end
 to completed-message
   ask patch 0 -1 [set plabel ""]
   ask patch 1 -1 [set plabel (word "Your token: " token)]
-  user-message (word "Thank you for completing the task." "\nYour token is\n" 
+  user-message (word "Thank you for completing the task." "\nYour token is\n"
     token "\nYou may now close this window.")
 end
 
@@ -280,7 +280,7 @@ to press-space
     ] completed [
       completed-message
     ] terminated [
-      terminated-message 
+      terminated-message
     ] second-attempt [
       only-once-message
     ][
@@ -316,7 +316,7 @@ to press-j
   ] completed [
     completed-message
   ] terminated [
-      terminated-message 
+      terminated-message
     ] second-attempt [
       only-once-message
     ]
@@ -355,7 +355,7 @@ to press-k
   ] completed [
       completed-message
   ] terminated [
-      terminated-message 
+      terminated-message
     ] second-attempt [
       only-once-message
     ]
@@ -393,7 +393,7 @@ to press-l
   ] completed [
     completed-message
     ] terminated [
-      terminated-message 
+      terminated-message
     ] second-attempt [
       only-once-message
     ]
@@ -405,11 +405,11 @@ end
 GRAPHICS-WINDOW
 300
 10
-750
-385
+758
+394
 -1
 -1
-75
+75.0
 1
 25
 1
@@ -427,7 +427,7 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-30
+30.0
 
 BUTTON
 90
@@ -518,12 +518,13 @@ MONITOR
 60
 23
 195
-76
+84
 Keys to go:
 togo-count
 0
 1
 15
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -903,22 +904,22 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.0
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 default
-0
--0.2 0 0 1
-0 1 1 0
-0.2 0 0 1
+0.0
+-0.2 0 0.0 1.0
+0.0 1 1.0 0.0
+0.2 0 0.0 1.0
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-
+0
 @#$#@#$#@
