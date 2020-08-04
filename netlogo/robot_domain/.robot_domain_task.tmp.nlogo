@@ -1,4 +1,4 @@
-;extensions [http-req]
+extensions [http-req]
 globals [
   num-robots 		;; number of robots including base station
   disk-radius 	;; radius for the delta-disk connectivity graph
@@ -248,7 +248,7 @@ to-report get-timer
     ifelse tut-mode = 0 [
       report word floor timer "/300"
     ] [
-      report floor timer "/420"
+      report word floor timer "/420"
     ]
   ]
 end
@@ -716,7 +716,7 @@ to main
     set mode-flag 2
     ;;stop
   ]
-  if tut-mode = 1 and (timer > 420)[
+  if tut-mode = 1 and (timer > 42)[
     log-state true
     print-instructions "main-one"
     user-message ("Map 1 Complete!  Now begin the last map and find 10 more flags!")

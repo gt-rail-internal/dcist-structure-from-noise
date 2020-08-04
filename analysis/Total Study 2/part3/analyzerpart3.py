@@ -51,7 +51,7 @@ def graphone(data):
     autolabel(rects1, ax)
     plt.show()
 
-def graphtwo(scoresYList, pointscoresList, data, actionList, pointactionList, k):
+def graphtwo(scoresYList, pointscoresList, actionList, pointactionList, k):
     fig, ax = plt.subplots()
     #print(scoresList)
     for i in range(0,len(USERNAME)):
@@ -91,33 +91,30 @@ def graphthree(actionList, pointactionList):
     ax.set_xlim([0, 900])
     plt.show()
 
+def mainconcat(k, path):
+    scoresYList = []
+    timesXList = []
+    actionList = []
+    pointactionList = []
+    for i in range(0, len(USERNAME)):
+        with open(path, 'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            stateArr, actionArr = parsePerson(reader, USERNAME[i], k)
+            scores = stateArr[:,2]
+            times = stateArr[:,3]
+            scores = np.array(scores, dtype=np.single)
+            times = np.array(times, dtype=np.single)
+            scores = scores[np.argsort(scores)]
+            times = times[np.argsort(times)]
+            timesXList.append(times)
+            scoresYList.append(scores)
+            actionList.append(actionArr[:,3].astype(float))
+            pointactionList.append(actionArr[:,2].astype(float))
+            #print(actionArr)
+    return scoresYList, timesXList, actionList, pointactionList
 if __name__ == "__main__":
     for k in range(0,3):
-        scoresYList = []
-        timesXList = []
-        actionList = []
-        pointactionList = []
-        for i in range(0, len(USERNAME)):
-            with open('out.csv', 'r') as csvfile:
-
-                reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-                stateArr, actionArr = parsePerson(reader, USERNAME[i], k)
-                scores = stateArr[:,2]
-                times = stateArr[:,3]
-                scores = np.array(scores, dtype=np.single)
-                times = np.array(times, dtype=np.single)
-                scores = scores[np.argsort(scores)]
-                times = times[np.argsort(times)]
-                timesXList.append(times)
-                scoresYList.append(scores)
-                actionList.append(actionArr[:,3].astype(float))
-                pointactionList.append(actionArr[:,2].astype(float))
-                #print(actionArr)
-                print()
-                print()
-        graphtwo(scoresYList, timesXList, data, actionList, pointactionList, k)
+        scoresYList, timesXList, actionList, pointactionList = mainconcat(k, 'out.csv')
+        graphtwo(scoresYList, timesXList, actionList, pointactionList, k)
     #graphone(data)
-
     #graphthree(actionList, pointactionList)
-def abc():
-    print("abc")
