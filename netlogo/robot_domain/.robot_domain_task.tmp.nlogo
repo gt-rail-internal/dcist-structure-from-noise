@@ -1,4 +1,4 @@
-;;extensions [http-req]
+;extensions [http-req]
 globals [
   num-robots 		;; number of robots including base station
   disk-radius 	;; radius for the delta-disk connectivity graph
@@ -239,7 +239,7 @@ to-report get-points
   ifelse tut-mode = 0 [
     report word floor points "/200"
   ] [
-   report word floor points "/500"
+   report floor points ;word floor points "/500"
   ]
 end
 
@@ -248,7 +248,7 @@ to-report get-timer
     ifelse tut-mode = 0 [
       report word floor timer "/300"
     ] [
-      report floor timer ;;"/420"
+      report floor timer "/420"
     ]
   ]
 end
@@ -716,14 +716,14 @@ to main
     set mode-flag 2
     ;;stop
   ]
-  if tut-mode = 1 and (timer > 600 or points > 499 )[
+  if tut-mode = 1 and (timer > 420)[
     log-state true
     print-instructions "main-one"
     user-message ("Map 1 Complete!  Now begin the last map and find 10 more flags!")
     set mode-flag 4
   ]
 
-  if tut-mode = 2 and (timer > 600 or points > 499 )  [  ;;or longer than 15 minutes points > 2500.1
+  if tut-mode = 2 and (timer > 420)  [  ;;or longer than 15 minutes points > 2500.1
     log-state true
     print-instructions "end-main"
     user-message (word "Experiment Complete!  Your exit code is " precision timer 2 " " precision points 4)
@@ -1041,33 +1041,33 @@ end
 
 to log-action [action-list]
   ;show "Logging:"
-;  let finallogstr (word logStr "_" precision timer 2 ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
+  let finallogstr (word logStr "_" precision timer 2 ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
   ;;show finallogstr
-; let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogstr "text/plain")
-;  ifelse (first response-triplet) = 200 [
-;    show "logs successfully sent";
-;  ] [
-;   show "log transmission failed"
-;  ]
+ let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogstr "text/plain")
+  ifelse (first response-triplet) = 200 [
+    show "logs successfully sent";
+  ] [
+   show "log transmission failed"
+  ]
 end
 
 
 to log-state [force]
-;  if logstate * 25 < points or force [
+  if logstate * 25 < points or force [
     ;;show "Logging:"
-;    let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
+    let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
     ;;show finallogstr
-;    let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
-;    ifelse (first response-triplet) = 200 [
-;      show "logs successfully sent"
-;      set logstate logstate + 1
-;    ]
-;    [
-;    show "log transmission failed"
-;     if force [
-;        log-state true
-;      ]
-;   ]
+    let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
+    ifelse (first response-triplet) = 200 [
+      show "logs successfully sent"
+      set logstate logstate + 1
+    ]
+    [
+    show "log transmission failed"
+     if force [
+        log-state true
+      ]
+   ]
   ]
 end
 

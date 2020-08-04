@@ -239,7 +239,7 @@ to-report get-points
   ifelse tut-mode = 0 [
     report word floor points "/200"
   ] [
-   report word floor points "/500"
+   report floor points ;word floor points "/500"
   ]
 end
 
@@ -248,7 +248,7 @@ to-report get-timer
     ifelse tut-mode = 0 [
       report word floor timer "/300"
     ] [
-      report floor timer ;;"/420"
+      report word floor timer "/420"
     ]
   ]
 end
@@ -716,14 +716,14 @@ to main
     set mode-flag 2
     ;;stop
   ]
-  if tut-mode = 1 and (timer > 600 or points > 499 )[
+  if tut-mode = 1 and (timer > 420)[
     log-state true
     print-instructions "main-one"
     user-message ("Map 1 Complete!  Now begin the last map and find 10 more flags!")
     set mode-flag 4
   ]
 
-  if tut-mode = 2 and (timer > 600 or points > 499 )  [  ;;or longer than 15 minutes points > 2500.1
+  if tut-mode = 2 and (timer > 420)  [  ;;or longer than 15 minutes points > 2500.1
     log-state true
     print-instructions "end-main"
     user-message (word "Experiment Complete!  Your exit code is " precision timer 2 " " precision points 4)
