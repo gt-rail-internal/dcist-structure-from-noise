@@ -1342,7 +1342,7 @@ end
 to finish
   show "Logging:"
   show logStr
-  let response-triplet (http-req:post "http://34.227.18.144/posttest-data" logStr "text/plain")
+  let response-triplet (http-req:post "http://54.89.180.124/posttest-data" logStr "text/plain")
   ifelse (first response-triplet) = 200 [
     show "logs successfully sent"
     set state state + 1

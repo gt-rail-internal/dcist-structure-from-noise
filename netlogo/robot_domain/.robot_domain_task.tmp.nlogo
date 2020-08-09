@@ -239,7 +239,7 @@ to-report get-points
   ifelse tut-mode = 0 [
     report word floor points "/200"
   ] [
-   report floor points ;word floor points "/500"
+   report word floor points "/500"
   ]
 end
 
@@ -248,7 +248,7 @@ to-report get-timer
     ifelse tut-mode = 0 [
       report word floor timer "/300"
     ] [
-      report word floor timer "/420"
+      report floor timer
     ]
   ]
 end
@@ -716,14 +716,14 @@ to main
     set mode-flag 2
     ;;stop
   ]
-  if tut-mode = 1 and (timer > 42)[
+  if tut-mode = 1 and (points > 500 or timer > 600)[
     log-state true
     print-instructions "main-one"
     user-message ("Map 1 Complete!  Now begin the last map and find 10 more flags!")
     set mode-flag 4
   ]
 
-  if tut-mode = 2 and (timer > 420)  [  ;;or longer than 15 minutes points > 2500.1
+  if tut-mode = 2 and (points > 500 or timer > 600)  [  ;;or longer than 15 minutes points > 2500.1
     log-state true
     print-instructions "end-main"
     user-message (word "Experiment Complete!  Your exit code is " precision timer 2 " " precision points 4)
@@ -1057,7 +1057,7 @@ to log-state [force]
     ;;show "Logging:"
     let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
     ;;show finallogstr
-    let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
+    let response-triplet (http-req:post "http:///robotdomain-data" finallogStr "text/plain")
     ifelse (first response-triplet) = 200 [
       show "logs successfully sent"
       set logstate logstate + 1

@@ -48,8 +48,8 @@ to initialize-error-params
 end
 
 to initialize-user [name]
-  let response-triplet (http-req:post "http://34.227.18.144/pretest-initialize" name "text/plain")
-  ifelse (item 0 response-triplet) = 200 [
+  let response-triplet (http-req:post "http://54.89.180.124/pretest-initialize" name "text/plain")
+  ifelse (item 0 response-triplet) = 200 or (item 0 response-triplet) = 210 [
     show response-triplet
   ]
   [
@@ -256,7 +256,7 @@ end
 
 
 to finish
-  let response-triplet (http-req:post "http://34.227.18.144/pretest-data" timelog "text/plain")
+  let response-triplet (http-req:post "http://54.89.180.124/pretest-data" timelog "text/plain")
   ifelse (first response-triplet) = 200 [
     show "logs successfully sent"
   ]

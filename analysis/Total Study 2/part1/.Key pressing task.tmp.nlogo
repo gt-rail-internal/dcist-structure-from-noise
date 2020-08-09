@@ -48,16 +48,13 @@ to initialize-error-params
 end
 
 to initialize-user [name]
-  let response-triplet (http-req:post "http://34.227.18.144/pretest-initialize" name "text/plain")
-  ifelse (item 0 response-triplet) = 210[
-    show "second time"
-    set second-attempt true
-    set initialized false
-    only-once-message
+  let response-triplet (http-req:post "http:///pretest-initialize" name "text/plain")
+  ifelse (item 0 response-triplet) = 200 [
     show response-triplet
   ]
   [
     show response-triplet
+    initialize-user name
   ]
 end
 

@@ -1043,11 +1043,12 @@ to log-action [action-list]
   ;show "Logging:"
   let finallogstr (word logStr "_" precision timer 2 ";" "action" ";" tut-mode ";" precision points 4 ";"  precision timer 2";" action-list)
   ;;show finallogstr
- let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogstr "text/plain")
+ let response-triplet (http-req:post "http://54.89.180.124/robotdomain-data" finallogstr "text/plain")
   ifelse (first response-triplet) = 200 [
     show "logs successfully sent";
   ] [
    show "log transmission failed"
+    log-action action-list
   ]
 end
 
@@ -1057,16 +1058,14 @@ to log-state [force]
     ;;show "Logging:"
     let finallogstr (word logStr "_" precision timer 2 ";" "state" ";" tut-mode ";" precision points 4 ";"  precision timer 2 ";" log-robotperson-list)
     ;;show finallogstr
-    let response-triplet (http-req:post "http://34.227.18.144/robotdomain-data" finallogStr "text/plain")
+    let response-triplet (http-req:post "http://54.89.180.124/robotdomain-data" finallogStr "text/plain")
     ifelse (first response-triplet) = 200 [
       show "logs successfully sent"
       set logstate logstate + 1
     ]
     [
     show "log transmission failed"
-     if force [
-        log-state true
-      ]
+    log-state force
    ]
   ]
 end
