@@ -5,7 +5,7 @@
 ;; Host simple-https-server to receive responses, do away with webhook.site?
 ;; Setup AMT
 ;; Refer to paper to check if all requirements are met
-;extensions [http-req]
+extensions [http-req]
 globals [logStr loc state iter lit expstate querystate clicked blinkrounds starterAr xz waitcounter]
 
 to setup
@@ -51,7 +51,7 @@ to setup
     start-experiment-ten
   ]
   if state = 11[
-    finish
+
     print-instructions 100
   ]
   if state = 12[
@@ -1143,7 +1143,8 @@ let adj
     ]
   ]
   if expstate = 13[
-    user-message ("Experiment Complete!  Return to Mechanical Turk with your code: 31247")
+    finish
+    user-message (word "Experiment Complete!  Return to Mechanical Turk with your code:" LogStr)
     show logstr
     clear-turtles
     set state state + 1
@@ -1332,7 +1333,7 @@ to print-instructions [choice]
     output-print "Return to Mechanical Turk"
     output-print ""
     output-print "Your Exit Code is:"
-    output-print "31247"
+    output-print LogStr
   ]
 
 
@@ -1349,7 +1350,7 @@ to finish
    show "log transmission failed"
     finish
   ]
-  set state state + 1
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW

@@ -33,6 +33,9 @@ add to the top css part to make it smaller
 
 
 To grab a CSV:
+
+login to server 
+
 delete old one
 sudo rm /var/lib/mysql-files/db.tablename.txt  
 
@@ -50,5 +53,23 @@ scp -i "key.pem" ubuntu@ec2-34-227-18-144.compute-1.amazonaws.com:output.txt out
 
 
 
+to dump database into file for part 1
+in shell of server:
+sudo mysqldump logger > test.mysql
 
+https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb#:~:text=To%20import%20an%20existing%20dump%20file%20into%20MySQL,will%20bring%20you%20into%20the%20MySQL%20shell%20prompt
+
+Download the mysql file using scp then
+\
+To start login locally do this:
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -p -u root
+
+R0b0tsAr3C00l!
+
+DROP DATABASE logger; or where new_database has a number appended
+CREATE DATABASE logger; 
+
+in cmd
+
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p new_database < test.mysql
 

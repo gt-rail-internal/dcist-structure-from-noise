@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 
-USERNAME = ["AE1DWQLNREKRF", "A31TQK11E2EBJZ", "A3GK90X2QOFR53", "A1KGCOR8OXYR72", "A248LF7KKHXZ14",  "A1F1BIPJR11LSR"]# ["A3H7GCFS21E253", "AN15QS1604XRS","A141CB4BKDYKDF","A32W2O02CUQ2TO"]
+
+
+USERNAME = ["A16OH8XXYY0AAS", "AUJVF2FELZW96", "A2PN1H89SQF28M", "A11R31H4YHL2Z7",  "ATGAWNJKGYWFD", "A30Y3H3UJ9QKWV", "A2PDV96SVVAUTE", "A11YQBM0AFKUW6", "AEAELZKTUUMN3", "A3PIJN4LHKKNPH", "A2VNK2H6USLQTK", "A1MKE1TSX06BJ3", "AQMJMYR9MANOG", "A11TPUPFP2S4MK", "AQUEW1WQG7KK6"]
 np.set_printoptions(suppress=True)
 readTemp = []
 data = [780.44, 466.01, 709.72, 900.62, 570.79]
 datay = [2500, 2500, 2500, 1103, 2500]
-stateTutArrAll = np.empty(shape=[len(USERNAME),0,6]) #each user, each data point, length of datapoint
+stateTutArrAllf = np.empty(shape=[len(USERNAME),0,6]) #each user, each data point, length of datapoint
 actionTutArrAll = np.empty(shape=[len(USERNAME),0,5])
 stateArrAll = np.empty(shape=[len(USERNAME),0,6])
 actionArrAll = np.empty(shape=[len(USERNAME),0,5])
@@ -62,6 +64,7 @@ def graphtwo(scoresYList, pointscoresList, actionList, pointactionList, k):
         #print(pointscoresList[i])
         #print(scoresList[i])
         #print()
+        print(len(timesXList[i]))
         plt.plot(np.sort(np.concatenate((timesXList[i], actionList[i]))), np.sort(np.concatenate((scoresYList[i], pointactionList[i]))), label='Participant ' + str(i + 1))
         #plt.plot(np.sort(np.concatenate((timesXList[i], actionList[i]))), np.sort(np.concatenate((x, pointactionList[i]))), label='Participant ' + str(i + 1))
         ax.scatter(np.sort(actionList[i]), np.sort(pointactionList[i]), 7, label="Action Click " + str(i + 1))
@@ -91,7 +94,7 @@ def graphthree(actionList, pointactionList):
     ax.set_xlim([0, 900])
     plt.show()
 
-def mainconcat(k, path):
+def mainconcat(k, path):  #K is each map type
     scoresYList = []
     timesXList = []
     actionList = []
