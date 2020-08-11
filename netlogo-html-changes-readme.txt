@@ -49,7 +49,8 @@ sudo cp /var/lib/mysql-files/db.tablename.txt  output.txt
 
 Then exit shell and scp it to your local machine:
 
-scp -i "key.pem" ubuntu@ec2-34-227-18-144.compute-1.amazonaws.com:output.txt out.txt
+scp -i "key.pem" ubuntu@ec2-54-89-180-124.compute-1.amazonaws.com:output.txt out.txt
+
 
 
 
