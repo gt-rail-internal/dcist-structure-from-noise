@@ -61,7 +61,12 @@ sudo mysqldump logger > test.mysql
 https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb#:~:text=To%20import%20an%20existing%20dump%20file%20into%20MySQL,will%20bring%20you%20into%20the%20MySQL%20shell%20prompt
 
 Download the mysql file using scp then
-\
+
+I recommend using mysql workbench and import the file directly to logger and then run Akshay's python script.
+
+
+Otherwise manually:
+
 To start login locally do this:
 "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -p -u root
 
