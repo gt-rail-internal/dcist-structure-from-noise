@@ -117,10 +117,11 @@ graph_writer = csv.writer(open('graph-small-graph-h-02.csv', 'w', newline='\n'))
 
 # these are AMT user IDs of users in specific groups that was used for the analysis.
 # H users are the ones that had H key, S user had the space key, when only 4 keys were used.
-H_users = ["A16OH8XXYY0AAS", "A11R31H4YHL2Z7", "A2PN1H89SQF28M", "ATGAWNJKGYWFD", "A30Y3H3UJ9QKWV", "A11YQBM0AFKUW6", "A2VNK2H6USLQTK", "A1MKE1TSX06BJ3", "A7HDYVFP9N2Z1", "A3G991Y0PG5BIC", "A1WLF3HNXNHU2F""AVJUIF9QHQRY8", "AWB75Q7MKORHP", "AG8NOMLGTJDTR","A2WQT33K6LD9Z5","A3906Y616EHDZL","A2PIFMM4Q2I9ZS", "A1A73A5Z4SDW06", "AEQI66Y2JSY05", "ACI8PUCF5OPDC","A5DTG37NL4GAG","A2R4XO2TAFCOZ7","A382SL9ROIY1P6","A2NHP55T9ZX86Q","A348NEQKS6VNIB","A1BJ6GNGWGMM92","A13PCA27Z3ZTPZ","AFUUPNBIKHRFZ","A1B5O1E2T429ET","A3HMHNZHE46CZQ","AEQ8K4HBO323D","A2UVJMJV1EOH9X","A289D98Z4GAZ28","A3IKKVVG1CSSAP","A1LRJ4U04532TM","A2BBHN6QH66V93","AFIK3VBMMX6G6","A3NI8HMVCT7SOF"]
+H_users = ["A16OH8XXYY0AAS", "A11R31H4YHL2Z7", "A2PN1H89SQF28M","A30Y3H3UJ9QKWV", "A2VNK2H6USLQTK", "A7HDYVFP9N2Z1", "A3G991Y0PG5BIC", "A1WLF3HNXNHU2F","AVJUIF9QHQRY8", "AWB75Q7MKORHP", "AG8NOMLGTJDTR","A2WQT33K6LD9Z5","A3906Y616EHDZL","A2PIFMM4Q2I9ZS", "A1A73A5Z4SDW06", "AEQI66Y2JSY05", "ACI8PUCF5OPDC","A5DTG37NL4GAG","A2R4XO2TAFCOZ7","A382SL9ROIY1P6","A2NHP55T9ZX86Q","A348NEQKS6VNIB","A1BJ6GNGWGMM92","A13PCA27Z3ZTPZ","AFUUPNBIKHRFZ","A1B5O1E2T429ET","A3HMHNZHE46CZQ","AEQ8K4HBO323D","A2UVJMJV1EOH9X","A289D98Z4GAZ28","A3IKKVVG1CSSAP","A1LRJ4U04532TM","A2BBHN6QH66V93","AFIK3VBMMX6G6","A3NI8HMVCT7SOF"]
 
 #S_users = ["A3GUM1J7OYRYPR", "A82VN0BRUIMNO", "A1LA6CIGBNDOH9", "A3UDUHUVFKD833"]
 for users in H_users:
+	found = 0
 	for row in data:
 		#print(row['user_id'])
 		if row['pretest_key_status'] and len(row['pretest_key_status']) > 0:
@@ -129,7 +130,8 @@ for users in H_users:
 			keys = stringListToInt(row['pretest_keys'])
 			key_status = stringListToInt(row['pretest_key_status'])
 			if len(key_status) >= 700 and ('rail_' in row['user_id'] or row['user_id'] == users):
-				print(row['user_id'])
+				found = 1
+				#print(row['user_id'])
 				# target_long = randomWalk(adj_list, 1500)
 				# print("---------------------------------------------------------------------")
 				# print("user ", row['user_id'])
@@ -215,3 +217,5 @@ for users in H_users:
 				# plt.scatter(list(ind), list(rtf), c='g', s=2)
 				# plt.title(row['user_id']+" "+row['pretest_graph_type'])
 				# plt.show()
+	if found == 0:
+		print(users)

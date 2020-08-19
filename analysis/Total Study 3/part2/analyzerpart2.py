@@ -4,20 +4,27 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import sys
 csv.field_size_limit(1000000)
-USERNAME = ["A16OH8XXYY0AAS", "A11R31H4YHL2Z7", "A2PN1H89SQF28M", "ATGAWNJKGYWFD", "A30Y3H3UJ9QKWV", "A11YQBM0AFKUW6", "A2VNK2H6USLQTK", "A1MKE1TSX06BJ3", "A7HDYVFP9N2Z1", "A3G991Y0PG5BIC", "A1WLF3HNXNHU2F""AVJUIF9QHQRY8", "AWB75Q7MKORHP", "AG8NOMLGTJDTR","A2WQT33K6LD9Z5","A3906Y616EHDZL","A2PIFMM4Q2I9ZS", "A1A73A5Z4SDW06", "AEQI66Y2JSY05", "ACI8PUCF5OPDC","A5DTG37NL4GAG","A2R4XO2TAFCOZ7","A382SL9ROIY1P6","A2NHP55T9ZX86Q","A348NEQKS6VNIB","A1BJ6GNGWGMM92","A13PCA27Z3ZTPZ","AFUUPNBIKHRFZ","A1B5O1E2T429ET","A3HMHNZHE46CZQ","AEQ8K4HBO323D","A2UVJMJV1EOH9X","A289D98Z4GAZ28","A3IKKVVG1CSSAP","A1LRJ4U04532TM","A2BBHN6QH66V93","AFIK3VBMMX6G6","A3NI8HMVCT7SOF"]
+USERNAME = ["A16OH8XXYY0AAS", "A11R31H4YHL2Z7", "A2PN1H89SQF28M","A30Y3H3UJ9QKWV", "A2VNK2H6USLQTK", "A7HDYVFP9N2Z1", "A3G991Y0PG5BIC", "A1WLF3HNXNHU2F","AVJUIF9QHQRY8", "AWB75Q7MKORHP", "AG8NOMLGTJDTR","A2WQT33K6LD9Z5","A3906Y616EHDZL","A2PIFMM4Q2I9ZS", "A1A73A5Z4SDW06", "AEQI66Y2JSY05", "ACI8PUCF5OPDC","A5DTG37NL4GAG","A2R4XO2TAFCOZ7","A382SL9ROIY1P6","A2NHP55T9ZX86Q","A348NEQKS6VNIB","A1BJ6GNGWGMM92","A13PCA27Z3ZTPZ","AFUUPNBIKHRFZ","A1B5O1E2T429ET","A3HMHNZHE46CZQ","AEQ8K4HBO323D","A2UVJMJV1EOH9X","A289D98Z4GAZ28","A3IKKVVG1CSSAP","A1LRJ4U04532TM","A2BBHN6QH66V93","AFIK3VBMMX6G6","A3NI8HMVCT7SOF"]
 
 def indexHelper(one, two, three):
     return min(one, two, three) * 0.5 + one * 0.5 + two * 0.5 + three * 0.5
 
+def indexHelper2(one, two, three):
+    return (two + three + 0.01) /2
+
 def processData(Index, filename):
     readTemp = []
     for UN in USERNAME:
+        found = 0
         with open(filename, 'r') as csvfile:
             reader = csv.reader(csvfile, delimiter='"', quotechar='|')
             for row in reader:
                 trow = []
                 if row[1].replace('"', "") == UN:
                     readTemp.append(row[11].split(","))
+                    found = 1
+        if found == 0:
+            print(UN)
     print(readTemp)
                     #print(len(trow))
     ##ReadTemp now contains a list with each person as a list object with first the ID and then each result
@@ -82,15 +89,15 @@ def processData(Index, filename):
     else:
         for j in range(0, len(readTemp)):
             minDists.append([])
-            minDists[j].append(indexHelper(distTemp[j][0],distTemp[j][1],distTemp[j][2]))
-            minDists[j].append(indexHelper(distTemp[j][3],distTemp[j][4],distTemp[j][5]))
-            minDists[j].append(indexHelper(distTemp[j][7],distTemp[j][8],distTemp[j][9]))
-            minDists[j].append(indexHelper(distTemp[j][10],distTemp[j][11],distTemp[j][12]))
-            minDists[j].append(indexHelper(distTemp[j][13],distTemp[j][14],distTemp[j][15]))
-            minDists[j].append(indexHelper(distTemp[j][16],distTemp[j][17],distTemp[j][18]))
-            minDists[j].append(indexHelper(distTemp[j][19],distTemp[j][20],distTemp[j][21]))
-            minDists[j].append(indexHelper(distTemp[j][22],distTemp[j][23],distTemp[j][24]))
-            minDists[j].append(indexHelper(distTemp[j][25],distTemp[j][26],distTemp[j][27]))
+            minDists[j].append(indexHelper2(distTemp[j][0],distTemp[j][1],distTemp[j][2]))
+            minDists[j].append(indexHelper2(distTemp[j][3],distTemp[j][4],distTemp[j][5]))
+            minDists[j].append(indexHelper2(distTemp[j][7],distTemp[j][8],distTemp[j][9]))
+            minDists[j].append(indexHelper2(distTemp[j][10],distTemp[j][11],distTemp[j][12]))
+            minDists[j].append(indexHelper2(distTemp[j][16],distTemp[j][17],distTemp[j][18]))
+            minDists[j].append(indexHelper2(distTemp[j][13],distTemp[j][14],distTemp[j][15]))
+            minDists[j].append(indexHelper2(distTemp[j][19],distTemp[j][20],distTemp[j][21]))
+            minDists[j].append(indexHelper2(distTemp[j][22],distTemp[j][23],distTemp[j][24]))
+            minDists[j].append(indexHelper2(distTemp[j][25],distTemp[j][26],distTemp[j][27]))
             #print(minDists)
 
     fig, ax = plt.subplots()
