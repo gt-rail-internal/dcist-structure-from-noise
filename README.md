@@ -5,17 +5,15 @@
 This is a previous email we sent:
 https://docs.google.com/document/d/1yoOJss9qrUjFHneC2NDYFxsKpEhMxOI_YTU9RPl9-Z8/edit
 
-### Summary to Chris and Ari:
+### Summary to Chris and Ari potetnailly:
 
 As you know from our previous email, we successfully ran a similar test to yours (same setup but two clusters) along with two other studies to find correlation between all three studies.  This was run with 35 people on Mechanical Turk, with your study being first and two other robotics related ones following.
 
-We have two ideas to run by you:
+We have two ideas to run still:???
 
 1.  Can using the beta value as a predictor of skill level, larger is better be reasonable?
 
 2.  When reading the RMSE curves, sometimes there's no definitive minima and for instance a beta of 1 or 10 can have similar RMSE values.  Do you have any insight on how to score using that?
-
-Thanks again for your insight.
 
 # There's three parts to the study:
 
